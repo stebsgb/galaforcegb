@@ -4,6 +4,8 @@ INCLUDE "gfx.inc"
 
 DEF MAXAL EQU 14           ; alien slots (2 objects each)
 DEF MAXINIT EQU 4
+DEF IDLE_HI EQU 3          ; title idle time before the demo: 768 frames (~13 s)
+DEF DEMO_FRAMES_HI EQU 7   ; demo length: 1792 frames (~30 s)
 
 ; ---- field offsets of an alien slot (16 bytes) ----
 DEF AL_ST    EQU 0         ; 0 free, $80 alive, $81 dying
@@ -106,6 +108,11 @@ wTmp:       ds 8
 wRot:       db
 wPause:     db
 wMusic:     ds 16
+wFade:      db            ; 0 normal .. 3 black
+wDemo:      db            ; 1 while the attract-mode demo runs
+wIdle:      dw            ; title idle frames
+wDemoT:     dw            ; demo frames
+wHiBak:     ds 7          ; hi-score saved while the demo runs
 
 SECTION "hram", HRAM
 hDma:       ds 10
@@ -225,12 +232,11 @@ Start:
     call InitHiScore
     call LoadHi
     call AudioInit
-    call ShowTitle
     xor a
     ldh [rIF], a
     ld a, %00000011
     ldh [rIE], a
-    ei
+    call ShowTitle
 
 ; ===================================================== main loop
 MainLoop:
@@ -251,6 +257,7 @@ MainLoop:
     and $0F
     cp $0F
     jp z, Start                 ; A+B+Select+Start soft reset
+    call DemoInput
     call AudioUpdate
     call GameUpdate
     call BuildOAM
@@ -383,4 +390,5 @@ INCLUDE "hud.asm"
 INCLUDE "screens.asm"
 INCLUDE "audio.asm"
 INCLUDE "save.asm"
+INCLUDE "fx.asm"
 INCLUDE "data.inc"

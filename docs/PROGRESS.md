@@ -10,7 +10,9 @@
 | 06 Attackers | done (all-sprite design) |
 | 07 Bombs, collisions, flow | done |
 | 08 Audio | done (custom driver; effects/music mix tuned for punch) |
-| 09 Screens, hi-score, polish | title centred; SRAM hi-score; pause dim; soft reset; death flash. Demo/attract mode and screen fades not done |
+| 09 Screens, hi-score, polish | title centred; SRAM hi-score; pause dim; soft reset; death flash. Demo mode and fades done in Stage 11 |
+| 11 Demo & fades | done (`src/fx.asm`, `tools/demotest.py`) |
+| 12 Options menu | planned (`STAGE-12-OPTIONS-MENU.md`) |
 | 10 Tuning & QA | partial: 200k-frame god-mode soak (79 waves, no crash), frame-drop and sprite-per-line audit done. See QA below |
 
 ## QA notes

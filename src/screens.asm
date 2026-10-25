@@ -25,6 +25,12 @@ BuildGameMap:
     call PutStr
     ld hl, strHI
     ld de, _SCRN0 + 32 + 11
+    call PutStr
+    ld a, [wDemo]
+    or a
+    ret z
+    ld hl, strDemo
+    ld de, _SCRN0 + 8
     jp PutStr
 
 ; full-screen title (LCD is switched off while it is drawn)
@@ -77,6 +83,10 @@ ShowTitle:
     ld [wState], a
     ld [wPause], a
     ld [wPAlive], a
+    ld [wIdle], a
+    ld [wIdle + 1], a
+    ld a, 3
+    ld [wFade], a
     call ApplyPalettes
     call ClearField
     ld a, LCDC_FULL
@@ -85,9 +95,11 @@ ShowTitle:
     ldh [rIF], a
     ei
     ld a, MUS_DEMO
-    jp MusicPlay
+    call MusicPlay
+    jp FadeIn
 
 strSC:      db "SC", 0
+strDemo:    db "DEMO", 0
 strHI:      db "HI", 0
 strPort:    db "GAME BOY EDITION", 0
 strPress:   db "PRESS  START", 0

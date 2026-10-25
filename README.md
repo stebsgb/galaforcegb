@@ -8,3 +8,5 @@ Build: `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pybo
 Controls: D-pad move, A fire, Start pause, A+B+Select+Start reset.
 
 Tools: `tools/bot.py`, `audit.py`, `savetest.py`, `sfxlevels.py`, `audiotest.py`, `snap.py`. See `docs/DECISIONS.md` and `docs/PROGRESS.md`.
+
+The title idles into a self-playing demo after about 13 s; press Start to return. Stage plans: `STAGE-11-DEMO-AND-FADES.md` (done), `STAGE-12-OPTIONS-MENU.md` (planned).

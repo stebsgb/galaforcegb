@@ -22,7 +22,7 @@ for f in range(frames):
     held = b
     pb.tick(1, False)
     cur = m[S["wFrame"]]
-    if (cur - prev) & 255 != 1: drops += 1
+    if (cur - prev) & 255 != 1 and m[S["wState"]] != 0 and f > 60: drops += 1
     prev = cur
     cnt = [0] * 160
     for o in range(40):

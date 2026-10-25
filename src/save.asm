@@ -68,21 +68,31 @@ SaveHi:
 
 ; Applies the normal or paused (dimmed) palettes according to wPause.
 ApplyPalettes:
+    ld a, [wFade]
+    ld c, a
     ld a, [wPause]
     or a
-    jr nz, .dim
-    ld a, %00011011
+    jr z, .lvl
+    ld a, c
+    or a
+    jr nz, .lvl
+    inc c                       ; pause dims by one fade step
+.lvl:
+    ld b, 0
+    ld hl, fadeBGP
+    add hl, bc
+    ld a, [hl]
     ldh [rBGP], a
-    ld a, %10010000
+    ld hl, fadeOBP0
+    add hl, bc
+    ld a, [hl]
     ldh [rOBP0], a
-    ld a, %10000100
+    ld hl, fadeOBP1
+    add hl, bc
+    ld a, [hl]
     ldh [rOBP1], a
     ret
-.dim:
-    ld a, %01101111
-    ldh [rBGP], a
-    ld a, %11100100
-    ldh [rOBP0], a
-    ld a, %11011000
-    ldh [rOBP1], a
-    ret
+
+fadeBGP:  db %00011011, %01101111, %10111111, %11111111
+fadeOBP0: db %10010000, %11100100, %11111000, %11111100
+fadeOBP1: db %10000100, %11011000, %11101100, %11111100

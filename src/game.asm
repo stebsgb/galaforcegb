@@ -39,7 +39,18 @@ GameUpdate:
 StateTitle:
     ld a, [wKeysNew]
     and PAD_START
-    ret z
+    jr nz, .go
+    ld hl, wIdle
+    inc [hl]
+    jr nz, .nc
+    inc hl
+    inc [hl]
+.nc:
+    ld a, [wIdle + 1]
+    cp IDLE_HI                  ; IDLE_HI * 256 frames of idling starts the demo
+    ret c
+    jp StartDemo
+.go:
     ldh a, [rDIV]
     ld hl, wRng
     xor [hl]
@@ -48,6 +59,9 @@ StateTitle:
     ld hl, wRng + 1
     xor [hl]
     ld [hl], a
+    xor a
+    ld [wDemo], a
+    call FadeOut
     jp StartGame
 
 StateWaveMsg:
@@ -136,7 +150,9 @@ StatePDead:
     ld [wTimer + 1], a
     ret
 .over:
-    call SaveHi
+    ld a, [wDemo]
+    or a
+    call z, SaveHi
     ld a, ST_GAMEOVER
     ld [wState], a
     ld a, LOW(240)
@@ -159,7 +175,7 @@ StateGameOver:
     ld [hl], 1
     ret
 .done:
-    jp ShowTitle
+    jp ReturnToTitle
 
 ; ---------------------------------------------------------------- start / reset
 StartGame:
@@ -196,8 +212,12 @@ StartGame:
     xor a
     ldh [rIF], a
     ei
+    ld a, 3
+    ld [wFade], a
+    call ApplyPalettes
     ld a, MUS_START
-    jp MusicPlay
+    call MusicPlay
+    jp FadeIn
 
 PlayerReset:
     ld a, 76
@@ -424,6 +444,9 @@ CollidePlayer:
 IF DEF(GOD)
     ret
 ENDC
+    ld a, [wDemo]
+    or a
+    ret nz                      ; the demo ship is invulnerable
     ld a, [wPAlive]
     or a
     ret z
