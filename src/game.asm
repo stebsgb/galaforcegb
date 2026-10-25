@@ -541,8 +541,8 @@ CollideBullets:
     inc l
     ld a, [hl]
     add 32
-    cp 72
-    jr c, .an                   ; entry/exit band (y < 40 or above the top): not hittable, matches the quiet vanish
+    cp 64
+    jr c, .an                   ; entry/exit band (y < 32 or above the top): not hittable
     sub 32
     call FieldY
     bit 7, a
