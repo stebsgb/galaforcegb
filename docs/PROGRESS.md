@@ -51,3 +51,5 @@
 - Boss alone fires a little less: bomb chance per frame 1/16 -> 1/32.
 
 - Options: alien/ship preview moved down 16px and hints down a row so BACK is not cramped. Title: removed GAME BOY EDITION line (logo one row lower than the original; the star-scroll text bands in titleSegs were shifted to match).
+
+- Wave 12 deep U (path 22, used only there) bottomed out at original y=240, under and below the ship where it could not be shot (and was hidden by the above-top rule). Its vertical movement is now scaled to 3/4 (bottom y=188, above the ship line). Other paths untouched.

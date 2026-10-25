@@ -161,6 +161,21 @@ AlienStep:
     add hl, de
     ld a, [hl]                  ; table dy is half the original; applied on both frames of a step
     ld b, a
+    ld a, c
+    or AL_PATH
+    ld l, a
+    ld h, HIGH(wAliens)
+    ld a, [hl-]
+    cp HIGH(patdat22)
+    jr nz, .fulldy
+    ld a, [hl]
+    cp LOW(patdat22)
+    jr nz, .fulldy
+    ld a, [wFrame]              ; wave 12 deep U (patdat22, only user) dives 3/4 as deep so it stays above the ship line
+    and 3
+    jr nz, .fulldy
+    ld b, 0
+.fulldy:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_Y
