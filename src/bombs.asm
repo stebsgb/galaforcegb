@@ -30,7 +30,7 @@ InitBomb:
     ld l, a
     ld a, [hl]
     call FieldY
-    cp 70
+    cp 100
     jr nc, .abort
     add 8
     ld e, a

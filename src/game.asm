@@ -468,11 +468,8 @@ ENDC
     jr nc, .n
     inc l
     ld a, [hl]
-    srl a
-    cp 120
-    jr c, .y
-    sub 128
-.y: ld b, a
+    call FieldY
+    ld b, a
     ld a, e
     sub b
     add 10

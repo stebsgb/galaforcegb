@@ -1,7 +1,8 @@
 SECTION "aliencode", ROM0
 
-; FieldY: a = original alien y -> playfield y. Compressed to 5/8 so the
-; action stays in the upper part of the screen. Values >= 120 (after >>1) are above the top.
+; FieldY: a = original alien y -> playfield y (h = y>>1; values >= 120 are above the top).
+; h <= 80: 5/8 h, so formations and sweeps sit high in the playfield and are easy to hit.
+; h > 80: 50 + 15/8 (h - 80), so a dive still reaches the player's row (h 113 -> 112).
 FieldY:
     srl a
     cp 120
@@ -9,6 +10,8 @@ FieldY:
     sub 128
     ret
 .pos:
+    cp 81
+    jr nc, .low
     push bc
     ld b, a
     srl a
@@ -19,6 +22,22 @@ FieldY:
     sub b
     cpl
     inc a                       ; b - 3/8 b = 5/8 b
+    pop bc
+    ret
+.low:
+    push bc
+    sub 80
+    ld b, a
+    add a
+    ld c, a
+    ld a, b
+    srl a
+    srl a
+    srl a
+    ld b, a
+    ld a, c
+    sub b                       ; 2d - d/8
+    add 50
     pop bc
     ret
 
@@ -105,8 +124,7 @@ AlienStep:
     ld [hl], a
     ld hl, dir_dy
     add hl, de
-    ld a, [hl]
-    sra a
+    ld a, [hl]                  ; table dy is half the original; applied on both frames of a step
     ld b, a
     ld h, HIGH(wAliens)
     ld a, c
