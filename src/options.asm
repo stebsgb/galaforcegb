@@ -83,10 +83,10 @@ ShowOptions:
     ld de, _SCRN0 + 32 * OPT_ROW_BACK + 4
     call PutStr
     ld hl, strHint1
-    ld de, _SCRN0 + 32 * 15 + 1
+    ld de, _SCRN0 + 32 * 16 + 1
     call PutStr
     ld hl, strHint2
-    ld de, _SCRN0 + 32 * 16 + 6
+    ld de, _SCRN0 + 32 * 17 + 6
     call PutStr
     xor a
     ldh [hSplit], a
@@ -374,7 +374,7 @@ CursorTile:
 
 ; Sprite preview so the contrast of the chosen background can be judged
 BuildOptionsOAM:
-    ld b, 112
+    ld b, 128
     ld c, 32
     ld d, SPR_PLAYER
     ld e, 0
@@ -398,7 +398,7 @@ BuildOptionsOAM:
     ld d, a
     ld a, [wTmp + 1]
     ld c, a
-    ld b, 112
+    ld b, 128
     call Put16
     ld a, [wTmp + 1]
     add 24

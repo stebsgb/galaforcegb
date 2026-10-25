@@ -40,7 +40,7 @@ ShowTitle:
     call ClearMapA
     call ResetLogoTiles
     ; big title letters "GALFORCE": 2x2 tiles each
-    ld hl, _SCRN0 + 32 * 2 + 1
+    ld hl, _SCRN0 + 32 * 4 + 1
     ld b, 9
     ld c, T_BIG0
 .big:
@@ -61,9 +61,6 @@ ShowTitle:
     ld c, a
     dec b
     jr nz, .big
-    ld hl, strPort
-    ld de, _SCRN0 + 32 * 6 + 2
-    call PutStr
     ld hl, strSC
     ld de, _SCRN0
     call PutStr
@@ -122,7 +119,6 @@ ShowTitle:
 strSC:      db "SC", 0
 strDemo:    db "DEMO", 0
 strHI:      db "HI", 0
-strPort:    db "GAME BOY EDITION", 0
 strPress:   db "PRESS  START", 0
 strHiTitle: db "HI-SCORE", 0
 strCred1:   db "BBC ORIGINAL 1986", 0

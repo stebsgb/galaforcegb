@@ -17,7 +17,7 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 D-pad move, A fire, Start pause, A+B+Select+Start soft reset. Title and options: Up/Down select, A or Start choose, Left/Right change a value, B go back.
 
 ## Features
-- Title styled after the BBC original (SC/HI line, wide logo, "GAME BOY EDITION" headline, small "BBC original 1986 / Kevin Edwards / Superior Software" credit, flags, occasional shine sweep, and the same scrolling starfield as in-game. Idles into a self-playing demo after about 13 s; any Start returns.
+- Title styled after the BBC original (SC/HI line, wide logo, small "BBC original 1986 / Kevin Edwards / Superior Software" credit, flags, occasional shine sweep, and the same scrolling starfield as in-game. Idles into a self-playing demo after about 13 s; any Start returns.
 - Options: starting lives 1-5 and a black or white background (white is the default); both are saved in battery RAM.
 - Cheat: on the options screen press Up, Up, Down, Down, Select to unlock a LEVEL row (1-16, not saved).
 - Screen fades, pause dimming, hi-score saved to SRAM.

@@ -49,3 +49,5 @@
 - Boss rows raised (y 80/128 instead of 80/150) so the formation sits closer to the original; flicker metric unchanged (32% hidden alien-frames).
 
 - Boss alone fires a little less: bomb chance per frame 1/16 -> 1/32.
+
+- Options: alien/ship preview moved down 16px and hints down a row so BACK is not cramped. Title: removed GAME BOY EDITION line, logo moved down two rows.
