@@ -142,6 +142,8 @@ BuildOAM:
     call FieldY
     bit 7, a
     jr nz, .alnext              ; above the top edge (waiting at y 255 etc.): not drawn, so nothing sits in the corners
+    cp 8
+    jr c, .alnext               ; paths that wrap off the top (hoop end) stay hidden until they die quietly
 .yok:
     add 24
     ld b, a

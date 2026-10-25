@@ -43,3 +43,5 @@
 - Wave 4 hoop corner glitch: aliens parked at original y=255 (above the top) were drawn at the top corners; BuildOAM now skips aliens whose FieldY is negative.
 
 - Aliens spawning at x<8 (wave 4 patterns 10/11 at the top-left corner) now slide in from behind the left edge instead of popping in.
+
+- Hoop (wave 4) aliens wrap past y=255 to y=5..17 for a few frames before their quiet vanish, which showed as pop-ins in the top corners. Aliens with field y < 8 are no longer drawn.
