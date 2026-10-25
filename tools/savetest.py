@@ -11,6 +11,7 @@ pb = PyBoy(rom, window="null", sound_emulated=False, cgb=False); m = pb.memory
 calls = []
 pb.hook_register(0, S['SaveHi'], lambda c: calls.append(1), None)
 while m[S["wFrame"]] < 20: pb.tick(1, False)
+m[S["wOptCont"]] = 0           # no continue prompt, so game over ends the game
 pb.button_press("start"); pb.tick(1, False); pb.button_release("start")
 for f in range(200): pb.tick(1, False)
 m[S["wScore"] + 2] = 5          # 0050000 so the next kill beats 30000

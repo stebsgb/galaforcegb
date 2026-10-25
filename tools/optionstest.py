@@ -26,6 +26,12 @@ tap(pb, "right"); tap(pb, "right"); tap(pb, "right"); assert m[S["wOptLives"]] =
 assert m[S["wOptBg"]] == 1  # default is white
 tap(pb, "down"); tap(pb, "right"); assert m[S["wOptBg"]] == 0
 tap(pb, "right"); assert m[S["wOptBg"]] == 1
+assert m[S["wOptCont"]] == 1  # default 1, no cheat needed
+tap(pb, "down"); assert m[S["wMenuSel"]] == 2
+for _ in range(5): tap(pb, "right")
+assert m[S["wOptCont"]] == 3
+tap(pb, "left"); tap(pb, "left"); assert m[S["wOptCont"]] == 1
+tap(pb, "up")
 print("BGP", hex(m[0xFF47]))
 for _ in range(10): pb.tick(1, False)
 shot(pb, "opt_screen_white.png")

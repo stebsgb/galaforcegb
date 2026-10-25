@@ -18,24 +18,17 @@ assert m[S["wState"]] == 5
 for k in ("down", "down", "right"): tap(k)       # wrong sequence: nothing
 assert m[S["wCheat"]] == 0
 tap("down"); tap("down")                          # sel -> back (3 rows without cheat)
-assert m[S["wMenuSel"]] == 4
+assert m[S["wMenuSel"]] == 4  # WAVE hidden: LIVES, BG, CONTINUES, BACK
 for k in ("up", "up", "down", "down", "select"): tap(k)
 assert m[S["wCheat"]] == 1, "cheat not unlocked"
 tap("up"); tap("up"); tap("down"); tap("down")
 print("sel", m[S["wMenuSel"]])
-while m[S["wMenuSel"]] != 2:
-    tap("up" if m[S["wMenuSel"]] > 2 else "down")
+while m[S["wMenuSel"]] != 3:
+    tap("up" if m[S["wMenuSel"]] > 3 else "down")
 for _ in range(7): tap("right")
 assert m[S["wStartLvl"]] == 8, m[S["wStartLvl"]]
 shot("cheat_menu.png")
-tap("down")
-assert m[S["wMenuSel"]] == 3 and m[S["wOptCont"]] == 0
-for _ in range(5): tap("right")
-assert m[S["wOptCont"]] == 3, m[S["wOptCont"]]
-for _ in range(5): tap("left")
-assert m[S["wOptCont"]] == 0
-tap("right"); tap("right")
-tap("up")
+
 for _ in range(10): tap("right")
 assert m[S["wStartLvl"]] == 16
 for _ in range(8): tap("left")

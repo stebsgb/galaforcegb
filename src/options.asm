@@ -1,11 +1,11 @@
 ; Options: starting lives (1..5) and black/white background, stored in SRAM at $A010.
-; Layout: $4F $50, lives, bg, checksum (lives + bg + $5A).
+; Layout: $4F $50, lives, bg, continues, checksum (sum + $5A).
 
 DEF OPT_SRAM EQU $A010
 DEF OPT_ROW_LIVES EQU 4
 DEF OPT_ROW_BG    EQU 6
-DEF OPT_ROW_LEVEL EQU 8
-DEF OPT_ROW_CONT  EQU 10
+DEF OPT_ROW_CONT  EQU 8
+DEF OPT_ROW_LEVEL EQU 10
 DEF OPT_ROW_BACK  EQU 12
 
 SECTION "options", ROM0
@@ -24,11 +24,17 @@ LoadOptions:
     inc hl
     ld c, [hl]                  ; bg
     inc hl
+    ld d, [hl]                  ; continues
+    inc hl
     ld a, b
     add c
+    add d
     add $5A
     cp [hl]
     jr nz, .off
+    ld a, d
+    cp 4
+    jr nc, .off
     ld a, b
     or a
     jr z, .off
@@ -41,6 +47,8 @@ LoadOptions:
     ld [wOptLives], a
     ld a, c
     ld [wOptBg], a
+    ld a, d
+    ld [wOptCont], a
 .off:
     xor a
     ld [$0000], a
@@ -58,6 +66,10 @@ SaveOptions:
     ld [hli], a
     ld b, a
     ld a, [wOptBg]
+    ld [hli], a
+    add b
+    ld b, a
+    ld a, [wOptCont]
     ld [hli], a
     add b
     add $5A
@@ -79,6 +91,9 @@ ShowOptions:
     call PutStr
     ld hl, strBackground
     ld de, _SCRN0 + 32 * OPT_ROW_BG + 4
+    call PutStr
+    ld hl, strCont
+    ld de, _SCRN0 + 32 * OPT_ROW_CONT + 4
     call PutStr
     ld hl, strBack
     ld de, _SCRN0 + 32 * OPT_ROW_BACK + 4
@@ -130,14 +145,14 @@ StateOptions:
     or a
     jr z, .nu
     dec a
-    cp 2
-    jr c, .u
+    cp 3
+    jr nz, .u
     ld c, a
     ld a, [wCheat]
     or a
     ld a, c
     jr nz, .u
-    ld a, 1                     ; WAVE and CONTINUES rows only exist after the cheat
+    dec a                       ; the WAVE row only exists after the cheat
 .u: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
@@ -149,16 +164,14 @@ StateOptions:
     cp 4
     jr nc, .nd
     inc a
-    cp 2
-    jr c, .d
-    cp 4
-    jr nc, .d
+    cp 3
+    jr nz, .d
     ld c, a
     ld a, [wCheat]
     or a
     ld a, c
     jr nz, .d
-    ld a, 4
+    inc a
 .d: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
@@ -167,9 +180,9 @@ StateOptions:
     cp 4
     jp z, .back
     cp 3
-    jr z, .cont
-    cp 2
     jr z, .level
+    cp 2
+    jr z, .cont
     or a
     jr nz, .bg
     ; lives row: left / right
@@ -336,11 +349,11 @@ MenuDraw:
     ld a, c
     cp 1
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 2
     ld a, c
     cp 2
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 2
     ld a, c
     cp 3
     call CursorTile
@@ -351,12 +364,6 @@ MenuDraw:
     ld a, [wCheat]
     or a
     jr z, .nolv
-    ld hl, strCont
-    ld de, _SCRN0 + 32 * OPT_ROW_CONT + 4
-    call PutStr
-    ld a, [wOptCont]
-    add T_FONT0 + 1
-    ld [_SCRN0 + 32 * OPT_ROW_CONT + 15], a
     ld hl, strLevel
     ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 4
     call PutStr
@@ -383,6 +390,9 @@ MenuDraw:
     ld a, [wOptLives]
     add T_FONT0 + 1
     ld [_SCRN0 + 32 * OPT_ROW_LIVES + 15], a
+    ld a, [wOptCont]
+    add T_FONT0 + 1
+    ld [_SCRN0 + 32 * OPT_ROW_CONT + 15], a
     ld hl, strBlack
     ld a, [wOptBg]
     or a
