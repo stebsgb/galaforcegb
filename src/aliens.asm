@@ -286,8 +286,8 @@ AlienFetch:
     or AL_Y
     ld l, a
     ld a, [hl]
-    add 32                      ; y < 24 or >= 224: path ended off the top edge, vanish quietly
-    cp 56
+    add 32                      ; y < 40 or >= 224: path ended in the top row / above it, vanish quietly
+    cp 72
     jr nc, .vis
     ld l, c
     xor a
