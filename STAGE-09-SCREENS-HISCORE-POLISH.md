@@ -1,5 +1,7 @@
 # STAGE 09 — Title, game over, hi-score, polish
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** the frame around the game, as in the original.
 **Input:** Stages 03–08, `docs/ANALYSIS.md` (TITLE, HIGH). **Output:** `src/title.asm`, `src/gameover.asm`, `src/hiscore.asm`, header update for SRAM.
 

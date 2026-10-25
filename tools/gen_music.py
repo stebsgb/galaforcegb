@@ -45,7 +45,8 @@ LT = {"START": rows[0], "BETW": rows[1], "OVER": rows[2], "DEMO": rows[3], "LOST
 MY_ORDER = ["START", "BETW", "LOST", "OVER", "ZONE", "DEMO"]   # MUS_* ids in main.asm
 
 # BBC ENVELOPE number -> (GB start volume, decay pace)
-ENV_NR12 = {2: (12, 2), 4: (10, 4), 5: (11, 3), 6: (11, 3), 7: (12, 2), 8: (11, 3)}
+# music sits below the effects so that the SFX punch through
+ENV_NR12 = {2: (9, 2), 4: (8, 4), 5: (9, 3), 6: (9, 3), 7: (9, 2), 8: (9, 3)}
 
 def nr12(e):
     v, p = ENV_NR12.get(e, (11, 3))
@@ -100,16 +101,16 @@ def nz(env, nr43, w=0):
 
 sfx = {}
 sfx["FIRE"] = p1(0x1C, 0x80, 0xA1, 1400, 10)
-sfx["BOOM"] = nz(0xD2, 0x73) + p2(0x80, 0xB2, 110, 18)
-sfx["PDEATH"] = nz(0xF6, 0x75) + p1(0x2D, 0x80, 0xF5, 500, 75)
+sfx["BOOM"] = nz(0xF3, 0x64) + p1(0x2B, 0x80, 0xF3, 200, 24)
+sfx["PDEATH"] = nz(0xF7, 0x75) + p1(0x3B, 0x80, 0xF6, 600, 90)
 up = []
 for hz, w in ((523, 5), (659, 5), (784, 5), (1047, 24)):
-    up += p1(0, 0x80, 0xB3, hz, w)
+    up += p1(0, 0x80, 0xD3, hz, w)
 sfx["ONEUP"] = up
-sfx["HIT"] = nz(0x81, 0x33) + p2(0x80, 0xA1, 900, 5)
+sfx["HIT"] = nz(0xC1, 0x33) + p2(0x80, 0xC1, 900, 6)
 last = []
 for i in range(14):
-    last += p2(0x40, 0xC2, 440 if i % 2 == 0 else 330, 6)
+    last += p2(0x40, 0xD2, 440 if i % 2 == 0 else 330, 6)
 sfx["LAST"] = last
 
 SFX_ORDER = ["FIRE", "BOOM", "PDEATH", "ONEUP", "HIT", "LAST"]    # SFX_* ids in main.asm

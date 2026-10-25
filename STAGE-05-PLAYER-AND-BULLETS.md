@@ -1,5 +1,7 @@
 # STAGE 05 — Player ship and bullets
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** a ship that moves and fires like the original.
 **Input:** Stage 04 engine, `docs/ANALYSIS.md` (CHARP/ROUT sections). **Output:** `src/player.asm`, `src/bullets.asm`.
 

@@ -9,7 +9,8 @@ while m[S['wFrame']] < 20: pb.tick(1, False)
 pb.button_press("start"); pb.tick(1, False); pb.button_release("start")
 import os
 CHEAT = os.environ.get('CHEAT') == '1'
-rnd = random.Random(1); last = None; held = set(); stuck = 0; lastwave = -1
+rnd = random.Random(int(os.environ.get('SEED','1')))
+minsp = 0xFFFF; last = None; held = set(); stuck = 0; lastwave = -1
 def hold(btns):
     global held
     for b in held - btns: pb.button_release(b)
@@ -33,10 +34,13 @@ for f in range(frames):
     if CHEAT: m[S['wLives']] = 3
     pb.tick(1, f in shots)
     if f in shots: pb.screen.image.copy().resize((480, 432)).save(f"shots/bot_{f}.png")
+    minsp = min(minsp, pb.register_file.SP)
+    if f % 7 == 0 and rnd.random() < 0.3: held_rand = True
     w = m[S["wWave"]]
     if w != lastwave:
         print("frame", f, "wave", w, "lives", m[S["wLives"]], "state", m[S["wState"]], "score", bytes(m[S["wScore"]:S["wScore"] + 7]).hex()); lastwave = w
 print("end state", m[S["wState"]], "wave", m[S["wWave"]], "lives", m[S["wLives"]], "frame", m[S["wFrame"]])
+print("min SP seen", hex(minsp))
 print("PC", hex(pb.register_file.PC), "SP", hex(pb.register_file.SP), "IME?", pb.memory[0xFFFF])
 for i in range(14):
     a = S["wAliens"] + 16 * i

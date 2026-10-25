@@ -23,12 +23,12 @@ build/main.o: $(SRCS) $(GEN) | build
 
 $(OUT): build/main.o
 	$(RGBLINK) -p 0xFF -m build/galaforce.map -n galaforce.sym -o $@ $<
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x00 -r 0 $@
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 $@
 
 god: $(SRCS) $(GEN) | build
 	$(RGBASM) -DGOD -I src/ -I build/ -o build/god.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_god.sym -o galaforce_god.gb build/god.o
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x00 -r 0 galaforce_god.gb
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_god.gb
 
 clean:
 	rm -rf build galaforce.gb galaforce.sym

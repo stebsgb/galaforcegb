@@ -1,5 +1,7 @@
 # STAGE 07 — Bombs, collisions, lives, score, waves
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** a complete, playable loop from wave 1 upward.
 **Input:** Stages 05–06, `docs/ANALYSIS.md` (BOMBS, FLAGS, HIGH, WAVE sections). **Output:** `src/bombs.asm`, `src/collide.asm`, `src/explode.asm`, `src/game.asm`, `src/hud.asm`.
 

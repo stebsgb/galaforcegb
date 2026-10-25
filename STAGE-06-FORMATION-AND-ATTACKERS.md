@@ -1,5 +1,7 @@
 # STAGE 06 — Formation and attackers (hybrid BG + sprite)
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** the alien formation drawn on the BG, with aliens that peel off along the original paths as sprites. This is the hardest stage — split it into the sub-steps below and verify each one.
 **Input:** Stages 02–05, `build/data/paths.inc`, `waves.inc`. **Output:** `src/formation.asm`, `src/aliens.asm`, `src/paths.asm`.
 

@@ -1,5 +1,7 @@
 # STAGE 04 — Engine core
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** the frame loop, screen layout and shared systems everything else builds on.
 **Input:** Stage 03 tiles. **Output:** `src/hardware.inc`, `src/engine.asm`, `src/oam.asm`, `src/input.asm`, `src/screen.asm`, `src/stars.asm`, `src/math.asm`, `src/ram.asm`.
 

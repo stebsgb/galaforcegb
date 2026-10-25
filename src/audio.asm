@@ -26,6 +26,9 @@ AudioInit:
     ldh [rNR51], a
     xor a
     ldh [rNR30], a
+    ldh [rNR12], a
+    ldh [rNR22], a
+    ldh [rNR42], a
     ld hl, WaveTable
     ld de, $FF30
     ld b, 16
@@ -253,7 +256,7 @@ PlayNote:
     ld d, a
     ld a, $80
     ldh [rNR30], a
-    ld a, $20
+    ld a, $40                   ; wave at 50% so it doesn't swamp the pulses
     ldh [rNR32], a
     ld a, e
     ldh [rNR33], a

@@ -100,10 +100,10 @@ syms.append(("SPR_BULLET", len(obj) // 16))
 obj.extend(tile8(bul[0:8]) + tile8(bul[8:16]))
 # alien bomb: diamond/drop, 4 wide
 bomb = [[0]*8 for _ in range(16)]
-shape = [".##.", "####", "####", ".##.", ".##.", ".##."]
+shape = [".##.", ".##.", ".##.", "####", "####", ".##."]   # falls downwards: round head at the bottom
 for y, row in enumerate(shape):
     for x, ch in enumerate(row):
-        if ch == "#": bomb[y][2 + x] = 2 if (x in (0, 3)) or y > 2 else 1
+        if ch == "#": bomb[y][2 + x] = 2 if (x in (0, 3)) or y < 3 else 1
 syms.append(("SPR_BOMB", len(obj) // 16))
 obj.extend(tile8(bomb[0:8]) + tile8(bomb[8:16]))
 FONTOBJ0 = len(obj) // 16

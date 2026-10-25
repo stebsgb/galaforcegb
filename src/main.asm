@@ -211,12 +211,7 @@ Start:
     ld de, _SCRN1 + 512
     ld bc, 512
     call MemCopy
-    ld a, %00011011
-    ldh [rBGP], a
-    ld a, %10010000
-    ldh [rOBP0], a
-    ld a, %10000100
-    ldh [rOBP1], a
+    call ApplyPalettes
     ld a, BOT_LINE
     ldh [rWY], a
     ld a, 7
@@ -228,6 +223,7 @@ Start:
     ld a, $AC
     ld [wRng + 1], a
     call InitHiScore
+    call LoadHi
     call AudioInit
     call ShowTitle
     xor a
@@ -251,6 +247,10 @@ MainLoop:
     ld hl, wFrame
     inc [hl]
     call ReadKeys
+    ld a, [wKeys]
+    and $0F
+    cp $0F
+    jp z, Start                 ; A+B+Select+Start soft reset
     call AudioUpdate
     call GameUpdate
     call BuildOAM
@@ -382,4 +382,5 @@ INCLUDE "game.asm"
 INCLUDE "hud.asm"
 INCLUDE "screens.asm"
 INCLUDE "audio.asm"
+INCLUDE "save.asm"
 INCLUDE "data.inc"

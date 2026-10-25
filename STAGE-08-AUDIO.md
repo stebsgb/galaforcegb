@@ -1,5 +1,7 @@
 # STAGE 08 — Music and sound effects
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** music and SFX that follow the original BBC Galaforce.
 **Input:** `assets/ref/music.json`, `docs/AUDIO.md`. **Output:** `assets/music/*.uge` (or `.asm` song data), `src/audio.asm`, `src/sfx.asm`, `docs/AUDIO.md` updated.
 

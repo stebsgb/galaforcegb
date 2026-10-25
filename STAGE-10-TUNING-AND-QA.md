@@ -1,5 +1,7 @@
 # STAGE 10 — Tuning, performance and QA
 
+> **Status/as built:** see `docs/DECISIONS.md` and `docs/PROGRESS.md`; the design changed (all-sprite aliens, custom audio driver, 128 px playfield, MBC1 SRAM). Where this file disagrees, those win.
+
 **Goal:** a smooth, fast, balanced, bug-free game.
 **Input:** the full game. **Output:** a final `galaforce.gb`, `docs/QA-REPORT.md`, `README.md`.
 
@@ -12,7 +14,7 @@
 6. **Accuracy edge cases:** hit the same alien with two bullets in one frame, kill during entry, die at the instant of wave clear, pause during explosion, pressing Start while dying, score overflow (cap at 999999), lives cap.
 7. **Docs:** `README.md` with build instructions, controls, differences from the original, credits (Kevin Edwards / Superior Software for the original), "personal project, not for distribution". `docs/QA-REPORT.md` with all measurements and open issues.
 
-8. **Wave 11 stall (open bug, found in the godmode soak):** with `make god` and `CHEAT=1 tools/bot.py`, the run sat at wave 11 for ~3,000 frames and the wave never ended. The remaining aliens were on looping paths (e.g. path data at 0x18f2, which ends `0,0`). In the original these loop until shot. Check that every looping alien can be reached and shot in the 128 px playfield, that its loop doesn't leave the player's firing range, and whether the bot is simply failing to hit it. If it is a real port bug, fix it (a wave-timeout fallback that makes survivors fly off is an acceptable last resort). Then rerun the soak through all 16 waves.
+8. **Wave 11 stall (RESOLVED, not a bug: wave 11 has 10-hit armored aliens and the weak bot needed ~4000 frames; the soak passes 79 waves. Original note follows):** with `make god` and `CHEAT=1 tools/bot.py`, the run sat at wave 11 for ~3,000 frames and the wave never ended. The remaining aliens were on looping paths (e.g. path data at 0x18f2, which ends `0,0`). In the original these loop until shot. Check that every looping alien can be reached and shot in the 128 px playfield, that its loop doesn't leave the player's firing range, and whether the bot is simply failing to hit it. If it is a real port bug, fix it (a wave-timeout fallback that makes survivors fly off is an acceptable last resort). Then rerun the soak through all 16 waves.
 
 ## Acceptance
 - Headroom ≥ 15% of the frame at worst case, or documented and justified.

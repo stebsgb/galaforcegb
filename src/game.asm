@@ -13,6 +13,7 @@ GameUpdate:
     ld a, [wPause]
     xor 1
     ld [wPause], a
+    call ApplyPalettes
     call AudioPause
 .nopause:
     ld a, [wPause]
@@ -88,6 +89,16 @@ StatePDead:
     ld a, [wPExpT]
     inc a
     ld [wPExpT], a
+    ld b, %00011011
+    cp 12
+    jr nc, .fl
+    and 2
+    jr z, .fl
+    ld b, %00011001             ; brief background flash on death
+.fl:
+    ld a, b
+    ldh [rBGP], a
+    ld a, [wPExpT]
     and 3
     jr nz, .s
     ld a, [wPExp]
@@ -125,6 +136,7 @@ StatePDead:
     ld [wTimer + 1], a
     ret
 .over:
+    call SaveHi
     ld a, ST_GAMEOVER
     ld [wState], a
     ld a, LOW(240)

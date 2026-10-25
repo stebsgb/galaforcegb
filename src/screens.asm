@@ -55,28 +55,29 @@ ShowTitle:
     dec b
     jr nz, .big
     ld hl, strPort
-    ld de, _SCRN0 + 32 * 7 + 4
+    ld de, _SCRN0 + 32 * 7 + 2
     call PutStr
     ld hl, strPress
     ld de, _SCRN0 + 32 * 11 + 4
     call PutStr
-    ld hl, strHiTitle
-    ld de, _SCRN0 + 32 * 13 + 4
-    call PutStr
     ld de, wHi
-    ld hl, _SCRN0 + 32 * 13 + 12
+    ld hl, _SCRN0 + 32 * 13 + 10
     call HudNum
+    ld hl, strHiTitle
+    ld de, _SCRN0 + 32 * 13 + 3
+    call PutStr
     ld hl, strOrig1
-    ld de, _SCRN0 + 32 * 15 + 2
+    ld de, _SCRN0 + 32 * 15 + 1
     call PutStr
     ld hl, strOrig2
-    ld de, _SCRN0 + 32 * 16 + 3
+    ld de, _SCRN0 + 32 * 16 + 2
     call PutStr
     xor a
     ldh [hSplit], a
     ld [wState], a
     ld [wPause], a
     ld [wPAlive], a
+    call ApplyPalettes
     call ClearField
     ld a, LCDC_FULL
     ldh [rLCDC], a

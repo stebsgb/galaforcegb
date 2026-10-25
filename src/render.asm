@@ -215,12 +215,17 @@ DrawMessages:
     ret nz
     ld hl, txtGameOver
     ld b, 80
-    ld c, 52
+    ld c, 53
     jp DrawText
 .wave:
     ld hl, txtWave
     ld b, 80
-    ld c, 60
+    ld c, 65                    ; centred for one digit
+    ld a, [wWave]
+    cp 9
+    jr c, .one
+    ld c, 61                    ; two digits
+.one:
     call DrawText               ; c = x after "WAVE "
     ld a, [wWave]
     inc a
