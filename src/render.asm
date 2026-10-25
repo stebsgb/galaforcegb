@@ -233,9 +233,33 @@ DrawMessages:
     jr z, .wave
     cp ST_GAMEOVER
     ret nz
+    ld a, [wAsk]
+    or a
+    jr nz, .ask
     ld hl, txtGameOver
     ld b, 80
     ld c, 53
+    jp DrawText
+.ask:
+    ld hl, txtContinue
+    ld b, 72
+    ld c, 48
+    call DrawText
+    ld hl, txtYesSel
+    ld a, [wContSel]
+    or a
+    jr z, .y
+    ld hl, txtYes
+.y: ld b, 88
+    ld c, 44
+    call DrawText
+    ld hl, txtNoSel
+    ld a, [wContSel]
+    or a
+    jr nz, .n
+    ld hl, txtNo
+.n: ld b, 88
+    ld c, 92
     jp DrawText
 .wave:
     ld hl, txtWave
@@ -285,6 +309,11 @@ DrawMessages:
 
 txtWave:     db "WAVE ", 0
 txtGameOver: db "GAME OVER", 0
+txtContinue: db "CONTINUE?", 0
+txtYesSel:   db ">YES", 0
+txtYes:      db " YES", 0
+txtNoSel:    db ">NO", 0
+txtNo:       db " NO", 0
 
 ; BossBoom: grand death of the boss. b = Y, c = X, hl = its AL_FRAME (0..23). A cluster of explosions
 ; with staggered phases bursts over and around it, then one big final blast.

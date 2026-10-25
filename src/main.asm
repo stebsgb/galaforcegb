@@ -125,6 +125,10 @@ wTwk:       dw            ; title logo shine cycle counter
 wCheat:      db            ; 1 once the options cheat code has been entered
 wCheatPos:  db
 wStartLvl:  db            ; cheat: starting level 1..16
+wOptCont:   db            ; cheat: continues per game 0..3
+wConts:     db            ; continues left in this game
+wAsk:       db            ; 1 while the game-over screen asks CONTINUE?
+wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 
 SECTION "hram", HRAM
@@ -265,6 +269,8 @@ Start:
     xor a
     ld [wCheat], a
     ld [wCheatPos], a
+    ld [wOptCont], a
+    ld [wAsk], a
     ld a, 1
     ld [wStartLvl], a
     ld a, 1                     ; white background by default

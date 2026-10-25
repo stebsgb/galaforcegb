@@ -2,10 +2,11 @@
 ; Layout: $4F $50, lives, bg, checksum (lives + bg + $5A).
 
 DEF OPT_SRAM EQU $A010
-DEF OPT_ROW_LIVES EQU 5
-DEF OPT_ROW_BG    EQU 7
-DEF OPT_ROW_LEVEL EQU 9
-DEF OPT_ROW_BACK  EQU 11
+DEF OPT_ROW_LIVES EQU 4
+DEF OPT_ROW_BG    EQU 6
+DEF OPT_ROW_LEVEL EQU 8
+DEF OPT_ROW_CONT  EQU 10
+DEF OPT_ROW_BACK  EQU 12
 
 SECTION "options", ROM0
 
@@ -130,12 +131,13 @@ StateOptions:
     jr z, .nu
     dec a
     cp 2
-    jr nz, .u
+    jr c, .u
+    ld c, a
     ld a, [wCheat]
     or a
-    ld a, 2
+    ld a, c
     jr nz, .u
-    dec a
+    ld a, 1                     ; WAVE and CONTINUES rows only exist after the cheat
 .u: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
@@ -144,24 +146,28 @@ StateOptions:
     and PAD_DOWN
     jr z, .nd
     ld a, [wMenuSel]
-    cp 3
+    cp 4
     jr nc, .nd
     inc a
     cp 2
-    jr nz, .d
+    jr c, .d
+    cp 4
+    jr nc, .d
     ld c, a
     ld a, [wCheat]
     or a
     ld a, c
     jr nz, .d
-    inc a
+    ld a, 4
 .d: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
 .nd:
     ld a, [wMenuSel]
+    cp 4
+    jp z, .back
     cp 3
-    jr z, .back
+    jr z, .cont
     cp 2
     jr z, .level
     or a
@@ -184,6 +190,28 @@ StateOptions:
     ld hl, wOptLives
     ld a, [hl]
     cp 5
+    ret nc
+    inc [hl]
+    ld a, 1
+    ld [wDirty], a
+    ret
+.cont:
+    ld hl, wOptCont
+    ld a, b
+    and PAD_LEFT
+    jr z, .ncn
+    ld a, [hl]
+    or a
+    jr z, .ncn
+    dec [hl]
+    ld a, 1
+    ld [wDirty], a
+.ncn:
+    ld a, b
+    and PAD_RIGHT
+    ret z
+    ld a, [hl]
+    cp 3
     ret nc
     inc [hl]
     ld a, 1
@@ -295,7 +323,7 @@ MenuRefresh:
 MenuDraw:
     ld a, [wState]
     or a
-    jr z, .title
+    jp z, .title
     cp ST_OPTIONS
     ret nz
     ld a, [wMenuSel]
@@ -312,13 +340,23 @@ MenuDraw:
     ld a, c
     cp 2
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 2
     ld a, c
     cp 3
+    call CursorTile
+    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 2
+    ld a, c
+    cp 4
     call CursorTile
     ld a, [wCheat]
     or a
     jr z, .nolv
+    ld hl, strCont
+    ld de, _SCRN0 + 32 * OPT_ROW_CONT + 4
+    call PutStr
+    ld a, [wOptCont]
+    add T_FONT0 + 1
+    ld [_SCRN0 + 32 * OPT_ROW_CONT + 15], a
     ld hl, strLevel
     ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 4
     call PutStr
@@ -413,6 +451,7 @@ BuildOptionsOAM:
 strOptions:    db "OPTIONS", 0
 strLives:      db "LIVES", 0
 strLevel:      db "WAVE ", 0
+strCont:       db "CONTINUES", 0
 strBackground: db "BACKGROUND", 0
 strBack:       db "BACK", 0
 strBlack:      db "BLACK", 0

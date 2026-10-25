@@ -57,3 +57,5 @@
 - Boss death is now grand: for ~1.6 s (24 explosion steps) six staggered explosions burst over and around the boss (BossBoom in render.asm, bossBoomOfs), a boom plays every 4th step, then one final blast. Small aliens unchanged.
 
 - The boss only gets the grand explosion when shot; when the player dies it uses the normal short explosion.
+
+- Cheat options now also have CONTINUES (0..3, default 0, not saved). At game over with continues left the screen asks CONTINUE? >YES / NO (d-pad toggles, A/START confirms): YES refills lives, keeps the score and replays the wave; NO ends the game. Options rows moved up one row to fit. tools/continuetest.py covers it.

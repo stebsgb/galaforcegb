@@ -178,7 +178,7 @@ StatePDead:
     ret c
     ld a, [wLives]
     or a
-    jr z, .over
+    jr z, .out
     dec a
     ld [wLives], a
     jr nz, .more
@@ -195,7 +195,20 @@ StatePDead:
     xor a
     ld [wTimer + 1], a
     ret
+.out:
+    ld a, [wConts]
+    or a
+    jr z, .over
+    ld a, 1                     ; ask CONTINUE? on the game-over screen
+    ld [wAsk], a
+    xor a
+    ld [wContSel], a
+    ld a, ST_GAMEOVER
+    ld [wState], a
+    ret
 .over:
+    xor a
+    ld [wAsk], a
     ld a, [wDemo]
     or a
     call z, SaveHi
@@ -209,6 +222,55 @@ StatePDead:
     jp MusicPlay
 
 StateGameOver:
+    ld a, [wAsk]
+    or a
+    jr z, .go
+    ld a, [wKeysNew]
+    ld b, a
+    and PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN
+    jr z, .nt
+    ld hl, wContSel
+    ld a, [hl]
+    xor 1
+    ld [hl], a
+.nt:
+    ld a, b
+    and PAD_START | PAD_A
+    ret z
+    ld a, [wContSel]
+    or a
+    jr nz, .no
+    ld hl, wConts               ; yes: refill the lives and replay this wave
+    dec [hl]
+    ld a, [wOptLives]
+    ld [wLives], a
+    xor a
+    ld [wAsk], a
+    ld hl, wWaveOff
+    dec [hl]
+    call PlayerReset
+    ld a, ST_WAVEMSG
+    ld [wState], a
+    ld a, 90
+    ld [wTimer], a
+    xor a
+    ld [wTimer + 1], a
+    ld a, SFX_1UP
+    jp Sfx
+.no:
+    xor a
+    ld [wConts], a
+    ld [wAsk], a
+    ld a, [wDemo]
+    or a
+    call z, SaveHi
+    ld a, LOW(240)
+    ld [wTimer], a
+    xor a
+    ld [wTimer + 1], a
+    ld a, MUS_OVER
+    jp MusicPlay
+.go:
     ld a, [wKeysNew]
     and PAD_START
     jr nz, .done
@@ -248,6 +310,16 @@ StartGame:
     ld [wPause], a
     ld a, 1
     ld [wWaveOff], a
+    xor a
+    ld [wAsk], a
+    ld [wContSel], a
+    ld a, [wDemo]
+    or a
+    ld a, 0
+    jr nz, .nc
+    ld a, [wOptCont]
+.nc:
+    ld [wConts], a
     call LoadWavePtr
     call ClearField
     call PlayerReset
