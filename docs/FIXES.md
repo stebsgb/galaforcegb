@@ -46,7 +46,3 @@ Wave numbers are 1-based as the player sees them; "wave index" is 0-based as in 
 - Corner pop-ins on wave 4 were reduced in several steps; the last two were checked only by reading sprite positions, not by watching play.
 - The boss rows are a compromise between the original layout and flicker. Raise `BOSS_B` in `tools/gen_data.py` towards 96 for a more faithful layout at the cost of flicker.
 - The wave 12 U depth (3/4) is a judgement call and easy to change in `AlienStep`.
-
-## Explosion art
-
-Explosion frames keep the original full-contrast specks but get a mid-tone fringe (`soften` in `tools/gen_art.py`) so the debris looks rounded and anti-aliased rather than jagged.
