@@ -282,6 +282,19 @@ AlienFetch:
 
 .die:
     ld h, HIGH(wAliens)
+    ld a, c
+    or AL_Y
+    ld l, a
+    ld a, [hl]
+    add 32                      ; y < 24 or >= 224: path ended off the top edge, vanish quietly
+    cp 56
+    jr nc, .vis
+    ld l, c
+    xor a
+    ld [hl], a
+    inc a
+    ret
+.vis:
     ld l, c
     ld a, $81
     ld [hl], a

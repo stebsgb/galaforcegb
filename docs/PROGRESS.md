@@ -29,3 +29,4 @@
 - Enemy bombs (all waves; extra random bombs from wave 4) redrawn as a fat 6x12 solid drop in the max-contrast palette index, visible in both background modes.
 - Cheat: on the options screen press UP UP DOWN DOWN SELECT to reveal a LEVEL row (1-16, not saved; demo ignores it). Test: tools/cheattest.py.
 - Wave 3 eased (playtest: sometimes no gap to shoot through): in StartPattern, streams with delay <= 16 are spaced x1.5 and carry 3/4 as many aliens. Other waves unchanged.
+- Aliens whose path ends (die opcode) off the top edge (y<24 or >=224) now vanish quietly instead of exploding in the top corners (seen on waves 5, 6 and 11).
