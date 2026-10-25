@@ -67,7 +67,7 @@ ShowTitle:
     ld de, _SCRN0 + 32 * 9 + 5
     call PutStr
     ld hl, strOptionsItem
-    ld de, _SCRN0 + 32 * 11 + 5
+    ld de, _SCRN0 + 32 * 11 + 6
     call PutStr
     ld de, wHi
     ld hl, _SCRN0 + 32 * 13 + 10
