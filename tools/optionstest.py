@@ -23,7 +23,9 @@ tap(pb, "a", 90)
 assert m[S["wState"]] == 5, m[S["wState"]]
 shot(pb, "opt_screen_black.png")
 tap(pb, "right"); tap(pb, "right"); tap(pb, "right"); assert m[S["wOptLives"]] == 5
-tap(pb, "down"); tap(pb, "right"); assert m[S["wOptBg"]] == 1
+assert m[S["wOptBg"]] == 1  # default is white
+tap(pb, "down"); tap(pb, "right"); assert m[S["wOptBg"]] == 0
+tap(pb, "right"); assert m[S["wOptBg"]] == 1
 print("BGP", hex(m[0xFF47]))
 for _ in range(10): pb.tick(1, False)
 shot(pb, "opt_screen_white.png")

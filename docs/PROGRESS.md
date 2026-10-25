@@ -23,3 +23,4 @@
 - Persistence: `tools/savetest.py` (play, beat hi-score, game over, reboot) passes.
 - Fixed: alien vertical speed was half of the original; collision now uses the drawn Y (no deaths without contact).
 - Stage 12 done: options menu (lives 1-5, black/white background), persisted in SRAM `$A010`; `tools/optionstest.py` passes. Makefile now rebuilds gfx when `font5x7.py` changes.
+- White background is now the default (a saved setting still overrides it).

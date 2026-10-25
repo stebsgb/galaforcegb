@@ -236,6 +236,8 @@ Start:
     ld [wRng + 1], a
     ld a, 3
     ld [wOptLives], a
+    ld a, 1                     ; white background by default
+    ld [wOptBg], a
     call InitHiScore
     call LoadHi
     call LoadOptions
