@@ -412,7 +412,7 @@ BuildOptionsOAM:
 
 strOptions:    db "OPTIONS", 0
 strLives:      db "LIVES", 0
-strLevel:      db "LEVEL", 0
+strLevel:      db "WAVE ", 0
 strBackground: db "BACKGROUND", 0
 strBack:       db "BACK", 0
 strBlack:      db "BLACK", 0
