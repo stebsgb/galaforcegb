@@ -26,3 +26,4 @@
 - White background is now the default (a saved setting still overrides it).
 - Title redesigned after the BBC original: HUD line (SC/HI) on top, wide red-style GALAFORCE, BY KEVIN EDWARDS, SUPERIOR SOFTWARE, flags bottom-left, static starfield.
 - Title stars now twinkle (one star cycles through blank/star tiles every other frame in VBlank).
+- Enemy bombs (all waves; extra random bombs from wave 4) redrawn as a fat 6x12 solid drop in the max-contrast palette index, visible in both background modes.
