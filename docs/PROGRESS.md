@@ -45,3 +45,5 @@
 - Aliens spawning at x<8 (wave 4 patterns 10/11 at the top-left corner) now slide in from behind the left edge instead of popping in.
 
 - Hoop (wave 4) aliens wrap past y=255 to y=5..17 for a few frames before their quiet vanish, which showed as pop-ins in the top corners. Aliens with field y < 8 are no longer drawn.
+
+- Boss rows raised (y 80/128 instead of 80/150) so the formation sits closer to the original; flicker metric unchanged (32% hidden alien-frames).
