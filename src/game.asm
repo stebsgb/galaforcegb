@@ -108,6 +108,20 @@ StateWaveMsg:
 
 StatePlay:
     call PlayerUpdate
+    ld a, [wPX]
+    ld hl, wLastPX
+    cp [hl]
+    ld [hl], a
+    ld hl, wStill
+    jr z, .still
+    ld [hl], 0
+    jr .idled
+.still:
+    ld a, [hl]
+    inc a
+    jr z, .idled                ; saturate at 255 frames
+    ld [hl], a
+.idled:
     call UpdateBullets
     call UpdateAliens
     call UpdateInits
@@ -260,6 +274,8 @@ StartGame:
     jp FadeIn
 
 PlayerReset:
+    xor a
+    ld [wStill], a
     ld a, 76
     ld [wPX], a
     ld a, 110

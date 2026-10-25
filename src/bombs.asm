@@ -25,6 +25,13 @@ InitBomb:
     cp 156
     jr nc, .abort
     ld d, a
+    ld a, [wStill]
+    cp 120
+    jr c, .noaim
+    ld a, [wPX]                 ; ship idle for 2s+: bombs are aimed at it
+    add 4
+    ld d, a
+.noaim:
     ld a, c
     or AL_Y
     ld l, a

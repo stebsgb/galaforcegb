@@ -102,6 +102,8 @@ wPY:        db
 wPAlive:    db
 wPExp:      db
 wPExpT:     db
+wStill:     db
+wLastPX:    db
 wFireCD:    db
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)

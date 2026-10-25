@@ -35,3 +35,5 @@
 - Path-end 'die' now vanishes silently for y < 40 (the whole top row), not just y < 24: wave 4 pattern 2 ended at y~34 and exploded visibly at the top.
 
 - Corner explosions: aliens in the entry/exit band (orig y < 40 or above the top) can no longer be shot, matching the quiet end-of-path vanish. Boss alone now drops a bomb about every 16 frames (its path has no bomb opcodes); with company the drop opcode gate is looser.
+
+- Anti-camping: if the ship has not moved for 120 frames, new bombs are aimed at its x (wStill in StatePlay, InitBomb). Only affects levels where aliens drop bombs.
