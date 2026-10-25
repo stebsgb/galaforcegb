@@ -81,7 +81,7 @@ UpdateAliens:
     jr c, .loop
     ret
 
-; BossFire: c = slot. A boss (type 5) with no other live alien drops a bomb about every 12 frames;
+; BossFire: c = slot. A boss (type 5) with no other live alien drops a bomb about every 32 frames;
 ; the boss path has no bomb opcodes, so this is its only fire.
 BossFire:
     ld h, HIGH(wAliens)
@@ -111,7 +111,7 @@ BossFire:
     cp 2
     ret nc
     call Rand
-    and 15
+    and 31
     ret nz
     jp InitBomb
 

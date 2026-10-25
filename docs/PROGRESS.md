@@ -47,3 +47,5 @@
 - Hoop (wave 4) aliens wrap past y=255 to y=5..17 for a few frames before their quiet vanish, which showed as pop-ins in the top corners. Aliens with field y < 8 are no longer drawn.
 
 - Boss rows raised (y 80/128 instead of 80/150) so the formation sits closer to the original; flicker metric unchanged (32% hidden alien-frames).
+
+- Boss alone fires a little less: bomb chance per frame 1/16 -> 1/32.
