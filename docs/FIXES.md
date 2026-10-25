@@ -54,3 +54,7 @@ When the boss is destroyed it stays for about 1.6 s with six staggered explosion
 ## Wave 2 spawner could not be killed
 
 The alien that spawns children in wave 2's last formation hovers at original y=39. My earlier "entry/exit band" rule made everything above y=40 unhittable, so shots passed through it. The band is now y < 32 (and above the top edge), which still covers the corner pop-in cases (`CollideBullets` in `src/game.asm`).
+
+## Wave 3 spawner
+
+The wave 3 spawner released too many children. A quarter of its spawns are now skipped on that wave only (`.newalien` in `src/aliens.asm`).

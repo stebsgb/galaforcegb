@@ -349,6 +349,16 @@ AlienFetch:
 .newalien:
     call ReadPat
     ld b, a
+    ld a, [wWave]
+    and 15
+    cp 2
+    jr nz, .spawn
+    call Rand                   ; wave 3: a quarter of the spawner's children are skipped
+    and 3
+    jr nz, .spawn
+    ld a, 1
+    ret
+.spawn:
     call SpawnChild
     ld a, 1
     ret
