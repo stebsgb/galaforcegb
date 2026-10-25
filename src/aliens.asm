@@ -74,7 +74,12 @@ UpdateAliens:
     ld a, [hl]
     cp 5
     ld a, b
-    jr z, .bossdie
+    jr nz, .small
+    ld a, [wState]
+    cp ST_PDEAD                 ; the boss only blows up grandly when shot
+    ld a, b
+    jr nz, .bossdie
+.small:
     cp 6
     jr c, .next
 .free:

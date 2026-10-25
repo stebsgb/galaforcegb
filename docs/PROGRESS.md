@@ -55,3 +55,5 @@
 - Wave 12 deep U (path 22, used only there) bottomed out at original y=240, under and below the ship where it could not be shot (and was hidden by the above-top rule). Its vertical movement is now scaled to 3/4 (bottom y=188, above the ship line). Other paths untouched.
 
 - Boss death is now grand: for ~1.6 s (24 explosion steps) six staggered explosions burst over and around the boss (BossBoom in render.asm, bossBoomOfs), a boom plays every 4th step, then one final blast. Small aliens unchanged.
+
+- The boss only gets the grand explosion when shot; when the player dies it uses the normal short explosion.

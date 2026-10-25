@@ -177,6 +177,9 @@ BuildOAM:
     ld a, d
     cp 5
     jr nz, .smalldie
+    ld a, [wState]
+    cp ST_PDEAD
+    jr z, .smalldie
     call BossBoom
     jr .alnext
 .smalldie:
