@@ -130,7 +130,13 @@ BuildOAM:
     jr z, .alnext
     ld [wTmp + 3], a            ; state
     ld a, [hli]
+    cp 8
+    jr nc, .xn
+    add a                       ; x < 8: slide in from behind the left edge instead of popping in
+    jr .xs
+.xn:
     add 8
+.xs:
     ld c, a
     ld a, [hli]
     call FieldY

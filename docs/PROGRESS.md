@@ -41,3 +41,5 @@
 - Anti-camping revised: after 240 still frames (4s) a live alien within 4px of the ship x drops a bomb (AimedBomb, every 16 frames); bombs always originate from a real alien. The earlier x-teleport was removed.
 
 - Wave 4 hoop corner glitch: aliens parked at original y=255 (above the top) were drawn at the top corners; BuildOAM now skips aliens whose FieldY is negative.
+
+- Aliens spawning at x<8 (wave 4 patterns 10/11 at the top-left corner) now slide in from behind the left edge instead of popping in.
