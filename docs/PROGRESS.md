@@ -37,3 +37,5 @@
 - Corner explosions: aliens in the entry/exit band (orig y < 40 or above the top) can no longer be shot, matching the quiet end-of-path vanish. Boss alone now drops a bomb about every 16 frames (its path has no bomb opcodes); with company the drop opcode gate is looser.
 
 - Anti-camping: if the ship has not moved for 120 frames, new bombs are aimed at its x (wStill in StatePlay, InitBomb). Only affects levels where aliens drop bombs.
+
+- Anti-camping revised: after 240 still frames (4s) a live alien within 4px of the ship x drops a bomb (AimedBomb, every 16 frames); bombs always originate from a real alien. The earlier x-teleport was removed.

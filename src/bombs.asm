@@ -25,13 +25,6 @@ InitBomb:
     cp 156
     jr nc, .abort
     ld d, a
-    ld a, [wStill]
-    cp 120
-    jr c, .noaim
-    ld a, [wPX]                 ; ship idle for 2s+: bombs are aimed at it
-    add 4
-    ld d, a
-.noaim:
     ld a, c
     or AL_Y
     ld l, a
@@ -120,3 +113,36 @@ RandomBombs:
     cp $80
     ret nz
     jp InitBomb
+
+; AimedBomb: ship idle for 4s on a bombing level -> a live alien right above it drops a bomb.
+AimedBomb:
+    ld a, [wWave]
+    cp 3
+    ret c
+    ld a, [wStill]
+    cp 240
+    ret c
+    ld a, [wFrame]
+    and 15
+    ret nz
+    ld a, [wPX]
+    ld d, a
+    ld c, 0
+.l: ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80
+    jr nz, .n
+    inc l
+    ld a, [hl]
+    sub d
+    add 4
+    cp 9
+    jr nc, .n
+    jp InitBomb
+.n: ld a, c
+    add 16
+    ld c, a
+    cp MAXAL * 16
+    jr c, .l
+    ret

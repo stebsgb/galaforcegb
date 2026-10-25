@@ -127,6 +127,7 @@ StatePlay:
     call UpdateInits
     call UpdateBombs
     call RandomBombs
+    call AimedBomb
     call CollideBullets
     call CollidePlayer
     ld a, [wState]
