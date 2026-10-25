@@ -83,9 +83,21 @@ def add_sprite(name, px):
 
 # player (sp16)
 add_sprite("SPR_PLAYER", conv(sp[16], auto_map(sp[16]), True)[::-1])  # source art is stored nose-down
-# explosion frames
+# explosion frames: the original specks keep their full-contrast shade (1); a mid-tone (2) fringe fills the
+# inner corners between specks and softens isolated ones, so the debris reads as rounded blobs (anti-aliased)
+def soften(g):
+    o = [r[:] for r in g]
+    for y in range(16):
+        for x in range(16):
+            if g[y][x]: continue
+            n = sum(1 for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1))
+                    if 0 <= y + dy < 16 and 0 <= x + dx < 16 and g[y + dy][x + dx] == 1)
+            near = sum(1 for dy in (-1, 0, 1) for dx in (-1, 0, 1)
+                       if 0 <= y + dy < 16 and 0 <= x + dx < 16 and g[y + dy][x + dx])
+            if n >= 2 or (n == 1 and near <= 2): o[y][x] = 2
+    return o
 for i in range(6):
-    add_sprite("SPR_EXPL%d" % i, conv(sp[i], {7:1, 3:1, 1:2, 6:1, 4:3})[::-1])
+    add_sprite("SPR_EXPL%d" % i, soften(conv(sp[i], {7:1, 3:1, 1:2, 6:1, 4:3})[::-1]))
 # aliens
 alien_pal = []
 for k in range(10):
