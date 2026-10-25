@@ -87,33 +87,28 @@ ShowTitle:
     ld [hli], a
     ld [hl], a
     ld hl, titleStars
+    ld de, wStars
 .st:
     ld a, [hli]
     cp $FF
     jr z, .stdone
-    ld b, a                     ; row
+    add a
+    add a
+    add a
+    ld b, a                     ; y = row * 8
     ld a, [hli]
-    ld c, a                     ; col
+    add a
+    add a
+    add a
+    ld c, a                     ; x = col * 8
     ld a, [hli]
-    ld e, a                     ; tile
-    push hl
-    ld h, 0
-    ld l, b
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    ld a, c
-    add l
-    ld l, a
-    ld a, h
-    adc 0
-    ld h, a
-    ld bc, _SCRN0
-    add hl, bc
-    ld [hl], e
-    pop hl
+    and 7
+    add c
+    ld [de], a                  ; x with a little jitter
+    inc de
+    ld a, b
+    ld [de], a
+    inc de
     jr .st
 .stdone:
     ld hl, strStartGame
@@ -152,6 +147,56 @@ strPress:   db "PRESS  START", 0
 strHiTitle: db "HI-SCORE", 0
 strBy:      db "BY KEVIN EDWARDS", 0
 strSuperior: db "SUPERIOR SOFTWARE", 0
+
+; Falling title stars as sprites, behind the logo/text (BG priority). Even-numbered stars fall
+; every frame and use the second palette, odd ones every other frame: a little parallax.
+TitleStars:
+    ld hl, wStars
+    ld a, [wFrame]
+    ld [wTmp], a
+    ld a, 0
+    ld [wTmp + 1], a
+.l: ld a, [wTmp + 1]
+    cp 18
+    ret nc
+    ld a, [hli]
+    ld c, a                     ; x
+    ld a, [hl]
+    ld b, a                     ; y
+    ld a, [wTmp + 1]
+    bit 0, a
+    jr z, .fast
+    ld a, [wTmp]
+    and 1
+    jr z, .nomove
+.fast:
+    inc b
+    ld a, b
+    cp 144
+    jr c, .nomove
+    ld b, 0
+.nomove:
+    ld a, b
+    ld [hli], a
+    ld a, b
+    add 16
+    ld b, a
+    ld a, c
+    add 8
+    ld c, a
+    ld a, [wTmp + 1]
+    and 1
+    swap a                      ; palette select bit 4
+    or %10000000                ; behind BG colours 1-3
+    ld e, a
+    ld d, SPR_STAR
+    push hl
+    call PutObj
+    pop hl
+    ld a, [wTmp + 1]
+    inc a
+    ld [wTmp + 1], a
+    jr .l
 
 ; Occasional shine across the GALAFORCE logo (called in VBlank). A 512-frame cycle; during the
 ; first 80 frames of every second 256 a lighter band sweeps over the logo one tile column per

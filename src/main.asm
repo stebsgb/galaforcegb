@@ -118,6 +118,7 @@ wOptLives:  db            ; options: starting spare lives 1..5
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
 wTwk:       dw            ; title logo shine cycle counter
+wStars:      ds 36         ; title stars: 18 x (x, y)
 wCheat:      db            ; 1 once the options cheat code has been entered
 wCheatPos:  db
 wStartLvl:  db            ; cheat: starting level 1..16

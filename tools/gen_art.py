@@ -107,6 +107,12 @@ for y, row in enumerate(shape):
 bomb[8][3] = bomb[8][4] = bomb[9][3] = bomb[9][4] = 3   # darker core so it reads as a glowing orb
 syms.append(("SPR_BOMB", len(obj) // 16))
 obj.extend(tile8(bomb[0:8]) + tile8(bomb[8:16]))
+# title star: 2x2 dot (8x16 object)
+st = [[0]*8 for _ in range(16)]
+for y in (0, 1):
+    for x in (3, 4): st[y][x] = 1
+syms.append(("SPR_STAR", len(obj) // 16))
+obj.extend(tile8(st[0:8]) + tile8(st[8:16]))
 FONTOBJ0 = len(obj) // 16
 for ch in CHARS:
     px = [[0]*8 for _ in range(8)]
