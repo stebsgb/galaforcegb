@@ -117,6 +117,7 @@ wHiBak:     ds 7          ; hi-score saved while the demo runs
 wOptLives:  db            ; options: starting spare lives 1..5
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
+wTwk:       db            ; title starfield: next star to twinkle
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 
 SECTION "hram", HRAM
@@ -261,6 +262,7 @@ MainLoop:
     call hDma
     call HudUpdate
     call MenuRefresh
+    call TitleTwinkle
     ld hl, wFrame
     inc [hl]
     call ReadKeys

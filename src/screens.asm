@@ -152,6 +152,66 @@ strHiTitle: db "HI-SCORE", 0
 strBy:      db "BY KEVIN EDWARDS", 0
 strSuperior: db "SUPERIOR SOFTWARE", 0
 
+; Cycles one title star through blank and the eight star tiles every other frame (called in VBlank)
+TitleTwinkle:
+    ld a, [wState]
+    or a
+    ret nz
+    ld a, [wFrame]
+    and 1
+    ret nz
+    ld a, [wTwk]
+    ld c, a
+    add a
+    add c
+    ld e, a
+    ld d, 0
+    ld hl, titleStars
+    add hl, de
+    ld a, [hl]
+    cp $FF
+    jr nz, .ok
+    xor a
+    ld [wTwk], a
+    ret
+.ok:
+    ld b, a                     ; row
+    ld a, [wTwk]
+    inc a
+    ld [wTwk], a
+    ld a, c
+    ld e, a
+    ld d, 0
+    ld hl, titleStars + 1
+    ld a, e
+    add a
+    add e
+    ld e, a
+    add hl, de
+    ld c, [hl]                  ; column
+    ld h, 0
+    ld l, b
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    ld a, c
+    add l
+    ld l, a
+    ld a, h
+    adc 0
+    ld h, a
+    ld bc, _SCRN0
+    add hl, bc
+    ld a, [hl]
+    inc a
+    cp T_STAR0 + 8 + 1
+    jr c, .w
+    xor a
+.w: ld [hl], a
+    ret
+
 ; row, column, star tile (T_STAR0 + n) for the title starfield
 titleStars:
     db 1, 4, T_STAR0 + 0,  1, 15, T_STAR0 + 3,  4, 9, T_STAR0 + 1,  4, 18, T_STAR0 + 5

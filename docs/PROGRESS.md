@@ -25,3 +25,4 @@
 - Stage 12 done: options menu (lives 1-5, black/white background), persisted in SRAM `$A010`; `tools/optionstest.py` passes. Makefile now rebuilds gfx when `font5x7.py` changes.
 - White background is now the default (a saved setting still overrides it).
 - Title redesigned after the BBC original: HUD line (SC/HI) on top, wide red-style GALAFORCE, BY KEVIN EDWARDS, SUPERIOR SOFTWARE, flags bottom-left, static starfield.
+- Title stars now twinkle (one star cycles through blank/star tiles every other frame in VBlank).
