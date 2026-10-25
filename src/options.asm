@@ -3,8 +3,8 @@
 
 DEF OPT_SRAM EQU $A010
 DEF OPT_ROW_LIVES EQU 4
-DEF OPT_ROW_BG    EQU 6
-DEF OPT_ROW_CONT  EQU 8
+DEF OPT_ROW_CONT  EQU 6
+DEF OPT_ROW_BG    EQU 8
 DEF OPT_ROW_LEVEL EQU 10
 DEF OPT_ROW_BACK  EQU 12
 
@@ -182,9 +182,9 @@ StateOptions:
     cp 3
     jr z, .level
     cp 2
-    jr z, .cont
+    jr z, .bg
     or a
-    jr nz, .bg
+    jr nz, .cont
     ; lives row: left / right
     ld a, b
     and PAD_LEFT
@@ -347,11 +347,11 @@ MenuDraw:
     call CursorTile
     ld hl, _SCRN0 + 32 * OPT_ROW_BG + 2
     ld a, c
-    cp 1
+    cp 2
     call CursorTile
     ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 2
     ld a, c
-    cp 2
+    cp 1
     call CursorTile
     ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 2
     ld a, c
