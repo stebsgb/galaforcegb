@@ -8,13 +8,13 @@ These files are instructions for an AI coding agent. Work through the stages in 
 | Topic | Decision |
 |---|---|
 | Toolchain | Pure SM83 assembly, RGBDS (`rgbasm`, `rgblink`, `rgbfix`, `rgbgfx`). Python 3 for tooling. Make for build. |
-| ROM | 32 KB, no mapper (`ROM0` only). Move to MBC1 only if the music/data exceeds the budget, and record it in `docs/DECISIONS.md`. |
+| ROM | 32 KB. As built: MBC1+RAM+battery header (8 KB SRAM for the hi-score); the ROM itself is still 32 KB. |
 | Layout | Score and hi-score at the TOP (like the original). Lives (and level) at the BOTTOM (like the original). Playfield between. |
-| Screen split | 160×144 = 8 px score row + 120 px playfield + 16 px bottom lives strip (Window layer). |
-| Formation | Idle formation drawn on the BG layer as tiles; attackers become hardware sprites (hybrid approach). |
+| Screen split | 160×144 = 8 px score row + 128 px playfield + 8 px bottom lives strip (as built) (Window layer). |
+| Formation | As built: all aliens are sprites (two 8x16 objects each) following the original path scripts; no BG formation. |
 | Sprites | 8×16 sprite mode. Aliens are hand-redrawn 16×16 (2 sprites). Recreated from the original, not copied pixel for pixel. |
 | Frame rate | 60 fps locked to vblank. 8.8 fixed point motion. Shadow OAM + HRAM DMA routine. |
-| Audio | hUGEDriver for music, with SFX that borrow channels. Sound and tunes follow the original. |
+| Audio | As built: custom 3-channel driver (not hUGEDriver) for music, with SFX that borrow channels. Sound and tunes follow the original. |
 | Scope | Personal use. Not for distribution. |
 
 ## Source map (original repo, `src/` and `object/`)
@@ -63,8 +63,11 @@ galaforcegb/
 | 03 | STAGE-03-DMG-ART.md | Redrawn DMG tiles/sprites, contrast tested |
 | 04 | STAGE-04-ENGINE-CORE.md | Boot, vblank loop, OAM DMA, input, split screen, stars |
 | 05 | STAGE-05-PLAYER-AND-BULLETS.md | Ship, firing, bullets |
-| 06 | STAGE-06-FORMATION-AND-ATTACKERS.md | BG formation, sprite attackers, paths, hand-over |
+| 06 | STAGE-06-FORMATION-AND-ATTACKERS.md | (as built: all-sprite) attackers, paths, hand-over |
 | 07 | STAGE-07-BOMBS-COLLISION-GAMEFLOW.md | Bombs, collisions, explosions, lives, score, waves |
 | 08 | STAGE-08-AUDIO.md | Music and sound effects |
 | 09 | STAGE-09-SCREENS-HISCORE-POLISH.md | Title, game over, hi-score, SRAM |
 | 10 | STAGE-10-TUNING-AND-QA.md | Performance, difficulty, flicker, final checks |
+
+| 11 | STAGE-11-DEMO-AND-FADES.md | Attract-mode demo and fades (done) |
+| 12 | STAGE-12-OPTIONS-MENU.md | Options menu: lives, white background (planned) |

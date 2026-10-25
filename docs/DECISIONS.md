@@ -15,3 +15,6 @@ These supersede the original stage plans where they differ.
 
 ## Controls
 D-pad move, A fire, Start pause (screen dims), A+B+Select+Start soft reset.
+
+## Vertical scaling (alien Y)
+Original alien Y (>>1) is mapped by `FieldY` (`src/aliens.asm`): 5/8 scale up to 80, then steeper so dives still reach the player row (112). Drawing, bullet hits, player collision and bomb release all use it. Alien vertical speed uses the full original step per sweep (frame pair).

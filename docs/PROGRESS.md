@@ -21,3 +21,4 @@
 - Sprites per line: max 28 objects on a line (hardware shows 10) in the densest waves; overflow in ~30% of frames of the bot run, shared by rotation flicker. Possible improvement: cap simultaneous aliens per row or prioritise by type.
 - "Wave 11 stall" was NOT a bug: armored aliens (10 hits) make that wave last ~4000 frames for the weak bot. Consider balancing the fire rate / hits if it feels slow.
 - Persistence: `tools/savetest.py` (play, beat hi-score, game over, reboot) passes.
+- Fixed: alien vertical speed was half of the original; collision now uses the drawn Y (no deaths without contact).
