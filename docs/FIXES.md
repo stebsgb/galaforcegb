@@ -57,4 +57,4 @@ The alien that spawns children in wave 2's last formation hovers at original y=3
 
 ## Wave 3 spawner
 
-The wave 3 spawner released children in a tight wall. Skipping spawns made it too easy, so every spawn is kept but a 22-frame pause (`wSpawnCD`) is enforced between them on that wave only; a blocked spawn retries next frame (`.newalien` in `src/aliens.asm`).
+The wave 3 spawner released children in a tight wall. Skipping spawns made it too easy, so every spawn is kept but a 8-frame pause (22 was too easy) (`wSpawnCD`) is enforced between them on that wave only; a blocked spawn retries next frame (`.newalien` in `src/aliens.asm`).

@@ -371,7 +371,7 @@ AlienFetch:
     ld a, 1
     ret
 .go:
-    ld a, 22
+    ld a, 8
     ld [wSpawnCD], a
 .spawn:
     call SpawnChild
