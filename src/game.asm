@@ -214,6 +214,14 @@ StartGame:
     ld [wLives], a
     xor a
     ld [wWave], a
+    ld a, [wDemo]
+    or a
+    jr nz, .w0
+    ld a, [wStartLvl]
+    dec a
+    ld [wWave], a
+.w0:
+    xor a
     ld [wExtra], a
     ld [wPause], a
     ld a, 1

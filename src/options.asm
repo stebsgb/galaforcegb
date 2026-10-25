@@ -4,7 +4,8 @@
 DEF OPT_SRAM EQU $A010
 DEF OPT_ROW_LIVES EQU 5
 DEF OPT_ROW_BG    EQU 7
-DEF OPT_ROW_BACK  EQU 9
+DEF OPT_ROW_LEVEL EQU 9
+DEF OPT_ROW_BACK  EQU 11
 
 SECTION "options", ROM0
 
@@ -119,6 +120,7 @@ StateOptions:
     ld b, a
     and PAD_B
     jr nz, LeaveOptions
+    call CheatCheck
     ld a, b
     and PAD_UP
     jr z, .nu
@@ -126,7 +128,14 @@ StateOptions:
     or a
     jr z, .nu
     dec a
-    ld [wMenuSel], a
+    cp 2
+    jr nz, .u
+    ld a, [wCheat]
+    or a
+    ld a, 2
+    jr nz, .u
+    dec a
+.u: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
 .nu:
@@ -134,16 +143,26 @@ StateOptions:
     and PAD_DOWN
     jr z, .nd
     ld a, [wMenuSel]
-    cp 2
+    cp 3
     jr nc, .nd
     inc a
-    ld [wMenuSel], a
+    cp 2
+    jr nz, .d
+    ld c, a
+    ld a, [wCheat]
+    or a
+    ld a, c
+    jr nz, .d
+    inc a
+.d: ld [wMenuSel], a
     ld a, 1
     ld [wDirty], a
 .nd:
     ld a, [wMenuSel]
-    cp 2
+    cp 3
     jr z, .back
+    cp 2
+    jr z, .level
     or a
     jr nz, .bg
     ; lives row: left / right
@@ -169,6 +188,28 @@ StateOptions:
     ld a, 1
     ld [wDirty], a
     ret
+.level:
+    ld hl, wStartLvl
+    ld a, b
+    and PAD_LEFT
+    jr z, .nlv
+    ld a, [hl]
+    cp 2
+    jr c, .nlv
+    dec [hl]
+    ld a, 1
+    ld [wDirty], a
+.nlv:
+    ld a, b
+    and PAD_RIGHT
+    ret z
+    ld a, [hl]
+    cp 16
+    ret nc
+    inc [hl]
+    ld a, 1
+    ld [wDirty], a
+    ret
 .bg:
     ld a, b
     and PAD_LEFT | PAD_RIGHT | PAD_A
@@ -184,6 +225,42 @@ StateOptions:
     and PAD_A | PAD_START
     ret z
     jp LeaveOptions
+
+; Cheat code on the options screen: UP UP DOWN DOWN SELECT reveals the LEVEL row. b = new keys
+CheatCheck:
+    ld a, b
+    or a
+    ret z
+    ld a, [wCheatPos]
+    ld e, a
+    ld d, 0
+    ld hl, cheatSeq
+    add hl, de
+    ld a, [hl]
+    and b
+    jr z, .miss
+    ld a, e
+    inc a
+    ld [wCheatPos], a
+    cp 5
+    ret nz
+    xor a
+    ld [wCheatPos], a
+    ld a, 1
+    ld [wCheat], a
+    ld [wDirty], a
+    ld a, SFX_1UP
+    jp Sfx
+.miss:
+    xor a
+    bit 6, b                    ; PAD_UP restarts the sequence
+    jr z, .set
+    inc a
+.set:
+    ld [wCheatPos], a
+    ret
+
+cheatSeq: db PAD_UP, PAD_UP, PAD_DOWN, PAD_DOWN, PAD_SELECT
 
 ; Title menu input (selection 0 = start, 1 = options)
 TitleMenuKeys:
@@ -230,10 +307,40 @@ MenuDraw:
     ld a, c
     cp 1
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 2
     ld a, c
     cp 2
     call CursorTile
+    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 2
+    ld a, c
+    cp 3
+    call CursorTile
+    ld a, [wCheat]
+    or a
+    jr z, .nolv
+    ld hl, strLevel
+    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 4
+    call PutStr
+    ld a, [wStartLvl]
+    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 15
+    cp 10
+    jr nc, .two
+    add T_FONT0 + 1
+    ld [de], a
+    inc de
+    ld a, T_FONT0
+    ld [de], a
+    jr .nolv
+.two:
+    sub 10
+    add T_FONT0 + 1
+    ld c, a
+    ld a, T_FONT0 + 2           ; tens digit is always 1
+    ld [de], a
+    inc de
+    ld a, c
+    ld [de], a
+.nolv:
     ld a, [wOptLives]
     add T_FONT0 + 1
     ld [_SCRN0 + 32 * OPT_ROW_LIVES + 15], a
@@ -266,7 +373,7 @@ CursorTile:
 
 ; Sprite preview so the contrast of the chosen background can be judged
 BuildOptionsOAM:
-    ld b, 104
+    ld b, 112
     ld c, 32
     ld d, SPR_PLAYER
     ld e, 0
@@ -290,7 +397,7 @@ BuildOptionsOAM:
     ld d, a
     ld a, [wTmp + 1]
     ld c, a
-    ld b, 104
+    ld b, 112
     call Put16
     ld a, [wTmp + 1]
     add 24
@@ -304,6 +411,7 @@ BuildOptionsOAM:
 
 strOptions:    db "OPTIONS", 0
 strLives:      db "LIVES", 0
+strLevel:      db "LEVEL", 0
 strBackground: db "BACKGROUND", 0
 strBack:       db "BACK", 0
 strBlack:      db "BLACK", 0

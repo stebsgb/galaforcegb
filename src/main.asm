@@ -118,6 +118,9 @@ wOptLives:  db            ; options: starting spare lives 1..5
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
 wTwk:       db            ; title starfield: next star to twinkle
+wCheat:      db            ; 1 once the options cheat code has been entered
+wCheatPos:  db
+wStartLvl:  db            ; cheat: starting level 1..16
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 
 SECTION "hram", HRAM
@@ -237,6 +240,11 @@ Start:
     ld [wRng + 1], a
     ld a, 3
     ld [wOptLives], a
+    xor a
+    ld [wCheat], a
+    ld [wCheatPos], a
+    ld a, 1
+    ld [wStartLvl], a
     ld a, 1                     ; white background by default
     ld [wOptBg], a
     call InitHiScore
