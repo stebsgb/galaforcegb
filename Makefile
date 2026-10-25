@@ -3,10 +3,15 @@ RGBLINK ?= rgblink
 RGBFIX ?= rgbfix
 PY ?= .venv/bin/python
 OUT = galaforce.gb
+VERSION = 0.0.9
+VOUT = galaforce-$(VERSION).gb
 SRCS = $(wildcard src/*.asm)
 GEN = build/data.inc build/gfx.inc build/music.inc
 
-all: $(OUT)
+all: $(OUT) $(VOUT)
+
+$(VOUT): $(OUT)
+	cp $(OUT) $(VOUT)
 
 build:
 	mkdir -p build
@@ -31,6 +36,6 @@ god: $(SRCS) $(GEN) | build
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_god.gb
 
 clean:
-	rm -rf build galaforce.gb galaforce.sym
+	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym
 
 .PHONY: all clean god
