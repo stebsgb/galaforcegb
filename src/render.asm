@@ -174,6 +174,12 @@ BuildOAM:
     call Put16
     jr .alnext
 .dying:
+    ld a, d
+    cp 5
+    jr nz, .smalldie
+    call BossBoom
+    jr .alnext
+.smalldie:
     ld a, [hl]                  ; frame
     cp 6
     jr nc, .alnext
@@ -194,7 +200,7 @@ BuildOAM:
 .s: ld [wTmp + 1], a
     ld hl, wTmp + 2
     dec [hl]
-    jr nz, .al
+    jp nz, .al
     ret
 
 ; DrawText: hl = string (charmap bytes, 0-terminated), b = OAM Y, c = OAM X
@@ -276,3 +282,70 @@ DrawMessages:
 
 txtWave:     db "WAVE ", 0
 txtGameOver: db "GAME OVER", 0
+
+; BossBoom: grand death of the boss. b = Y, c = X, hl = its AL_FRAME (0..23). A cluster of explosions
+; with staggered phases bursts over and around it, then one big final blast.
+BossBoom:
+    ld a, [hl]
+    ld [wTmp + 4], a
+    ld a, b
+    ld [wTmp + 5], a
+    ld a, c
+    ld [wTmp + 6], a
+    ld a, [wTmp + 4]
+    cp 18
+    jr c, .cluster
+    sub 18                      ; final blast: one explosion over the boss position
+    add a
+    add a
+    add SPR_EXPL0
+    ld d, a
+    ld e, 0
+    jp Put16
+.cluster:
+    ld hl, bossBoomOfs
+    ld a, 6
+    ld [wTmp + 7], a
+.l: ld a, [wTmp + 4]
+    inc hl
+    inc hl
+    add [hl]                    ; + phase
+    dec hl
+    dec hl
+    and 7
+    cp 6
+    jr nc, .skip
+    add a
+    add a
+    add SPR_EXPL0
+    ld d, a
+    ld a, [wTmp + 5]
+    add [hl]
+    ld b, a
+    inc hl
+    ld a, [wTmp + 6]
+    add [hl]
+    ld c, a
+    dec hl
+    ld e, 0
+    push hl
+    call Put16
+    pop hl
+.skip:
+    inc hl
+    inc hl
+    inc hl
+    ld a, [wTmp + 7]
+    dec a
+    ld [wTmp + 7], a
+    jr nz, .l
+    ret
+
+; dy, dx, phase
+bossBoomOfs:
+    db 0, 0, 0
+    db -10, -14, 2
+    db -10, 14, 4
+    db 8, -14, 5
+    db 8, 14, 1
+    db 4, -4, 3

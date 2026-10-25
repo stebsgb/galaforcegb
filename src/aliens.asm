@@ -67,12 +67,30 @@ UpdateAliens:
     or AL_FRAME
     ld l, a
     inc [hl]
+    ld b, [hl]
+    ld a, c
+    or AL_TYPE
+    ld l, a
     ld a, [hl]
+    cp 5
+    ld a, b
+    jr z, .bossdie
     cp 6
     jr c, .next
+.free:
     ld l, c
     xor a
     ld [hl], a
+    jr .next
+.bossdie:                       ; boss: 24 frame steps (~1.6 s) of chained explosions, a boom every 4th step
+    cp 24
+    jr nc, .free
+    and 3
+    jr nz, .next
+    push bc
+    ld a, SFX_BOOM
+    call Sfx
+    pop bc
 .next:
     ld a, c
     add 16

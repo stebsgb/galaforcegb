@@ -46,3 +46,7 @@ Wave numbers are 1-based as the player sees them; "wave index" is 0-based as in 
 - Corner pop-ins on wave 4 were reduced in several steps; the last two were checked only by reading sprite positions, not by watching play.
 - The boss rows are a compromise between the original layout and flicker. Raise `BOSS_B` in `tools/gen_data.py` towards 96 for a more faithful layout at the cost of flicker.
 - The wave 12 U depth (3/4) is a judgement call and easy to change in `AlienStep`.
+
+## Boss death
+
+When the boss is destroyed it stays for about 1.6 s with six staggered explosions bursting over and around it, a boom every 4th step, and a final blast (`BossBoom` in `src/render.asm`, `UpdateAliens` in `src/aliens.asm`). The next wave waits until it has finished.
