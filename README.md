@@ -24,4 +24,4 @@ D-pad move, A fire, Start pause, A+B+Select+Start soft reset. Title and options:
 
 ## Tools and docs
 `tools/`: `bot.py`, `audit.py`, `savetest.py`, `demotest.py`, `optionstest.py`, `cheattest.py`, `sfxlevels.py`, `audiotest.py`, `snap.py`, `screenshots.py` (regenerates `docs/screenshots/`; run `make` and `make god` first).
-See `00-OVERVIEW.md`, `docs/DECISIONS.md` and `docs/PROGRESS.md`. Stage plans `STAGE-01` to `STAGE-12` are all done.
+See `00-OVERVIEW.md`, `docs/DECISIONS.md` and `docs/PROGRESS.md` and `docs/FIXES.md` (playtest fixes). Stage plans `STAGE-01` to `STAGE-12` are all done.
