@@ -40,7 +40,7 @@ ShowTitle:
     call ClearMapA
     call ResetLogoTiles
     ; big title letters "GALFORCE": 2x2 tiles each
-    ld hl, _SCRN0 + 32 * 2 + 1
+    ld hl, _SCRN0 + 32 * 3 + 1
     ld b, 9
     ld c, T_BIG0
 .big:
