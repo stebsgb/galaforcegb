@@ -39,7 +39,7 @@ ShowTitle:
     call LcdOff
     call ClearMapA
     ; big title letters "GALFORCE": 2x2 tiles each
-    ld hl, _SCRN0 + 32 * 3 + 1
+    ld hl, _SCRN0 + 32 * 2 + 1
     ld b, 9
     ld c, T_BIG0
 .big:
@@ -60,26 +60,66 @@ ShowTitle:
     ld c, a
     dec b
     jr nz, .big
+    ld hl, strBy
+    ld de, _SCRN0 + 32 * 5 + 2
+    call PutStr
     ld hl, strPort
     ld de, _SCRN0 + 32 * 7 + 2
     call PutStr
+    ld hl, strSC
+    ld de, _SCRN0
+    call PutStr
+    ld a, T_FONT0 + 1
+    ld [_SCRN0 + 7], a
+    ld hl, strHI
+    ld de, _SCRN0 + 11
+    call PutStr
+    ld de, wHi
+    ld hl, _SCRN0 + 13
+    call HudNum
+    ld hl, strSuperior
+    ld de, _SCRN0 + 32 * 14 + 1
+    call PutStr
+    ld a, T_FLAG
+    ld hl, _SCRN0 + 32 * 17
+    ld [hli], a
+    ld [hli], a
+    ld [hl], a
+    ld hl, titleStars
+.st:
+    ld a, [hli]
+    cp $FF
+    jr z, .stdone
+    ld b, a                     ; row
+    ld a, [hli]
+    ld c, a                     ; col
+    ld a, [hli]
+    ld e, a                     ; tile
+    push hl
+    ld h, 0
+    ld l, b
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    ld a, c
+    add l
+    ld l, a
+    ld a, h
+    adc 0
+    ld h, a
+    ld bc, _SCRN0
+    add hl, bc
+    ld [hl], e
+    pop hl
+    jr .st
+.stdone:
     ld hl, strStartGame
     ld de, _SCRN0 + 32 * 9 + 5
     call PutStr
     ld hl, strOptionsItem
     ld de, _SCRN0 + 32 * 11 + 6
-    call PutStr
-    ld de, wHi
-    ld hl, _SCRN0 + 32 * 13 + 10
-    call HudNum
-    ld hl, strHiTitle
-    ld de, _SCRN0 + 32 * 13 + 3
-    call PutStr
-    ld hl, strOrig1
-    ld de, _SCRN0 + 32 * 15 + 1
-    call PutStr
-    ld hl, strOrig2
-    ld de, _SCRN0 + 32 * 16 + 2
     call PutStr
     xor a
     ldh [hSplit], a
@@ -109,5 +149,14 @@ strHI:      db "HI", 0
 strPort:    db "GAME BOY EDITION", 0
 strPress:   db "PRESS  START", 0
 strHiTitle: db "HI-SCORE", 0
-strOrig1:   db "ORIGINAL BBC MICRO", 0
-strOrig2:   db "BY KEVIN EDWARDS", 0
+strBy:      db "BY KEVIN EDWARDS", 0
+strSuperior: db "SUPERIOR SOFTWARE", 0
+
+; row, column, star tile (T_STAR0 + n) for the title starfield
+titleStars:
+    db 1, 4, T_STAR0 + 0,  1, 15, T_STAR0 + 3,  4, 9, T_STAR0 + 1,  4, 18, T_STAR0 + 5
+    db 6, 2, T_STAR0 + 4,  6, 13, T_STAR0 + 2,  8, 7, T_STAR0 + 6,  8, 17, T_STAR0 + 0
+    db 10, 1, T_STAR0 + 3,  10, 12, T_STAR0 + 1,  12, 5, T_STAR0 + 5,  12, 16, T_STAR0 + 7
+    db 13, 9, T_STAR0 + 2,  15, 3, T_STAR0 + 6,  15, 14, T_STAR0 + 4,  16, 8, T_STAR0 + 0
+    db 16, 18, T_STAR0 + 3,  1, 10, T_STAR0 + 7
+    db $FF

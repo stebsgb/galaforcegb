@@ -132,26 +132,16 @@ for ch in CHARS:
         for x, c in enumerate(r):
             if c == "#": px[y][x] = 3
     bg_add(tile8(px))
-# big title letters (2x scaled 5x7 -> 10x14, centred in 16x16, shadow)
+# big title letters (3x wide, 2x tall 5x7 -> 15x14 in a 16x16 cell, as the wide BBC title, with shadow)
 BIGSET = "GALAFORCE"
 while len(bg) // 16 < 64 - BG0: bg_add(blank())
 BIG0 = BG0 + len(bg) // 16
 for ch in BIGSET:
     big = [[0]*16 for _ in range(16)]
-    for y, r in enumerate(G[ch]):
-        for x, c in enumerate(r):
-            if c == "#":
-                for dy in range(2):
-                    for dx in range(2):
-                        yy, xx = 1 + y*2 + dy, 3 + x*2 + dx
-                        big[yy][xx] = 3
-                        if yy+1 < 16 and xx+1 < 16 and big[yy+1][xx+1] == 0: big[yy+1][xx+1] = 1
-    # re-apply bright over shadow
-    for y, r in enumerate(G[ch]):
-        for x, c in enumerate(r):
-            if c == "#":
-                for dy in range(2):
-                    for dx in range(2): big[1+y*2+dy][3+x*2+dx] = 3
+    pts = [(1 + y*2 + dy, x*3 + dx) for y, r in enumerate(G[ch]) for x, c in enumerate(r) if c == "#" for dy in range(2) for dx in range(3)]
+    for yy, xx in pts:
+        if yy + 1 < 16: big[yy+1][xx] = 1
+    for yy, xx in pts: big[yy][xx] = 3
     bg_add(tile8([r[0:8] for r in big[0:8]])); bg_add(tile8([r[8:16] for r in big[0:8]]))
     bg_add(tile8([r[0:8] for r in big[8:16]])); bg_add(tile8([r[8:16] for r in big[8:16]]))
 while len(bg) // 16 < 100 - BG0: bg_add(blank())
