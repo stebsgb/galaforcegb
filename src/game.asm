@@ -391,11 +391,8 @@ CollideBullets:
     jr nc, .an
     inc l
     ld a, [hl]
-    srl a
-    cp 120
-    jr c, .y
-    sub 128
-.y: ld d, a
+    call FieldY
+    ld d, a
     ld a, [wTmp + 1]
     sub d
     add 5

@@ -131,10 +131,7 @@ BuildOAM:
     add 8
     ld c, a
     ld a, [hli]
-    srl a
-    cp 120
-    jr c, .yok
-    sub 128
+    call FieldY
 .yok:
     add 24
     ld b, a

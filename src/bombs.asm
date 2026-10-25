@@ -29,8 +29,8 @@ InitBomb:
     or AL_Y
     ld l, a
     ld a, [hl]
-    srl a
-    cp 112
+    call FieldY
+    cp 70
     jr nc, .abort
     add 8
     ld e, a

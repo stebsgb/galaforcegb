@@ -1,5 +1,27 @@
 SECTION "aliencode", ROM0
 
+; FieldY: a = original alien y -> playfield y. Compressed to 5/8 so the
+; action stays in the upper part of the screen. Values >= 120 (after >>1) are above the top.
+FieldY:
+    srl a
+    cp 120
+    jr c, .pos
+    sub 128
+    ret
+.pos:
+    push bc
+    ld b, a
+    srl a
+    srl a
+    ld c, a
+    srl a
+    add c
+    sub b
+    cpl
+    inc a                       ; b - 3/8 b = 5/8 b
+    pop bc
+    ret
+
 ; ---------------------------------------------------------------- per-frame alien update
 UpdateAliens:
     ld c, 0
