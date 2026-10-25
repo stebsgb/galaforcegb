@@ -117,7 +117,7 @@ wHiBak:     ds 7          ; hi-score saved while the demo runs
 wOptLives:  db            ; options: starting spare lives 1..5
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
-wTwk:       db            ; title starfield: next star to twinkle
+wTwk:       dw            ; title logo shine cycle counter
 wCheat:      db            ; 1 once the options cheat code has been entered
 wCheatPos:  db
 wStartLvl:  db            ; cheat: starting level 1..16
@@ -270,7 +270,7 @@ MainLoop:
     call hDma
     call HudUpdate
     call MenuRefresh
-    call TitleTwinkle
+    call TitleShine
     ld hl, wFrame
     inc [hl]
     call ReadKeys

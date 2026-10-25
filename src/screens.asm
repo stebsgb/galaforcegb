@@ -38,6 +38,7 @@ ShowTitle:
     di
     call LcdOff
     call ClearMapA
+    call ResetLogoTiles
     ; big title letters "GALFORCE": 2x2 tiles each
     ld hl, _SCRN0 + 32 * 2 + 1
     ld b, 9
@@ -152,64 +153,110 @@ strHiTitle: db "HI-SCORE", 0
 strBy:      db "BY KEVIN EDWARDS", 0
 strSuperior: db "SUPERIOR SOFTWARE", 0
 
-; Cycles one title star through blank and the eight star tiles every other frame (called in VBlank)
-TitleTwinkle:
+; Occasional shine across the GALAFORCE logo (called in VBlank). A 512-frame cycle; during the
+; first 80 frames of every second 256 a lighter band sweeps over the logo one tile column per
+; 4 frames, one tile rewritten per frame (face pixels shade 3 -> 2, restored from ROM behind it).
+TitleShine:
     ld a, [wState]
     or a
     ret nz
-    ld a, [wFrame]
-    and 1
+    ld a, [wFade]
+    or a
     ret nz
+    ld hl, wTwk
+    inc [hl]
+    jr nz, .nc
+    inc hl
+    inc [hl]
+.nc:
+    ld a, [wTwk + 1]
+    and 1
+    ret z
     ld a, [wTwk]
+    cp 80
+    ret nc
     ld c, a
-    add a
-    add c
-    ld e, a
-    ld d, 0
-    ld hl, titleStars
-    add hl, de
-    ld a, [hl]
-    cp $FF
-    jr nz, .ok
-    xor a
-    ld [wTwk], a
-    ret
-.ok:
-    ld b, a                     ; row
-    ld a, [wTwk]
-    inc a
-    ld [wTwk], a
+    srl a
+    srl a
+    ld b, a                     ; n = sweep column
     ld a, c
+    and 3
+    ld c, a
+    bit 1, c
+    jr nz, .restore
+    ld a, b
+    cp 18
+    ret nc
+    ld a, $FF
+    jr .go
+.restore:
+    ld a, b
+    sub 2
+    ret c
+    ld b, a
+    xor a
+.go:
+    ld [wTmp], a                ; $FF = highlight, 0 = restore
+    ld a, b                     ; tile column 0..17
     ld e, a
-    ld d, 0
-    ld hl, titleStars + 1
+    srl a
+    add a
+    add a
+    ld d, a
     ld a, e
-    add a
-    add e
-    ld e, a
-    add hl, de
-    ld c, [hl]                  ; column
-    ld h, 0
-    ld l, b
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, hl
-    add hl, hl
+    and 1
+    add d
+    ld d, a
     ld a, c
-    add l
+    and 1
+    add a
+    add d
+    add T_BIG0
     ld l, a
-    ld a, h
-    adc 0
-    ld h, a
-    ld bc, _SCRN0
+    ld h, 0
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    add hl, hl
+    ld b, h
+    ld c, l
+    ld hl, _VRAM_BG
     add hl, bc
-    ld a, [hl]
-    inc a
-    cp T_STAR0 + 8 + 1
-    jr c, .w
+    ld d, h
+    ld e, l
+    ld hl, gfx_bg
+    add hl, bc
+    ld a, [wTmp]
+    or a
+    jr nz, .hi
+    ld bc, 16
+    jp MemCopy
+.hi:
+    ld b, 8
+.r: ld a, [hli]
+    ld c, a
+    ld a, [hli]
+    push af
+    cpl
+    and c
+    ld [de], a
+    inc de
+    pop af
+    ld [de], a
+    inc de
+    dec b
+    jr nz, .r
+    ret
+
+; Puts the logo tiles back to normal (LCD off)
+ResetLogoTiles:
+    ld hl, gfx_bg + T_BIG0 * 16
+    ld de, _VRAM_BG + T_BIG0 * 16
+    ld bc, 36 * 16
+    call MemCopy
     xor a
-.w: ld [hl], a
+    ld [wTwk], a
+    ld [wTwk + 1], a
     ret
 
 ; row, column, star tile (T_STAR0 + n) for the title starfield
