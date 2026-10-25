@@ -129,7 +129,7 @@ strCred3:   db "SUPERIOR SOFTWARE", 0
 ; $9C00 (same stars and speed as in the game). Each entry: line where the next split happens (the blank bottom line of a text row,
 ; so the mid-line map switch is invisible), then 1 = stars.
 titleSegs:
-    db 7, 0,  15, 1,  31, 0,  47, 1,  55, 0,  71, 1,  79, 0,  87, 1,  95, 0,  111, 1,  200, 0
+    db 7, 0,  23, 1,  39, 0,  47, 1,  55, 0,  71, 1,  79, 0,  87, 1,  95, 0,  111, 1,  200, 0
 
 ; Called from the STAT interrupt (af already pushed) while the title is shown
 TitleStat:

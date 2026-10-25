@@ -50,4 +50,4 @@
 
 - Boss alone fires a little less: bomb chance per frame 1/16 -> 1/32.
 
-- Options: alien/ship preview moved down 16px and hints down a row so BACK is not cramped. Title: removed GAME BOY EDITION line (logo one row lower than the original).
+- Options: alien/ship preview moved down 16px and hints down a row so BACK is not cramped. Title: removed GAME BOY EDITION line (logo one row lower than the original; the star-scroll text bands in titleSegs were shifted to match).
