@@ -39,3 +39,5 @@
 - Anti-camping: if the ship has not moved for 120 frames, new bombs are aimed at its x (wStill in StatePlay, InitBomb). Only affects levels where aliens drop bombs.
 
 - Anti-camping revised: after 240 still frames (4s) a live alien within 4px of the ship x drops a bomb (AimedBomb, every 16 frames); bombs always originate from a real alien. The earlier x-teleport was removed.
+
+- Wave 4 hoop corner glitch: aliens parked at original y=255 (above the top) were drawn at the top corners; BuildOAM now skips aliens whose FieldY is negative.

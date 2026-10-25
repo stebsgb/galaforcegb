@@ -134,6 +134,8 @@ BuildOAM:
     ld c, a
     ld a, [hli]
     call FieldY
+    bit 7, a
+    jr nz, .alnext              ; above the top edge (waiting at y 255 etc.): not drawn, so nothing sits in the corners
 .yok:
     add 24
     ld b, a
