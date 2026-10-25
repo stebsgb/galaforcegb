@@ -112,7 +112,7 @@ BuildOAM:
 
     ; --- aliens
     ld a, [wRot]
-    add 16
+    add ROTSTEP * 16
     cp MAXAL * 16
     jr c, .rot
     xor a

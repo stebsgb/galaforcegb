@@ -452,6 +452,8 @@ CollideBullets:
     inc l
     ld a, [hl]
     call FieldY
+    bit 7, a
+    jr nz, .an                  ; still above the top edge: not hittable (no phantom explosions in the corners)
     ld d, a
     ld a, [wTmp + 1]
     sub d
