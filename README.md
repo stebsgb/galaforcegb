@@ -1,8 +1,6 @@
 # Galaforce for Game Boy (DMG)
 
-Personal-project port of Kevin Edwards' BBC Micro *Galaforce* (original source: https://github.com/KevEdwards/Galaforce1BBC, cloned to `ref/`). Not for distribution.
-
-Pure SM83 assembly (RGBDS) with Python tooling. Targets the original monochrome Game Boy: 160x144, 16x16 sprites, the original formations, paths and wave data, a custom 4-channel audio driver with the original tunes and effects, and battery-backed hi-score and settings (MBC1 + RAM).
+A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (1986). It keeps the original formations, flight paths and wave data, redraws the sprites for the Game Boy's small 4-shade screen, and recreates the original music and sound effects. Written in SM83 assembly (RGBDS) with Python tooling. Original source: https://github.com/KevEdwards/Galaforce1BBC (cloned to `ref/`). Personal project, not for distribution.
 
 | White background (default) | Black background |
 |---|---|
