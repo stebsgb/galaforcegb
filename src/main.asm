@@ -103,6 +103,7 @@ wPAlive:    db
 wPExp:      db
 wPExpT:     db
 wStill:     db
+wSpawnCD:   db            ; wave 3: frames until the spawner may release another child
 wLastPX:    db
 wFireCD:    db
 wBul:       ds 12          ; 3 x (active, x, y, -)

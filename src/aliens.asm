@@ -43,6 +43,12 @@ FieldY:
 
 ; ---------------------------------------------------------------- per-frame alien update
 UpdateAliens:
+    ld a, [wSpawnCD]
+    or a
+    jr z, .cd
+    dec a
+    ld [wSpawnCD], a
+.cd:
     ld c, 0
 .loop:
     ld h, HIGH(wAliens)
@@ -353,11 +359,20 @@ AlienFetch:
     and 15
     cp 2
     jr nz, .spawn
-    call Rand                   ; wave 3: a quarter of the spawner's children are skipped
-    and 3
-    jr nz, .spawn
+    ld a, [wSpawnCD]            ; wave 3: pause between spawns so children don't form a wall
+    or a
+    jr z, .go
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_OFF
+    ld l, a
+    dec [hl]
+    dec [hl]                    ; retry this spawn next frame
     ld a, 1
     ret
+.go:
+    ld a, 22
+    ld [wSpawnCD], a
 .spawn:
     call SpawnChild
     ld a, 1
