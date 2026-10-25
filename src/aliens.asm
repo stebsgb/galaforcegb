@@ -464,6 +464,10 @@ StartPattern:
     ld l, a
     ld a, [hli]
     ld b, a
+    ld a, [wWave]               ; wave 3 is eased: see .d / num below
+    and 15
+    sub 2
+    ld [wTmp + 6], a
     ld de, wInits
 .part:
     ld a, 1
@@ -489,14 +493,33 @@ StartPattern:
     inc e
     ld a, [hli]                 ; delay
     or a
-    jr nz, .d
+    jr nz, .d0
     inc a
+.d0:
+    ld c, a
+    ld a, [wTmp + 6]
+    or a
+    ld a, c
+    jr nz, .d
+    cp 17
+    jr nc, .d
+    srl c
+    add c                       ; wave 3: spacing x1.5 so there are gaps to shoot through
 .d: ld [de], a                  ; count
     inc e
     ld [de], a                  ; delay
     inc e
+    ld a, [wTmp + 6]
+    or a
     ld a, [hli]                 ; num
-    ld [de], a
+    jr nz, .n
+    ld c, a
+    srl c
+    srl c
+    sub c                       ; wave 3: 3/4 as many aliens per stream
+    jr nz, .n
+    inc a
+.n: ld [de], a
     inc e
     ld a, [hli]                 ; relx
     ld [de], a
