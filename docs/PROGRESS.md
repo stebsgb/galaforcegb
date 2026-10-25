@@ -30,3 +30,4 @@
 - Cheat: on the options screen press UP UP DOWN DOWN SELECT to reveal a LEVEL row (1-16, not saved; demo ignores it). Test: tools/cheattest.py.
 - Wave 3 eased (playtest: sometimes no gap to shoot through): in StartPattern, streams with delay <= 16 are spaced x1.5 and carry 3/4 as many aliens. Other waves unchanged.
 - Aliens whose path ends (die opcode) off the top edge (y<24 or >=224) now vanish quietly instead of exploding in the top corners (seen on waves 5, 6 and 11).
+- Flicker: alien OAM draw order now strides over the slots (ALSTEP=9) instead of rotating by one, so an overflowing alien is hidden 1-3 frames at a time (was 7-10 on the boss wave). tools/flicker.py measures hidden-run lengths. Boss rows are ~8 px apart on screen vs 16 px sprites; re-spacing them to 16 px cuts hidden alien-frames 61% -> 47% but changes the layout (not applied).

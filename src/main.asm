@@ -4,6 +4,7 @@ INCLUDE "gfx.inc"
 
 DEF MAXAL EQU 14           ; alien slots (2 objects each)
 DEF MAXINIT EQU 4
+DEF ALSTEP EQU 9            ; OAM draw-order stride over alien slots (coprime with MAXAL): overflow hides scattered aliens for 1-2 frames, not a block
 DEF IDLE_HI EQU 3          ; title idle time before the demo: 768 frames (~13 s)
 DEF DEMO_FRAMES_HI EQU 7   ; demo length: 1792 frames (~30 s)
 

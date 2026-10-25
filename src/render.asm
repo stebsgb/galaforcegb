@@ -175,10 +175,12 @@ BuildOAM:
     call Put16
 .alnext:
     ld a, [wTmp + 1]
-    add 16
+    add ALSTEP * 16
+    jr c, .wrap
     cp MAXAL * 16
     jr c, .s
-    xor a
+.wrap:
+    sub MAXAL * 16
 .s: ld [wTmp + 1], a
     ld hl, wTmp + 2
     dec [hl]
