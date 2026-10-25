@@ -53,6 +53,7 @@ UpdateAliens:
     bit 0, a
     jr nz, .dying
     call AlienStep
+    call BossFire
     jr .next
 .dying:
     ld a, c
@@ -79,6 +80,40 @@ UpdateAliens:
     cp MAXAL * 16
     jr c, .loop
     ret
+
+; BossFire: c = slot. A boss (type 5) with no other live alien drops a bomb about every 12 frames;
+; the boss path has no bomb opcodes, so this is its only fire.
+BossFire:
+    ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80
+    ret nz
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    ret nz
+    ld d, MAXAL
+    ld e, 0
+    ld hl, wAliens
+.c: ld a, [hl]
+    cp $80
+    jr nz, .n
+    inc e
+.n: ld a, l
+    add 16
+    ld l, a
+    dec d
+    jr nz, .c
+    ld a, e
+    cp 2
+    ret nc
+    call Rand
+    and 15
+    ret nz
+    jp InitBomb
 
 ; c = slot offset. Interprets path script when the current move is finished, then moves.
 AlienStep:
@@ -312,9 +347,39 @@ AlienFetch:
     ret
 
 .drop:
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    jr nz, .dnorm
+    ld d, MAXAL                 ; boss: count the other live aliens
+    ld e, 0
+    ld hl, wAliens
+.dc:
+    ld a, [hl]
+    cp $80
+    jr nz, .dn
+    inc e
+.dn:
+    ld a, l
+    add 16
+    ld l, a
+    dec d
+    jr nz, .dc
+    ld a, e
+    cp 2
+    jr c, .dgo                  ; boss alone: drops on every bomb opcode
+    call Rand
+    and 1                       ; boss with company: twice the normal rate
+    jp nz, .again
+    jr .dgo
+.dnorm:
     call Rand
     and 3
     jp nz, .again
+.dgo:
     call InitBomb
     jp .again
 

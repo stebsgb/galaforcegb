@@ -451,6 +451,10 @@ CollideBullets:
     jr nc, .an
     inc l
     ld a, [hl]
+    add 32
+    cp 72
+    jr c, .an                   ; entry/exit band (y < 40 or above the top): not hittable, matches the quiet vanish
+    sub 32
     call FieldY
     bit 7, a
     jr nz, .an                  ; still above the top edge: not hittable (no phantom explosions in the corners)
