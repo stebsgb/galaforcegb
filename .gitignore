@@ -1,0 +1,8 @@
+ref/
+build/
+.venv/
+*.gb
+*.sym
+__pycache__/
+galaforce_god.*
+shots/
