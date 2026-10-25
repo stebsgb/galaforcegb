@@ -63,8 +63,11 @@ ShowTitle:
     ld hl, strPort
     ld de, _SCRN0 + 32 * 7 + 2
     call PutStr
-    ld hl, strPress
-    ld de, _SCRN0 + 32 * 11 + 4
+    ld hl, strStartGame
+    ld de, _SCRN0 + 32 * 9 + 5
+    call PutStr
+    ld hl, strOptionsItem
+    ld de, _SCRN0 + 32 * 11 + 5
     call PutStr
     ld de, wHi
     ld hl, _SCRN0 + 32 * 13 + 10
@@ -83,6 +86,8 @@ ShowTitle:
     ld [wState], a
     ld [wPause], a
     ld [wPAlive], a
+    call MenuDraw
+    xor a
     ld [wIdle], a
     ld [wIdle + 1], a
     ld a, 3

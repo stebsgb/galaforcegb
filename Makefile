@@ -13,7 +13,7 @@ build:
 
 build/data.inc: tools/gen_data.py tools/bbc.py | build
 	$(PY) tools/gen_data.py
-build/gfx.inc: tools/gen_art.py tools/bbc.py | build
+build/gfx.inc: tools/gen_art.py tools/bbc.py tools/font5x7.py | build
 	$(PY) tools/gen_art.py
 build/music.inc: tools/gen_music.py | build
 	$(PY) tools/gen_music.py

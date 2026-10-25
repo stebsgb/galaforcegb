@@ -42,6 +42,7 @@ DEF ST_WAVEMSG  EQU 1
 DEF ST_PLAY     EQU 2
 DEF ST_PDEAD    EQU 3
 DEF ST_GAMEOVER EQU 4
+DEF ST_OPTIONS  EQU 5
 
 ; ---- sound effect ids ----
 DEF SFX_FIRE    EQU 0
@@ -66,7 +67,7 @@ DEF PY_MAX EQU 112
 ; font charmap: text strings become BG tile numbers
 NEWCHARMAP gfchars
 SETCHARMAP gfchars
-DEF FONTSTR EQUS " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:!'/?,="
+DEF FONTSTR EQUS " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-.:!'/?,=<>"
 FOR i, CHARLEN("{FONTSTR}")
   CHARMAP STRSLICE("{FONTSTR}", i, i + 1), T_FONT0 + i
 ENDR
@@ -113,6 +114,10 @@ wDemo:      db            ; 1 while the attract-mode demo runs
 wIdle:      dw            ; title idle frames
 wDemoT:     dw            ; demo frames
 wHiBak:     ds 7          ; hi-score saved while the demo runs
+wOptLives:  db            ; options: starting spare lives 1..5
+wOptBg:     db            ; options: 0 black background, 1 white
+wMenuSel:   db
+wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 
 SECTION "hram", HRAM
 hDma:       ds 10
@@ -229,8 +234,11 @@ Start:
     ld [wRng], a
     ld a, $AC
     ld [wRng + 1], a
+    ld a, 3
+    ld [wOptLives], a
     call InitHiScore
     call LoadHi
+    call LoadOptions
     call AudioInit
     xor a
     ldh [rIF], a
@@ -250,6 +258,7 @@ MainLoop:
     ldh [hVBlank], a
     call hDma
     call HudUpdate
+    call MenuRefresh
     ld hl, wFrame
     inc [hl]
     call ReadKeys
@@ -391,4 +400,5 @@ INCLUDE "screens.asm"
 INCLUDE "audio.asm"
 INCLUDE "save.asm"
 INCLUDE "fx.asm"
+INCLUDE "options.asm"
 INCLUDE "data.inc"

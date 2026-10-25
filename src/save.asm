@@ -78,6 +78,11 @@ ApplyPalettes:
     jr nz, .lvl
     inc c                       ; pause dims by one fade step
 .lvl:
+    ld a, [wOptBg]
+    add a
+    add a
+    add c                       ; white-background tables follow the black ones
+    ld c, a
     ld b, 0
     ld hl, fadeBGP
     add hl, bc
@@ -93,6 +98,10 @@ ApplyPalettes:
     ldh [rOBP1], a
     ret
 
+; entries 0-3: black background fading to black; 4-7: white background fading to white
 fadeBGP:  db %00011011, %01101111, %10111111, %11111111
+          db %11100100, %10010000, %01000000, %00000000
 fadeOBP0: db %10010000, %11100100, %11111000, %11111100
+          db %01101100, %00011000, %00000100, %00000000
 fadeOBP1: db %10000100, %11011000, %11101100, %11111100
+          db %01111000, %00100100, %00010000, %00000000

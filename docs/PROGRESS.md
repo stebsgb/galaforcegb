@@ -22,3 +22,4 @@
 - "Wave 11 stall" was NOT a bug: armored aliens (10 hits) make that wave last ~4000 frames for the weak bot. Consider balancing the fire rate / hits if it feels slow.
 - Persistence: `tools/savetest.py` (play, beat hi-score, game over, reboot) passes.
 - Fixed: alien vertical speed was half of the original; collision now uses the drawn Y (no deaths without contact).
+- Stage 12 done: options menu (lives 1-5, black/white background), persisted in SRAM `$A010`; `tools/optionstest.py` passes. Makefile now rebuilds gfx when `font5x7.py` changes.

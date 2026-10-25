@@ -17,6 +17,8 @@ BuildOAM:
     ld a, [wState]
     or a
     ret z                       ; title: no objects
+    cp ST_OPTIONS
+    jp z, BuildOptionsOAM
     call DrawMessages
 
     ; --- player / player explosion

@@ -4,6 +4,8 @@ GameUpdate:
     ld a, [wState]
     or a
     jp z, StateTitle
+    cp ST_OPTIONS
+    jp z, StateOptions
     ; pause toggle
     cp ST_GAMEOVER
     jr z, .nopause
@@ -37,9 +39,17 @@ GameUpdate:
     jp StateGameOver
 
 StateTitle:
+    call TitleMenuKeys
     ld a, [wKeysNew]
-    and PAD_START
-    jr nz, .go
+    or a
+    jr z, .idle
+    xor a
+    ld [wIdle], a
+    ld [wIdle + 1], a
+    ld a, [wKeysNew]
+    and PAD_START | PAD_A
+    jr nz, .pick
+.idle:
     ld hl, wIdle
     inc [hl]
     jr nz, .nc
@@ -50,6 +60,12 @@ StateTitle:
     cp IDLE_HI                  ; IDLE_HI * 256 frames of idling starts the demo
     ret c
     jp StartDemo
+.pick:
+    ld a, [wMenuSel]
+    or a
+    jr z, .go
+    call FadeOut
+    jp ShowOptions
 .go:
     ldh a, [rDIV]
     ld hl, wRng
@@ -103,12 +119,20 @@ StatePDead:
     ld a, [wPExpT]
     inc a
     ld [wPExpT], a
+    ld d, a
+    ld a, [wOptBg]
+    or a
     ld b, %00011011
+    ld c, %00011001
+    jr z, .m
+    ld b, %11100100
+    ld c, %11100110
+.m: ld a, d
     cp 12
     jr nc, .fl
     and 2
     jr z, .fl
-    ld b, %00011001             ; brief background flash on death
+    ld b, c                     ; brief background flash on death
 .fl:
     ld a, b
     ldh [rBGP], a
@@ -186,7 +210,7 @@ StartGame:
     ld bc, 7
     xor a
     call MemFill
-    ld a, 3
+    ld a, [wOptLives]
     ld [wLives], a
     xor a
     ld [wWave], a

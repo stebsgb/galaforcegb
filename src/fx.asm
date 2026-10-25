@@ -81,7 +81,9 @@ ReturnToTitle:
     call MemCopy
     xor a
     ld [wDemo], a
-.t: call FadeOut
+.t: xor a
+    ld [wMenuSel], a
+    call FadeOut
     jp ShowTitle
 
 ; Called each frame after ReadKeys. In the demo, replaces the pad with a simple auto-pilot.
