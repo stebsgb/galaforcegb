@@ -58,6 +58,7 @@ DEF PAD_DOWN   EQU $80
 DEF LCDC_TOP   EQU %10100101   ; HUD: BG map $9800, window on, OBJ off, 8x16
 DEF LCDC_STAR  EQU %10101111   ; playfield: BG map $9C00, OBJ on
 DEF LCDC_BOT   EQU %10101101   ; bottom strip: OBJ off
+DEF LCDC_TSTAR EQU %10001111   ; title star bands: BG map $9C00
 DEF LCDC_FULL  EQU %10000111   ; title screens: BG map $9800, OBJ on
 
 DEF PLAY_TOP   EQU 8           ; first screen line of playfield

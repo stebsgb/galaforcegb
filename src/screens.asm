@@ -61,11 +61,8 @@ ShowTitle:
     ld c, a
     dec b
     jr nz, .big
-    ld hl, strBy
-    ld de, _SCRN0 + 32 * 5 + 2
-    call PutStr
     ld hl, strPort
-    ld de, _SCRN0 + 32 * 7 + 2
+    ld de, _SCRN0 + 32 * 6 + 2
     call PutStr
     ld hl, strSC
     ld de, _SCRN0
@@ -78,39 +75,20 @@ ShowTitle:
     ld de, wHi
     ld hl, _SCRN0 + 13
     call HudNum
-    ld hl, strSuperior
+    ld hl, strCred1
     ld de, _SCRN0 + 32 * 14 + 1
+    call PutStr
+    ld hl, strCred2
+    ld de, _SCRN0 + 32 * 15 + 3
+    call PutStr
+    ld hl, strCred3
+    ld de, _SCRN0 + 32 * 16 + 1
     call PutStr
     ld a, T_FLAG
     ld hl, _SCRN0 + 32 * 17
     ld [hli], a
     ld [hli], a
     ld [hl], a
-    ld hl, titleStars
-    ld de, wStars
-.st:
-    ld a, [hli]
-    cp $FF
-    jr z, .stdone
-    add a
-    add a
-    add a
-    ld b, a                     ; y = row * 8
-    ld a, [hli]
-    add a
-    add a
-    add a
-    ld c, a                     ; x = col * 8
-    ld a, [hli]
-    and 7
-    add c
-    ld [de], a                  ; x with a little jitter
-    inc de
-    ld a, b
-    ld [de], a
-    inc de
-    jr .st
-.stdone:
     ld hl, strStartGame
     ld de, _SCRN0 + 32 * 9 + 5
     call PutStr
@@ -122,6 +100,8 @@ ShowTitle:
     ld [wState], a
     ld [wPause], a
     ld [wPAlive], a
+    inc a
+    ldh [hTitle], a
     call MenuDraw
     xor a
     ld [wIdle], a
@@ -145,58 +125,55 @@ strHI:      db "HI", 0
 strPort:    db "GAME BOY EDITION", 0
 strPress:   db "PRESS  START", 0
 strHiTitle: db "HI-SCORE", 0
-strBy:      db "BY KEVIN EDWARDS", 0
-strSuperior: db "SUPERIOR SOFTWARE", 0
+strCred1:   db "BBC ORIGINAL 1986", 0
+strCred2:   db "KEVIN EDWARDS", 0
+strCred3:   db "SUPERIOR SOFTWARE", 0
 
-; Falling title stars as sprites, behind the logo/text (BG priority). Even-numbered stars fall
-; every frame and use the second palette, odd ones every other frame: a little parallax.
-TitleStars:
-    ld hl, wStars
-    ld a, [wFrame]
-    ld [wTmp], a
-    ld a, 0
-    ld [wTmp + 1], a
-.l: ld a, [wTmp + 1]
-    cp 18
-    ret nc
-    ld a, [hli]
-    ld c, a                     ; x
-    ld a, [hl]
-    ld b, a                     ; y
-    ld a, [wTmp + 1]
-    bit 0, a
-    jr z, .fast
-    ld a, [wTmp]
-    and 1
-    jr z, .nomove
-.fast:
-    inc b
-    ld a, b
-    cp 144
-    jr c, .nomove
-    ld b, 0
-.nomove:
-    ld a, b
-    ld [hli], a
-    ld a, b
-    add 16
-    ld b, a
-    ld a, c
-    add 8
-    ld c, a
-    ld a, [wTmp + 1]
-    and 1
-    swap a                      ; palette select bit 4
-    or %10000000                ; behind BG colours 1-3
-    ld e, a
-    ld d, SPR_STAR
+; Title screen split: text rows come from the $9800 map, the gaps show the scrolling star map at
+; $9C00 (same stars and speed as in the game). Each entry: line where the next split happens (the blank bottom line of a text row,
+; so the mid-line map switch is invisible), then 1 = stars.
+titleSegs:
+    db 7, 0,  15, 1,  31, 0,  47, 1,  55, 0,  71, 1,  79, 0,  87, 1,  95, 0,  111, 1,  200, 0
+
+; Called from the STAT interrupt (af already pushed) while the title is shown
+TitleStat:
+    push de
     push hl
-    call PutObj
-    pop hl
-    ld a, [wTmp + 1]
+    ldh a, [hSeg]
     inc a
-    ld [wTmp + 1], a
-    jr .l
+    ldh [hSeg], a
+    add a
+    ld e, a
+    ld d, 0
+    ld hl, titleSegs
+    add hl, de
+    ld a, [hli]
+    ld e, a
+    ld a, [hl]
+    ld d, a
+.hb:
+    ldh a, [rSTAT]
+    and 3
+    jr nz, .hb
+    ld a, d
+    or a
+    jr z, .text
+    ldh a, [hStarY]
+    ldh [rSCY], a
+    ld a, LCDC_TSTAR
+    jr .set
+.text:
+    xor a
+    ldh [rSCY], a
+    ld a, LCDC_FULL
+.set:
+    ldh [rLCDC], a
+    ld a, e
+    ldh [rLYC], a
+    pop hl
+    pop de
+    pop af
+    reti
 
 ; Occasional shine across the GALAFORCE logo (called in VBlank). A 512-frame cycle; during the
 ; first 80 frames of every second 256 a lighter band sweeps over the logo one tile column per
@@ -304,11 +281,4 @@ ResetLogoTiles:
     ld [wTwk + 1], a
     ret
 
-; row, column, star tile (T_STAR0 + n) for the title starfield
-titleStars:
-    db 1, 4, T_STAR0 + 0,  1, 15, T_STAR0 + 3,  4, 9, T_STAR0 + 1,  4, 18, T_STAR0 + 5
-    db 6, 2, T_STAR0 + 4,  6, 13, T_STAR0 + 2,  8, 7, T_STAR0 + 6,  8, 17, T_STAR0 + 0
-    db 10, 1, T_STAR0 + 3,  10, 12, T_STAR0 + 1,  12, 5, T_STAR0 + 5,  12, 16, T_STAR0 + 7
-    db 13, 9, T_STAR0 + 2,  15, 3, T_STAR0 + 6,  15, 14, T_STAR0 + 4,  16, 8, T_STAR0 + 0
-    db 16, 18, T_STAR0 + 3,  1, 10, T_STAR0 + 7
-    db $FF
+

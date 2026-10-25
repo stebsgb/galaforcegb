@@ -118,7 +118,6 @@ wOptLives:  db            ; options: starting spare lives 1..5
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
 wTwk:       dw            ; title logo shine cycle counter
-wStars:      ds 36         ; title stars: 18 x (x, y)
 wCheat:      db            ; 1 once the options cheat code has been entered
 wCheatPos:  db
 wStartLvl:  db            ; cheat: starting level 1..16
@@ -129,6 +128,8 @@ hDma:       ds 10
 hVBlank:    db
 hSplit:     db
 hStarY:     db
+hTitle:     db            ; 1 while the title screen (split star background) is shown
+hSeg:       db            ; title split segment index
 
 ; ===================================================== vectors
 SECTION "vec_vbl", ROM0[$40]
@@ -147,6 +148,19 @@ VBlankISR:
     push af
     ld a, 1
     ldh [hVBlank], a
+    ldh a, [hTitle]
+    or a
+    jr z, .game
+    xor a
+    ldh [hSeg], a
+    ldh [rSCY], a
+    ld a, LCDC_FULL
+    ldh [rLCDC], a
+    ld a, 7
+    ldh [rLYC], a
+    pop af
+    reti
+.game:
     ldh a, [hSplit]
     or a
     jr z, .full
@@ -169,6 +183,9 @@ VBlankISR:
 
 StatISR:
     push af
+    ldh a, [hTitle]
+    or a
+    jp nz, TitleStat
     ldh a, [rLYC]
     cp 8
     jr nz, .bottom

@@ -39,6 +39,13 @@ GameUpdate:
     jp StateGameOver
 
 StateTitle:
+    ld a, [wFrame]
+    and 1
+    jr nz, .nos
+    ldh a, [hStarY]
+    dec a
+    ldh [hStarY], a
+.nos:
     call TitleMenuKeys
     ld a, [wKeysNew]
     or a
@@ -232,6 +239,7 @@ StartGame:
     ld a, 1
     ldh [hSplit], a
     xor a
+    ldh [hTitle], a
     ldh [hStarY], a
     ld a, ST_WAVEMSG
     ld [wState], a

@@ -16,7 +16,7 @@ BuildOAM:
 
     ld a, [wState]
     or a
-    jp z, TitleStars
+    ret z                       ; title: no objects
     cp ST_OPTIONS
     jp z, BuildOptionsOAM
     call DrawMessages

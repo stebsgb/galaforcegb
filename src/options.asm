@@ -90,6 +90,7 @@ ShowOptions:
     call PutStr
     xor a
     ldh [hSplit], a
+    ldh [hTitle], a
     ld [wPause], a
     ld [wPAlive], a
     ld [wMenuSel], a

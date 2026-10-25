@@ -24,7 +24,7 @@
 - Fixed: alien vertical speed was half of the original; collision now uses the drawn Y (no deaths without contact).
 - Stage 12 done: options menu (lives 1-5, black/white background), persisted in SRAM `$A010`; `tools/optionstest.py` passes. Makefile now rebuilds gfx when `font5x7.py` changes.
 - White background is now the default (a saved setting still overrides it).
-- Title redesigned after the BBC original: HUD line (SC/HI) on top, wide red-style GALAFORCE, BY KEVIN EDWARDS, SUPERIOR SOFTWARE, flags bottom-left, static starfield.
-- Title stars are falling sprites (behind the logo and text via BG priority, two speeds and palettes), like the in-game starfield; the logo also gets an occasional grey shine sweep (every ~8.5 s).
+- Title redesigned after the BBC original: HUD line (SC/HI) on top, wide red-style GALAFORCE, GAME BOY EDITION headline, small credit (BBC ORIGINAL 1986 / KEVIN EDWARDS / SUPERIOR SOFTWARE) for the original author and publisher, flags bottom-left.
+- Title stars use the in-game method: the $9C00 star map scrolled via LYC splits between the text rows (TitleStat, waits for HBlank before switching); the logo also gets an occasional grey shine sweep (every ~8.5 s).
 - Enemy bombs (all waves; extra random bombs from wave 4) redrawn as a fat 6x12 solid drop in the max-contrast palette index, visible in both background modes.
 - Cheat: on the options screen press UP UP DOWN DOWN SELECT to reveal a LEVEL row (1-16, not saved; demo ignores it). Test: tools/cheattest.py.
