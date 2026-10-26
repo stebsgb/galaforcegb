@@ -62,3 +62,10 @@ The wave 3 spawner released children in a tight wall. Skipping spawns made it to
 ## Alien bomb speeds
 
 Slow alien bombs used to alternate 1 and 2 px per frame (about 1.5 px average), so the two kinds looked almost the same. Slow bombs now move a steady 1 px per frame. Fast bombs alternate 3 and 4 px per frame (3.5 average), a little faster than the original 3 px and slower than a steady 4 px. Both are in `UpdateBombs` in `src/bombs.asm`. The original BBC bombs move 8 units per move, so these are tuning values, not a direct match.
+
+## Last-life sound timing
+
+The "last life" sound played after a fixed countdown (170 frames) set when the last life was lost. It did not follow the length of the Lost a Life tune, so it could play late. It now waits for the tune to finish: `StateWaveMsg` in `src/game.asm` polls `MusicBusy` (`src/audio.asm`), which returns once every tune channel has ended. The wave-message timer is held until the sound has played, so the next wave does not start early. `wLastSfx` is now a pending flag (`src/main.asm`).
+
+While the last-life sound plays, `aSfxLock` blocks other effects so bullets and explosions cannot cut it off. Music also overrides effects while a tune is still playing, and the Lost a Life tune cuts off the death explosion.
+

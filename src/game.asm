@@ -90,6 +90,19 @@ StateTitle:
 StateWaveMsg:
     call PlayerUpdate
     call UpdateBullets
+    ld a, [wLastSfx]            ; last life pending: wait until the Lost a Life tune has finished
+    or a
+    jr z, .nosfx
+    call MusicBusy              ; Z once every channel has ended
+    jr nz, .nosfx
+    xor a
+    ld [wLastSfx], a
+    ld a, SFX_LAST
+    call Sfx
+.nosfx:
+    ld a, [wLastSfx]
+    or a
+    ret nz                      ; hold the wave message (timer frozen) until the last-life sound has played
     ld hl, wTimer
     ld a, [hl]
     sub 1
@@ -182,8 +195,8 @@ StatePDead:
     dec a
     ld [wLives], a
     jr nz, .more
-    ld a, SFX_LAST
-    call Sfx
+    ld a, 1                     ; last life: play SFX_LAST once the Lost a Life tune has finished
+    ld [wLastSfx], a
 .more:
     ld hl, wWaveOff
     dec [hl]                    ; replay the pattern that was in progress
@@ -690,8 +703,10 @@ PlayerDie:
     ld bc, 24
     xor a
     call MemFill
-    ld a, SFX_PDEATH
-    jp Sfx
+    ld a, SFX_PDEATH                ; the explosion starts first...
+    call Sfx
+    ld a, MUS_LOST                  ; ...then Lost a Life (as in INIT.asm die_loop) cuts it off
+    jp MusicPlay
 
 ; ---------------------------------------------------------------- score
 ; AddScore: a = value (x10 points) added at the tens digit

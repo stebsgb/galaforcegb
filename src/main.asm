@@ -107,6 +107,7 @@ wStill:     db
 wSpawnCD:   db            ; wave 3: frames until the spawner may release another child
 wLastPX:    db
 wFireCD:    db
+wLastSfx:   db            ; 1 = last-life sound pending; it plays once the Lost a Life tune has finished
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw

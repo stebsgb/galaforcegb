@@ -14,6 +14,7 @@ aSfxOn:   db
 aSfxCt:   db
 aSfxPtr:  dw
 aPaused:  db
+aSfxLock: db              ; 1 while the last-life sound plays: nothing (bullets, explosions) can cut it
 
 SECTION "audio", ROM0
 
@@ -43,6 +44,7 @@ AudioInit:
     ld [aAcc], a
     ld [aGateCt], a
     ld [aSfxOn], a
+    ld [aSfxLock], a
     ld [aPaused], a
     ret
 
@@ -85,10 +87,9 @@ MusicPlay:
     ld [aAcc], a
     ld [aGateCt], a
     ldh [rNR30], a
-    ld a, [aSfxOn]
-    or a
-    ret nz
     xor a
+    ld [aSfxOn], a                  ; the tune takes the pulse channels back, cutting any effect (e.g. the death explosion)
+    ld [aSfxLock], a                ; a tune also releases the last-life lock
     ldh [rNR12], a
     ldh [rNR22], a
     ret
@@ -291,12 +292,32 @@ Sfx:
     ld a, [wDemo]                   ; no sound effects during the attract demo
     or a
     jr nz, .out
+    ld a, [aSfxLock]                ; the last-life sound blocks every other effect until it ends
+    or a
+    jr nz, .out
+    ld a, b                         ; the last-life effect cuts the tune rather than being dropped by it
+    cp SFX_LAST
+    jr z, .force
+    ld a, [aPlay]                   ; music overrides every effect while a tune is still playing
+    or a
+    jr z, .free
+    push bc
+    call MusicBusy                  ; Z when every channel has finished
+    pop bc
+    jr nz, .out
+.free:
     ld a, b                         ; FIRE (0) and BOOM (1) always start, cutting any effect that is sounding
     cp 2
     jr c, .go
     ld a, [aSfxOn]
     or a
     jr nz, .out
+    jr .go
+.force:                             ; stop the tune's channels, then play the effect
+    xor a
+    ld [aPlay], a
+    ld [aGateCt], a
+    ldh [rNR30], a
 .go:
     ld a, b
     add a
@@ -310,6 +331,12 @@ Sfx:
     ld [aSfxPtr + 1], a
     ld a, 1
     ld [aSfxOn], a
+    ld a, b
+    cp SFX_LAST
+    jr nz, .nolock
+    ld a, 1
+    ld [aSfxLock], a
+.nolock:
     xor a
     ld [aSfxCt], a
     call SfxStep
@@ -367,6 +394,7 @@ SfxStep:
 .end:
     xor a
     ld [aSfxOn], a
+    ld [aSfxLock], a
     ret
 
 INCLUDE "music.inc"

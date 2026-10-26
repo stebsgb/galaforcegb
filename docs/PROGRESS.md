@@ -62,3 +62,7 @@
 - CONTINUES is a standard option under LIVES (0..3, default 1, saved to SRAM with the other options; the save layout gained a byte, so older saves reset to defaults). At game over with continues left the screen asks CONTINUE? >YES / NO (d-pad toggles, A/START confirms): YES refills lives, keeps the score and replays the wave; NO ends the game. Only the WAVE row stays behind the cheat. tools/continuetest.py covers it.
 
 - Alien bomb speeds tuned in `UpdateBombs` (`src/bombs.asm`): slow bombs 1 px per frame, fast bombs 3 or 4 px per frame alternating (3.5 average). Checked by build only; please play-test on ZONE 04 (cheat LEVEL 4).
+
+- Last-life sound: plays once the Lost a Life tune has finished (polled via `MusicBusy`), replacing the fixed 170-frame delay. Recorded in `docs/FIXES.md`. Build checked; not yet play-tested.
+- Version 0.0.11 released: see `docs/RELEASE-v0.0.11.md`.
+

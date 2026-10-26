@@ -7,7 +7,7 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 | ![Title screen into the demo, white background](docs/screenshots/demo.gif) | ![Title screen into the demo, dark background](docs/screenshots/demo_dark.gif) |
 
 ## Build
-`make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-0.0.10.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
+`make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-0.0.11.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
 `make god` builds `galaforce_god.gb` (cannot die; used for soak tests and gameplay screenshots).
 
 ## Controls
