@@ -142,7 +142,7 @@ ShowTitle:
     xor a
     ldh [rIF], a
     ei
-    ld a, MUS_DEMO
+    ld a, MUS_DEMO                  ; title plays the attract-mode tune
     call MusicPlay
     jp FadeIn
 

@@ -46,8 +46,23 @@ AudioInit:
     ld [aPaused], a
     ret
 
-; a = tune id
+; a = tune id. During the attract demo there is no music: any tune request silences the channels.
 MusicPlay:
+    push af
+    ld a, [wDemo]
+    or a
+    jr z, .play
+    pop af
+    xor a
+    ld [aPlay], a
+    ld [aAcc], a
+    ld [aGateCt], a
+    ldh [rNR30], a
+    ldh [rNR12], a
+    ldh [rNR22], a
+    ret
+.play:
+    pop af
     swap a
     ld e, a
     ld d, 0
@@ -273,6 +288,9 @@ Sfx:
     push de
     push hl
     ld b, a
+    ld a, [wDemo]                   ; no sound effects during the attract demo
+    or a
+    jr nz, .out
     or a
     jr nz, .go
     ld a, [aSfxOn]

@@ -342,7 +342,7 @@ StartGame:
     ld a, 3
     ld [wFade], a
     call ApplyPalettes
-    ld a, MUS_START
+    ld a, MUS_START                 ; a real game plays the start tune (the demo is silenced in MusicPlay)
     call MusicPlay
     jp FadeIn
 
