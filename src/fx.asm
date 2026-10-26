@@ -32,7 +32,12 @@ FadeOut:
     ld a, b
     cp 4
     jr c, .s
-    ret
+    ; sprites faded with the palette; now clear them so nothing carries onto the next screen
+    ld hl, wOAM
+    ld bc, 160
+    xor a
+    call MemFill
+    jp hDma
 
 ; Fade from black to normal
 FadeIn:
