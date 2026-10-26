@@ -107,7 +107,7 @@ up = []
 for hz, w in ((523, 5), (659, 5), (784, 5), (1047, 24)):
     up += p1(0, 0x80, 0xD3, hz, w)
 sfx["ONEUP"] = up
-sfx["HIT"] = nz(0xC1, 0x33) + p2(0x80, 0xC1, 900, 6)
+sfx["HIT"] = nz(0xF1, 0x33) + p2(0x80, 0xF1, 900, 6)     # full-volume attack, like FIRE (was 0xC1)
 last = []
 for i in range(14):
     last += p2(0x40, 0xD2, 440 if i % 2 == 0 else 330, 6)

@@ -291,8 +291,9 @@ Sfx:
     ld a, [wDemo]                   ; no sound effects during the attract demo
     or a
     jr nz, .out
-    or a
-    jr nz, .go
+    ld a, b                         ; FIRE (0) and BOOM (1) always start, cutting any effect that is sounding
+    cp 2
+    jr c, .go
     ld a, [aSfxOn]
     or a
     jr nz, .out
