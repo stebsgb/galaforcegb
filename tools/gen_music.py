@@ -100,7 +100,7 @@ def nz(env, nr43, w=0):
     return [2, 0, env, nr43, 0x80, w]
 
 sfx = {}
-sfx["FIRE"] = p1(0x1C, 0x80, 0xA1, 1400, 10)
+sfx["FIRE"] = p1(0x1C, 0x80, 0xF1, 1400, 4)     # short, full-volume click: fast attack, 4-frame wait
 sfx["BOOM"] = nz(0xF3, 0x64) + p1(0x2B, 0x80, 0xF3, 200, 24)
 sfx["PDEATH"] = nz(0xF7, 0x75) + p1(0x3B, 0x80, 0xF6, 600, 90)
 up = []
