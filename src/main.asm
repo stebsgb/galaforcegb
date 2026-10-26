@@ -96,6 +96,7 @@ wScore:     ds 7
 wHi:        ds 7
 wLives:     db
 wWave:      db
+wBest:      db              ; highest wave reached since power-on (WRAM only, never saved; cleared at boot)
 wExtra:     db
 wPX:        db
 wPY:        db

@@ -81,11 +81,41 @@ ShowTitle:
     ld hl, strCred3
     ld de, _SCRN0 + 32 * 16 + 1
     call PutStr
-    ld a, T_FLAG
+    ; one flag per five levels reached (level = wWave + 1), up to three.
+    ; wWave 0 (nothing played yet) draws no flags.
+    ld a, [wBest]
+    or a
+    jr z, .noflags
+    inc a                       ; a = level
+    add 4
+    ld d, 0
+.div5:
+    cp 5
+    jr c, .flagsdone
+    sub 5
+    inc d
+    jr .div5
+.flagsdone:                     ; d = ceil(level / 5)
+    ld a, d
+    cp 4
+    jr c, .capped
+    ld a, 3
+.capped:
+    ld d, a
+    jr .drawflags
+.noflags:
+    ld d, 0
+.drawflags:
     ld hl, _SCRN0 + 32 * 17
+.flagloop:
+    ld a, d
+    or a
+    jr z, .flagend
+    ld a, T_FLAG
     ld [hli], a
-    ld [hli], a
-    ld [hl], a
+    dec d
+    jr .flagloop
+.flagend:
     ld hl, strStartGame
     ld de, _SCRN0 + 32 * 9 + 5
     call PutStr

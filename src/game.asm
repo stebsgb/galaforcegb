@@ -451,6 +451,13 @@ WaveControl:
 .end:
     ld hl, wWave
     inc [hl]
+    ld a, [wWave]               ; best wave reached since power-on (for the title flags)
+    ld hl, wBest
+    cp [hl]
+    jr c, .nobest
+    jr z, .nobest
+    ld [hl], a
+.nobest:
     ld a, 1
     ld [wWaveOff], a
     call LoadWavePtr
