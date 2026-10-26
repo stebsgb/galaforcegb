@@ -38,4 +38,9 @@ god: $(SRCS) $(GEN) | build
 clean:
 	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym
 
-.PHONY: all clean god
+boss: $(SRCS) $(GEN) | build
+	$(RGBASM) -DBOSSTEST -I src/ -I build/ -o build/boss.o src/main.asm
+	$(RGBLINK) -p 0xFF -n galaforce_boss.sym -o galaforce_boss.gb build/boss.o
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
+
+.PHONY: all clean god boss

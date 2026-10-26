@@ -316,6 +316,10 @@ StartGame:
     ld a, [wDemo]
     or a
     jr nz, .w0
+IF DEF(BOSSTEST)
+    ld a, 4                     ; temp boss build: start on ZONE 04 (wave 3, boss pattern 45)
+    ld [wStartLvl], a
+ENDC
     ld a, [wStartLvl]
     dec a
     ld [wWave], a

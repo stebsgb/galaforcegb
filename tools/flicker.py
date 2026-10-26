@@ -16,6 +16,7 @@ tap("down"); tap("a", 90)
 for k in ("up", "up", "down", "down", "select"): tap(k)
 tap("up"); tap("up"); tap("down"); tap("down")
 while m[S["wMenuSel"]] != 2: tap("up" if m[S["wMenuSel"]] > 2 else "down")
+tap("down")  # LEVEL row (index 3); BG row is 2
 for _ in range(lvl - 1): tap("right")
 tap("b", 100); tap("up"); tap("start", 5)
 A = S["wAliens"]
