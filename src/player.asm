@@ -99,7 +99,7 @@ UpdateBullets:
     inc hl
     inc hl
     ld a, [hl]
-    sub 3
+    sub 4                       ; player bullet: 4 px per frame (was 3)
     jr c, .kill
     ld [hl], a
     dec hl
