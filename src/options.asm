@@ -138,6 +138,10 @@ StateOptions:
     and PAD_B
     jr nz, LeaveOptions
     call CheatCheck
+    call SecretCheck
+    ld a, [wState]
+    cp ST_SECRET
+    ret z                           ; the secret screen took over
     ld a, b
     and PAD_UP
     jr z, .nu

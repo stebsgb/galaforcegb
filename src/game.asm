@@ -6,6 +6,8 @@ GameUpdate:
     jp z, StateTitle
     cp ST_OPTIONS
     jp z, StateOptions
+    cp ST_SECRET
+    jp z, StateSecret
     ; pause toggle
     cp ST_GAMEOVER
     jr z, .nopause

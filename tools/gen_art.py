@@ -98,6 +98,28 @@ for y in range(0, 8):
     for x in (3, 4): bul[y][x] = 1 if y < 3 else 2
 syms.append(("SPR_BULLET", len(obj) // 16))
 obj.extend(tile8(bul[0:8]) + tile8(bul[8:16]))
+# secret-screen sparkle: 4-point star, 8x16 object. Bright core, thin arms; shrinks for the grow/fade frames.
+spk = [[0]*8 for _ in range(16)]
+for y in range(16):
+    for x in range(8):
+        dx, dy = x - 3.5, y - 7.5
+        if abs(dx) < 0.6 or abs(dy) < 0.6:
+            d = abs(dx) + abs(dy)
+            if d <= 5.5:
+                spk[y][x] = 1
+spk[7][3] = spk[7][4] = spk[8][3] = spk[8][4] = 3       # bright centre
+syms.append(("SPR_SPARK", len(obj) // 16))
+obj.extend(tile8(spk[0:8]) + tile8(spk[8:16]))
+# small version (arms half as long) for the grow and shrink frames
+sps = [[0]*8 for _ in range(16)]
+for y in range(16):
+    for x in range(8):
+        dx, dy = x - 3.5, y - 7.5
+        if (abs(dx) < 0.6 or abs(dy) < 0.6) and abs(dx) + abs(dy) <= 2.5:
+            sps[y][x] = 1
+sps[7][3] = sps[7][4] = sps[8][3] = sps[8][4] = 3
+syms.append(("SPR_SPARK_S", len(obj) // 16))
+obj.extend(tile8(sps[0:8]) + tile8(sps[8:16]))
 # alien bomb: diamond/drop, 4 wide
 bomb = [[0]*8 for _ in range(16)]
 shape = ["..##..", "..##..", ".####.", ".####.", "######", "######", "######", "######", "######", "######", ".####.", "..##.."]   # fat 6x12 drop, round head at the bottom
@@ -158,6 +180,27 @@ flag = ["#####...", "######..", "#####...", "#.......", "#.......", "#.......", 
 for icon in (life, flag):
     px = [[3 if ch == "#" else 0 for ch in r] for r in icon]
     bg_add(tile8(px))
+# big heart for the secret screen: 32x32 px = 4x4 BG tiles, row-major (secret.asm draws them)
+HEART0 = BG0 + len(bg) // 16
+heart = [[0]*32 for _ in range(32)]
+for yy in range(32):
+    for xx in range(32):
+        X = (xx - 15.5) / 13.0
+        Y = (15.5 - yy) / 13.0
+        if (X*X + Y*Y - 1)**3 - X*X*Y**3 <= 0:
+            heart[yy][xx] = 3                              # solid fill
+for yy in range(32):
+    for xx in range(32):
+        if heart[yy][xx]:
+            edge = any(not (0 <= yy+dy < 32 and 0 <= xx+dx < 32) or not heart[yy+dy][xx+dx]
+                       for dy, dx in ((1,0),(-1,0),(0,1),(0,-1)))
+            if edge:
+                heart[yy][xx] = 2                          # rim
+            if 6 <= yy <= 11 and 6 <= xx <= 11:
+                heart[yy][xx] = 1                          # shine on the upper-left lobe
+for r in range(4):
+    for c in range(4):
+        bg_add(tile8([row[c*8:c*8+8] for row in heart[r*8:r*8+8]]))
 BG_TILES = len(bg) // 16
 assert BG0 + BG_TILES <= 128
 
@@ -183,6 +226,7 @@ L.append("DEF T_FONT0 EQU %d" % FONT0)
 L.append("DEF T_BIG0 EQU %d" % BIG0)
 L.append("DEF T_LIFE EQU %d" % ICON0)
 L.append("DEF T_FLAG EQU %d" % (ICON0 + 1))
+L.append("DEF HEART0 EQU %d" % HEART0)
 for ch in "0123456789":
     pass
 L.append('; font char order: %r' % CHARS)

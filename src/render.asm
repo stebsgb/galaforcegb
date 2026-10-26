@@ -19,6 +19,8 @@ BuildOAM:
     ret z                       ; title: no objects
     cp ST_OPTIONS
     jp z, BuildOptionsOAM
+    cp ST_SECRET
+    jp z, DrawSecretFX              ; the secret screen: sparkles only (BG for the rest)
     call DrawMessages
 
     ; --- player / player explosion

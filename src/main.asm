@@ -45,6 +45,7 @@ DEF ST_PLAY     EQU 2
 DEF ST_PDEAD    EQU 3
 DEF ST_GAMEOVER EQU 4
 DEF ST_OPTIONS  EQU 5
+DEF ST_SECRET   EQU 6
 
 ; ---- sound effect ids ----
 DEF SFX_FIRE    EQU 0
@@ -53,6 +54,7 @@ DEF SFX_PDEATH  EQU 2
 DEF SFX_1UP     EQU 3
 DEF SFX_HIT     EQU 4
 DEF SFX_LAST    EQU 5
+DEF SFX_SPARKLE EQU 6
 
 ; ---- music ids ----
 DEF MUS_START   EQU 0
@@ -133,6 +135,7 @@ wConts:     db            ; continues left in this game
 wAsk:       db            ; 1 while the game-over screen asks CONTINUE?
 wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
+wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
 
 SECTION "hram", HRAM
 hDma:       ds 10
@@ -444,4 +447,5 @@ INCLUDE "audio.asm"
 INCLUDE "save.asm"
 INCLUDE "fx.asm"
 INCLUDE "options.asm"
+INCLUDE "secret.asm"
 INCLUDE "data.inc"

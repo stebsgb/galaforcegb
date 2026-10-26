@@ -112,8 +112,13 @@ last = []
 for i in range(14):
     last += p2(0x40, 0xD2, 440 if i % 2 == 0 else 330, 6)
 sfx["LAST"] = last
+# sparkle: a fast trill on pulse 2 (alternating two high notes) under a short noise shimmer
+sparkle = nz(0x81, 0x27)
+for i in range(8):
+    sparkle += p2(0x80, 0x82, 1568 if i % 2 == 0 else 1975, 2)
+sfx["SPARKLE"] = sparkle
 
-SFX_ORDER = ["FIRE", "BOOM", "PDEATH", "ONEUP", "HIT", "LAST"]    # SFX_* ids in main.asm
+SFX_ORDER = ["FIRE", "BOOM", "PDEATH", "ONEUP", "HIT", "LAST", "SPARKLE"]    # SFX_* ids in main.asm
 out.append("SfxTable:")
 out.append("    dw " + ",".join("Sfx_" + n for n in SFX_ORDER))
 for n in SFX_ORDER:
