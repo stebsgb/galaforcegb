@@ -2,14 +2,9 @@
 
 A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (1986). It keeps the original formations, flight paths and wave data, redraws the sprites for the Game Boy's small 4-shade screen, and recreates the original music and sound effects. Written in SM83 assembly (RGBDS) with Python tooling. Original source: https://github.com/KevEdwards/Galaforce1BBC (cloned to `ref/`). Personal project, not for distribution.
 
-![Title screen into the demo](docs/screenshots/demo.gif)
-
-| White background (default) | Black background |
+| White background (default) | Dark (black) background |
 |---|---|
-| ![Title](docs/screenshots/title_white.png) | ![Title](docs/screenshots/title_black.png) |
-| ![Wave 1](docs/screenshots/wave1_white.png) | ![Wave 1](docs/screenshots/wave1_black.png) |
-| ![Wave 5](docs/screenshots/wave5_white.png) | ![Wave 5](docs/screenshots/wave5_black.png) |
-| ![Options](docs/screenshots/options_white.png) | ![Options](docs/screenshots/options_black.png) |
+| ![Title screen into the demo, white background](docs/screenshots/demo.gif) | ![Title screen into the demo, dark background](docs/screenshots/demo_dark.gif) |
 
 ## Build
 `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-0.0.10.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
@@ -25,5 +20,5 @@ D-pad move, A fire, Start pause, A+B+Select+Start soft reset. Title and options:
 - Screen fades, pause dimming, hi-score saved to SRAM.
 
 ## Tools and docs
-`tools/`: `bot.py`, `audit.py`, `savetest.py`, `demotest.py`, `optionstest.py`, `cheattest.py`, `continuetest.py`, `makegif.py` (records `docs/screenshots/demo.gif`), `sfxlevels.py`, `audiotest.py`, `snap.py`, `screenshots.py` (regenerates `docs/screenshots/`; run `make` and `make god` first).
+`tools/`: `bot.py`, `audit.py`, `savetest.py`, `demotest.py`, `optionstest.py`, `cheattest.py`, `continuetest.py`, `makegif.py` (records `docs/screenshots/demo.gif`; `BG=0 python tools/makegif.py` records `demo_dark.gif` on the black background), `sfxlevels.py`, `audiotest.py`, `snap.py`, `screenshots.py` (saves PNG screenshots to `docs/screenshots/`; run `make` and `make god` first).
 See `00-OVERVIEW.md`, `docs/DECISIONS.md` and `docs/PROGRESS.md` and `docs/FIXES.md` (playtest fixes). Stage plans `STAGE-01` to `STAGE-12` are all done.

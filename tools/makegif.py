@@ -5,9 +5,12 @@ sys.path.insert(0, "tools")
 from PIL import Image
 from run_headless import make, load_syms
 rom = "galaforce.gb"
+BG = int(os.environ.get("BG", "1"))            # 1 white (default), 0 black (dark mode)
+OUT = "docs/screenshots/demo.gif" if BG else "docs/screenshots/demo_dark.gif"
 if os.path.exists(rom + ".ram"): os.remove(rom + ".ram")
 pb = make(rom); S = load_syms(rom); m = pb.memory
 while m[S["wFrame"]] < 20: pb.tick(1, False)
+m[S["wOptBg"]] = BG
 STEP = 4
 frames = []
 def grab():
@@ -24,5 +27,5 @@ for _ in range(60 * 14 // STEP):                 # about 14 s of demo play
     grab()
 pal = frames[0].quantize(4) if False else None
 q = [f.convert("P", palette=Image.ADAPTIVE, colors=4) for f in frames]
-q[0].save("docs/screenshots/demo.gif", save_all=True, append_images=q[1:], duration=STEP * 1000 // 60, loop=0, optimize=True)
-print(len(frames), "frames, demo starts at", start, os.path.getsize("docs/screenshots/demo.gif") // 1024, "KB")
+q[0].save(OUT, save_all=True, append_images=q[1:], duration=STEP * 1000 // 60, loop=0, optimize=True)
+print(len(frames), "frames, demo starts at", start, os.path.getsize(OUT) // 1024, "KB ->", OUT)
