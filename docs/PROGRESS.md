@@ -12,10 +12,11 @@
 | 08 Audio | done (custom driver; effects/music mix tuned for punch) |
 | 09 Screens, hi-score, polish | title centred; SRAM hi-score; pause dim; soft reset; death flash. Demo mode and fades done in Stage 11 |
 | 11 Demo & fades | done (`src/fx.asm`, `tools/demotest.py`) |
-| 12 Options menu | planned (`STAGE-12-OPTIONS-MENU.md`) |
+| 12 Options menu | done (`STAGE-12-OPTIONS-MENU.md`; lives, continues, background, cheat LEVEL row) |
 | 10 Tuning & QA | partial: 200k-frame god-mode soak (79 waves, no crash), frame-drop and sprite-per-line audit done. See QA below |
 
 ## QA notes
+- Zone naming: the wave-entry message reads `ENTERING` / `ZONE nn` (two lines, always two digits). The options cheat row reads `ZONE nn` (1-16). Verified by build and `tools/cheattest.py`; screenshots captured to check layout.
 - Soak: `make god && .venv/bin/python tools/bot.py galaforce_god.gb 200000` reached wave 79, min SP 0xFFF2, no crash.
 - Frame budget: `tools/audit.py galaforce_god.gb 60000` -> 2 dropped frames in 60000.
 - Sprites per line: max 28 objects on a line (hardware shows 10) in the densest waves; overflow in ~30% of frames of the bot run, shared by rotation flicker. Possible improvement: cap simultaneous aliens per row or prioritise by type.

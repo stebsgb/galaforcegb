@@ -262,15 +262,14 @@ DrawMessages:
     ld c, 92
     jp DrawText
 .wave:
-    ld hl, txtWave
-    ld b, 80
-    ld c, 65                    ; centred for one digit
-    ld a, [wWave]
-    cp 9
-    jr c, .one
-    ld c, 61                    ; two digits
-.one:
-    call DrawText               ; c = x after "WAVE "
+    ld hl, txtEntering
+    ld b, 72
+    ld c, 56
+    call DrawText
+    ld hl, txtZone
+    ld b, 88
+    ld c, 60
+    call DrawText               ; c = x after "ZONE "
     ld a, [wWave]
     inc a
     cp 100
@@ -285,8 +284,6 @@ DrawMessages:
     jr .t
 .u: ld e, a
     ld a, d
-    or a
-    jr z, .ones
     inc a
     add a
     add T_OFONT0
@@ -307,7 +304,8 @@ DrawMessages:
     ld e, 0
     jp PutObj
 
-txtWave:     db "WAVE ", 0
+txtEntering: db "ENTERING", 0
+txtZone:     db "ZONE ", 0
 txtGameOver: db "GAME OVER", 0
 txtContinue: db "CONTINUE?", 0
 txtYesSel:   db ">YES", 0

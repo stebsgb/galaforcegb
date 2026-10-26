@@ -371,10 +371,12 @@ MenuDraw:
     ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 15
     cp 10
     jr nc, .two
-    add T_FONT0 + 1
+    ld c, a
+    ld a, T_FONT0 + 1               ; tens digit is 0
     ld [de], a
     inc de
-    ld a, T_FONT0
+    ld a, c
+    add T_FONT0 + 1
     ld [de], a
     jr .nolv
 .two:
@@ -460,7 +462,7 @@ BuildOptionsOAM:
 
 strOptions:    db "OPTIONS", 0
 strLives:      db "LIVES", 0
-strLevel:      db "WAVE ", 0
+strLevel:      db "ZONE ", 0
 strCont:       db "CONTINUES", 0
 strBackground: db "BACKGROUND", 0
 strBack:       db "BACK", 0

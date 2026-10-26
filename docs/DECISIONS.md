@@ -12,6 +12,7 @@ These supersede the original stage plans where they differ.
 | Mapper | none | **MBC1 + RAM + battery, 8 KB SRAM**, ROM still 32 KB | Hi-score persistence (`$A000`: "GF", 7 digits, checksum). |
 | Sprite art | - | Original 12x16 art redrawn at 16x16; symmetric originals are mirrored exactly. Source art is stored upside down, so all sprites are flipped vertically. | User requirement. |
 | Sprites/line | - | Hardware limit 10 objects per line = 5 aliens abreast. OAM start slot rotates each frame so overflow flickers fairly. | Measured: dense waves exceed it for ~30% of frames (see QA). |
+| Wave entry text | `WAVE n` | Two centred lines: `ENTERING` (y 72) over `ZONE nn` (y 88), number always two digits. Options row also reads `ZONE nn`. | Original-style zone naming. One 15-glyph line would exceed the 10-sprites-per-line limit and drop characters, so it is split. |
 
 ## Controls
 D-pad move, A fire, Start pause (screen dims), A+B+Select+Start soft reset.
