@@ -58,3 +58,7 @@ The alien that spawns children in wave 2's last formation hovers at original y=3
 ## Wave 3 spawner
 
 The wave 3 spawner released children in a tight wall. Skipping spawns made it too easy, so every spawn is kept but a 8-frame pause (22 was too easy) (`wSpawnCD`) is enforced between them on that wave only; a blocked spawn retries next frame (`.newalien` in `src/aliens.asm`).
+
+## Alien bomb speeds
+
+Slow alien bombs used to alternate 1 and 2 px per frame (about 1.5 px average), so the two kinds looked almost the same. Slow bombs now move a steady 1 px per frame. Fast bombs alternate 3 and 4 px per frame (3.5 average), a little faster than the original 3 px and slower than a steady 4 px. Both are in `UpdateBombs` in `src/bombs.asm`. The original BBC bombs move 8 units per move, so these are tuning values, not a direct match.
