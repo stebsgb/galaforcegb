@@ -711,6 +711,13 @@ PlayerDie:
     call MemFill
     ld a, SFX_PDEATH                ; the explosion starts first...
     call Sfx
+    ld a, [wLives]                  ; fatal hit (no lives left) with no continues: straight to GAME OVER
+    or a
+    jr nz, .tune
+    ld a, [wConts]
+    or a
+    ret z                           ; game over: no Lost a Life tune, MUS_OVER starts at .over
+.tune:
     ld a, MUS_LOST                  ; ...then Lost a Life (as in INIT.asm die_loop) cuts it off
     jp MusicPlay
 

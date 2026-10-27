@@ -3,7 +3,7 @@ RGBLINK ?= rgblink
 RGBFIX ?= rgbfix
 PY ?= .venv/bin/python
 OUT = galaforce.gb
-VERSION = 0.0.11
+VERSION = 0.0.13
 VOUT = galaforce-$(VERSION).gb
 SRCS = $(wildcard src/*.asm)
 GEN = build/data.inc build/gfx.inc build/music.inc
@@ -35,12 +35,20 @@ god: $(SRCS) $(GEN) | build
 	$(RGBLINK) -p 0xFF -n galaforce_god.sym -o galaforce_god.gb build/god.o
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_god.gb
 
+SNAP = galaforce-$(VERSION)-SNAPSHOT.gb
+
+# Development build from the current source. Does not touch galaforce.gb or the versioned release copy.
+snapshot: $(SRCS) $(GEN) | build
+	$(RGBASM) -I src/ -I build/ -o build/snapshot.o src/main.asm
+	$(RGBLINK) -p 0xFF -n galaforce_snapshot.sym -o $(SNAP) build/snapshot.o
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 $(SNAP)
+
 clean:
-	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym
+	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym galaforce_snapshot.sym
 
 boss: $(SRCS) $(GEN) | build
 	$(RGBASM) -DBOSSTEST -I src/ -I build/ -o build/boss.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_boss.sym -o galaforce_boss.gb build/boss.o
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
 
-.PHONY: all clean god boss
+.PHONY: all clean god boss snapshot
