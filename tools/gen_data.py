@@ -71,11 +71,9 @@ BOSS_A, BOSS_B = 80, 128
 # Boss pattern 45: the original rows are 24 y-units apart, which FieldY squeezes to ~8 px, so two 16 px rows
 # overlap and put ~20 objects on a scanline (limit 10 = heavy flicker). Re-space the rows so they do not overlap.
 patts_out = [list(q) for q in patts]
-# Path 0 (used by patterns 0 and 1, so waves 0 and 8): lengthen the two 3-step vertical legs
-# (direction 12) to 4 steps for a slightly larger y swing. Opcode 131 = move 3, 132 = move 4.
+# Path 0 (used by patterns 0 and 1, so waves 0 and 8): keep the original 3-step vertical legs.
+# A 4-step leg (opcode 132) caused a lone alien to appear clipped at the right edge on Zone 1 (v0.0.10).
 assert pdats[0][2] == 131 and pdats[0][11] == 131, pdats[0]
-pdats[0][2] = 132
-pdats[0][11] = 132
 assert patts_out[45][0] == 3 and patts_out[45][10] == 72 and patts_out[45][18] == 96
 patts_out[45][10] = BOSS_A
 patts_out[45][18] = BOSS_B

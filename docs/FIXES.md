@@ -26,7 +26,7 @@ Wave numbers are 1-based as the player sees them; "wave index" is 0-based as in 
 
 - The original rows are 24 y-units apart, which `FieldY` squeezes to about 8 px, so the two rows of 16 and 15 aliens overlap and put about 20 objects on one scanline. The hardware limit is 10, which caused heavy flicker.
 - Each row is thinned to 8 aliens at double spacing, and the rows sit at y 80 and 128 (the original second row is at 96, but that flickers badly).
-- The alien OAM draw order alternates halves every frame (`ROTSTEP=7`, `ALSTEP=1`), so an overflowing alien is hidden for 1 frame at a time, not many. This removes the slow shimmer.
+- The alien OAM draw order alternates halves every frame (`ROTSTEP=7`, `ALSTEP=9`), so an overflowing alien is hidden for only 1-3 frames at a time, not many. This removes the slow shimmer.
 - `tools/flicker.py` measures this: about 33 % of alien-frames are partly hidden on the boss wave, against 61 % at first.
 - Data lives in `tools/gen_data.py` (`BOSS_A`, `BOSS_B`, `patts_out`).
 
