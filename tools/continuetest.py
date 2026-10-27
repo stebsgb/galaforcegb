@@ -26,7 +26,7 @@ tap("right"); pb.tick(10, False)
 tap("a", 5)
 for _ in range(100): pb.tick(1, False)
 print("state", m[S["wState"]], "lives", m[S["wLives"]], "conts", m[S["wConts"]])
-assert m[S["wState"]] in (1, 2) and m[S["wLives"]] == 3 and m[S["wConts"]] == 0
+assert m[S["wState"]] in (1, 2) and m[S["wLives"]] == 2 and m[S["wConts"]] == 0  # setting 3 = 3 ships: 2 spare + 1 in play
 m[S["wLives"]] = 0; m[S["wState"]] = 3; m[S["wPExpT"]] = 0; m[S["wPExp"]] = 0; m[S["wPAlive"]] = 0
 for _ in range(200): pb.tick(1, False)
 print("state", m[S["wState"]], "ask", m[S["wAsk"]])

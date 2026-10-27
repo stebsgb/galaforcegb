@@ -257,7 +257,8 @@ StateGameOver:
     jr nz, .no
     ld hl, wConts               ; yes: refill the lives and replay this wave
     dec [hl]
-    ld a, [wOptLives]
+    ld a, [wOptLives]           ; the option is total lives; wLives counts spares (the ship in play is extra)
+    dec a
     ld [wLives], a
     xor a
     ld [wAsk], a
@@ -310,6 +311,7 @@ StartGame:
     xor a
     call MemFill
     ld a, [wOptLives]
+    dec a                           ; option = total lives; wLives = spares (the ship in play is extra)
     ld [wLives], a
     xor a
     ld [wWave], a

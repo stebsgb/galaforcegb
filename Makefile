@@ -8,7 +8,7 @@ VOUT = galaforce-$(VERSION).gb
 SRCS = $(wildcard src/*.asm)
 GEN = build/data.inc build/gfx.inc build/music.inc
 
-all: $(OUT) $(VOUT)
+all: snapshot
 
 $(VOUT): $(OUT)
 	cp $(OUT) $(VOUT)

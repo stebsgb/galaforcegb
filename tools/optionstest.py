@@ -40,7 +40,7 @@ tap(pb, "up"); shot(pb, "opt_title_white.png")
 tap(pb, "start", 5)
 for _ in range(200): pb.tick(1, False)
 print("lives", m[S["wLives"]], "state", m[S["wState"]])
-assert m[S["wLives"]] == 5
+assert m[S["wLives"]] == 4  # spares: setting 5 = 5 ships total (4 spare + 1 in play)
 shot(pb, "opt_game_white.png")
 pb.stop(save=True) if hasattr(pb, "stop") else None
 pb2 = boot(); m = pb2.memory
