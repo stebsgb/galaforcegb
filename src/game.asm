@@ -226,7 +226,11 @@ StatePDead:
     ld [wAsk], a
     ld a, [wDemo]
     or a
-    call z, SaveHi
+    jr nz, .nohi
+    ld a, [wHiOK]               ; hi-score only if no continue was used this game
+    or a
+    call nz, SaveHi
+.nohi:
     ld a, ST_GAMEOVER
     ld [wState], a
     ld a, LOW(240)
@@ -255,6 +259,8 @@ StateGameOver:
     ld a, [wContSel]
     or a
     jr nz, .no
+    xor a
+    ld [wHiOK], a               ; a continue was used: this game cannot record a hi-score
     ld hl, wConts               ; yes: refill the lives and replay this wave
     dec [hl]
     ld a, [wOptLives]           ; the option is total lives; wLives counts spares (the ship in play is extra)
@@ -279,7 +285,11 @@ StateGameOver:
     ld [wAsk], a
     ld a, [wDemo]
     or a
-    call z, SaveHi
+    jr nz, .nohi2
+    ld a, [wHiOK]               ; hi-score only if no continue was used this game
+    or a
+    call nz, SaveHi
+.nohi2:
     ld a, LOW(240)
     ld [wTimer], a
     xor a
@@ -334,6 +344,15 @@ ENDC
     xor a
     ld [wAsk], a
     ld [wContSel], a
+    ld a, [wStartLvl]           ; a fresh game may record a hi-score until a continue is taken...
+    cp 2
+    jr c, .hiok                 ; ...but only when starting on ZONE 01 (no cheat level select)
+    xor a
+    jr .sethi
+.hiok:
+    ld a, 1
+.sethi:
+    ld [wHiOK], a
     ld a, [wDemo]
     or a
     ld a, 0

@@ -133,6 +133,7 @@ wStartLvl:  db            ; cheat: starting level 1..16
 wOptCont:   db            ; options: continues per game 0..3
 wConts:     db            ; continues left in this game
 wAsk:       db            ; 1 while the game-over screen asks CONTINUE?
+wHiOK:      db            ; 1 = this game may record a hi-score (0 once a continue is used)
 wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
@@ -276,14 +277,15 @@ Start:
     ld [wCheat], a
     ld [wCheatPos], a
     ld [wAsk], a
+    xor a
+    ld [wOptCont], a            ; default: no continues (so hi-scores are recorded)
     ld a, 1
-    ld [wOptCont], a
     ld [wStartLvl], a
     ld a, 1                     ; white background by default
     ld [wOptBg], a
     call InitHiScore
-    call LoadHi
     call LoadOptions
+    call LoadHi                 ; after the options: the hi-score slot depends on the continue setting
     call AudioInit
     xor a
     ldh [rIF], a

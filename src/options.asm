@@ -127,6 +127,7 @@ ShowOptions:
 ; Leaves the options screen: saves, fades, back to the title with OPTIONS selected
 LeaveOptions:
     call SaveOptions
+    call LoadHi                 ; show the hi-score for the chosen continue setting
     call FadeOut
     ld a, 1
     ld [wMenuSel], a

@@ -5,10 +5,51 @@ DEF SRAM_BASE EQU $A000
 SECTION "save", ROM0
 
 ; Loads the saved hi-score into wHi if the SRAM block is valid.
+; Returns hl = SRAM address of the hi-score slot for the current continue setting (wOptCont 0..3).
+; Slot 0 is at $A000 (as before); slots 1..3 at $A020, $A030, $A040.
+SlotPtr:
+    ld a, [wOptCont]
+    ld e, a
+    ld d, 0
+    ld hl, slot_sram
+    add hl, de
+    add hl, de
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a
+    ret
+
+slot_sram: dw SRAM_BASE, SRAM_BASE + $20, SRAM_BASE + $30, SRAM_BASE + $40
+
+; Default hi-score for each continue setting (0..3), used when no valid score is saved.
+; Digits are 7 bytes, most significant first (index 0 = 10^6, index 2 = 10^4, index 1 = 10^5).
+; 0 continues = 30000, 1 = 60000, 2 = 75000, 3 = 100000.
+default_hi: db 0,0,3,0,0,0,0    ; 30000
+            db 0,0,6,0,0,0,0    ; 60000
+            db 0,0,7,5,0,0,0    ; 75000
+            db 0,1,0,0,0,0,0    ; 100000
+
+ResetHi:
+    ld a, [wOptCont]
+    and 3
+    ld e, a
+    ld d, 0
+    ld hl, default_hi
+    add hl, de
+    add hl, de
+    add hl, de
+    add hl, de
+    add hl, de
+    add hl, de
+    add hl, de
+    ld de, wHi
+    ld bc, 7
+    jp MemCopy
+
 LoadHi:
     ld a, $0A
     ld [$0000], a
-    ld hl, SRAM_BASE
+    call SlotPtr
     ld a, [hli]
     cp $47
     jr nz, .bad
@@ -37,6 +78,7 @@ LoadHi:
 .badpop:
     pop hl
 .bad:
+    call ResetHi
 .off:
     xor a
     ld [$0000], a
@@ -45,7 +87,7 @@ LoadHi:
 SaveHi:
     ld a, $0A
     ld [$0000], a
-    ld hl, SRAM_BASE
+    call SlotPtr
     ld a, $47
     ld [hli], a
     ld a, $46
