@@ -24,7 +24,7 @@ assert m[S["wState"]] == 5, m[S["wState"]]
 shot(pb, "opt_screen_black.png")
 tap(pb, "right"); tap(pb, "right"); tap(pb, "right"); assert m[S["wOptLives"]] == 5
 assert m[S["wOptBg"]] == 1  # default is white
-assert m[S["wOptCont"]] == 1  # default 1, no cheat needed
+assert m[S["wOptCont"]] == 0  # default 0 (no continues), no cheat needed
 tap(pb, "down"); assert m[S["wMenuSel"]] == 1
 for _ in range(5): tap(pb, "right")
 assert m[S["wOptCont"]] == 3
