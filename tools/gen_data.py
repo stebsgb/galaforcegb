@@ -36,7 +36,7 @@ def idx_key(prefix, d):
 patts = [patt[k] for _, k in idx_key("patt", patt)]
 pdats = [patdat[k] for _, k in idx_key("patdat", patdat)]
 waves = [wave[k] for _, k in idx_key("wave", wave)]
-assert len(patts) == 46 and len(pdats) == 30 and len(waves) == 16, (len(patts), len(pdats), len(waves))
+assert len(patts) == 46 and len(pdats) == 31 and len(waves) == 16, (len(patts), len(pdats), len(waves))
 
 
 # validate patt layout
@@ -77,14 +77,17 @@ patts_out = [list(q) for q in patts]
 assert pdats[0][2] == 131 and pdats[0][11] == 131, pdats[0]
 assert patts_out[45][0] == 3 and patts_out[45][10] == 72 and patts_out[45][18] == 96
 patts_out[45][10] = BOSS_A
+# spacing/delay
 patts_out[45][18] = BOSS_B
+# number of aliens
 # ...and thin each row to 8 aliens at double spacing (<= 5 abreast = 10 objects per line, the hardware limit)
 assert patts_out[45][11] == 4 and patts_out[45][19] == 4
-patts_out[45][11] = patts_out[45][19] = 8
-patts_out[45][12] = patts_out[45][20] = 8
-# Boss screen only: the cyan row directly under the boss uses path 28 (wobble + gentle drift)
-# instead of path 27 to match the observed under-boss movement pattern.
-assert patts_out[45][16] == 27
+patts_out[45][11] = 10  # spacing/delay
+patts_out[45][12] = 16 # number of aliens
+patts_out[45][19] = 8
+patts_out[45][20] = 8
+# Boss screen only: keep the top single stream on path 29; only the looping stream uses path 28.
+patts_out[45][8] = 29
 patts_out[45][16] = 28
 # CHECKPOINT (boss one-line, pattern 45, path 28): one under-boss stream only, boss waves use pattern 45 only
 assert patts_out[45][0] == 2 or patts_out[45][0] == 3
