@@ -177,7 +177,9 @@ while len(bg) // 16 < 100 - BG0: bg_add(blank())
 ICON0 = BG0 + len(bg) // 16
 life = ["...##...", "...##...", "..####..", "..####..", ".######.", "########", "##.##.##", "#..##..#"]
 flag = ["#####...", "######..", "#####...", "#.......", "#.......", "#.......", "#.......", "#......."]
-for icon in (life, flag):
+# smart bomb: round body with a fuse (HUD icon, lower status)
+bomb_icon = ["...#....", "..#.....", "..####..", ".######.", ".######.", ".######.", "..####..", "........"]
+for icon in (life, flag, bomb_icon):
     px = [[3 if ch == "#" else 0 for ch in r] for r in icon]
     bg_add(tile8(px))
 # big heart for the secret screen: 32x32 px = 4x4 BG tiles, row-major (secret.asm draws them)
@@ -226,6 +228,7 @@ L.append("DEF T_FONT0 EQU %d" % FONT0)
 L.append("DEF T_BIG0 EQU %d" % BIG0)
 L.append("DEF T_LIFE EQU %d" % ICON0)
 L.append("DEF T_FLAG EQU %d" % (ICON0 + 1))
+L.append("DEF T_BOMB EQU %d" % (ICON0 + 2))
 L.append("DEF HEART0 EQU %d" % HEART0)
 for ch in "0123456789":
     pass

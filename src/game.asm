@@ -123,6 +123,10 @@ StateWaveMsg:
 
 StatePlay:
     call PlayerUpdate
+    ; SELECT: smart bomb (if held and the ship is alive). Hits every live alien.
+    ld a, [wKeysNew]
+    and PAD_SELECT
+    call nz, UseBomb
     ld a, [wPX]
     ld hl, wLastPX
     cp [hl]
@@ -324,6 +328,8 @@ StartGame:
     dec a                           ; option = total lives; wLives = spares (the ship in play is extra)
     ld [wLives], a
     xor a
+    ld [wBombs], a                  ; a new game starts with no bombs (PlayerReset gives the first)
+    xor a
     ld [wWave], a
     ld a, [wDemo]
     or a
@@ -389,6 +395,13 @@ ENDC
 PlayerReset:
     xor a
     ld [wStill], a
+    ; each new life starts with one smart bomb; a player already holding two keeps two (max 2)
+    ld a, [wBombs]
+    cp 1
+    jr nc, .bombs_ok
+    ld a, 1
+    ld [wBombs], a
+.bombs_ok:
     ld a, 76
     ld [wPX], a
     ld a, 110
@@ -557,8 +570,52 @@ AlienHit:                       ; c = alien slot
     pop bc
     ret
 
+; UseBomb: SELECT pressed in play. Uses one smart bomb if held and the ship is alive.
+; Every live alien takes two hits; the boss (type 5) takes one. Dying aliens are skipped.
+UseBomb:
+    ld a, [wBombs]
+    or a
+    ret z
+    ld a, [wPAlive]
+    or a
+    ret z
+    ld a, [wBombs]
+    dec a
+    ld [wBombs], a
+    ld c, 0
+.ub:
+    ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80                          ; live alien only
+    jr nz, .ubn
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5                            ; boss: one hit
+    jr z, .ubboss
+    call AlienHit                   ; two hits for everything else
+    ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80
+    jr nz, .ubn
+    call AlienHit
+    jr .ubn
+.ubboss:
+    call AlienHit
+.ubn:
+    ld a, c
+    add 16
+    ld c, a
+    cp MAXAL * 16
+    jr c, .ub
+    ret
+
 CollideBullets:
     ld b, 0
+
 .bl:
     ld hl, wBul
     ld e, b

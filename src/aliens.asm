@@ -93,9 +93,20 @@ UpdateAliens:
     xor a
     ld [hl], a
     jr .next
+.bossfree:                      ; boss death finished: grant one smart bomb (max 2), then free the slot
+    ld a, [wBombs]
+    cp 2
+    jr nc, .bombcap
+    inc a
+    ld [wBombs], a
+.bombcap:
+    ld l, c
+    xor a
+    ld [hl], a
+    jr .next
 .bossdie:                       ; boss: 24 frame steps (~1.6 s) of chained explosions, a boom every 4th step
     cp 24
-    jr nc, .free
+    jr nc, .bossfree
     and 3
     jr nz, .next
     push bc
@@ -417,7 +428,6 @@ AlienFetch:
     xor a
     ld [hl], a
     jp .again
-
 .newalien:
     call ReadPat
     ld b, a

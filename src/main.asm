@@ -110,6 +110,7 @@ wSpawnCD:   db            ; wave 3: frames until the spawner may release another
 wLastPX:    db
 wFireCD:    db
 wLastSfx:   db            ; 1 = last-life sound pending; it plays once the Lost a Life tune has finished
+wBombs:     db            ; smart bombs held: 0, 1 or 2 (SELECT uses one; boss kill adds one, capped at 2)
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
