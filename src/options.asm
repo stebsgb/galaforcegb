@@ -38,7 +38,7 @@ LoadOptions:
     ld a, b
     or a
     jr z, .off
-    cp 6
+    cp 8
     jr nc, .off
     ld a, c
     cp 2
@@ -207,7 +207,7 @@ StateOptions:
     ret z
     ld hl, wOptLives
     ld a, [hl]
-    cp 5
+    cp 7
     ret nc
     inc [hl]
     ld a, 1

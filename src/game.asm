@@ -123,10 +123,49 @@ StateWaveMsg:
 
 StatePlay:
     call PlayerUpdate
-    ; SELECT: smart bomb (if held and the ship is alive). Hits every live alien.
+    ; smart-bomb screen flash: alternate the background palette like the life-lost flash
+    ld a, [wBombFlash]
+    or a
+    jr z, .noflash
+    dec a
+    ld [wBombFlash], a
+    ld a, [wOptBg]
+    or a
+    ld b, %00011011                 ; black background, normal
+    ld c, %00011001                 ; black background, flash
+    jr z, .flpal
+    ld b, %11100100                 ; white background, normal
+    ld c, %11100110                 ; white background, flash
+.flpal:
+    ld a, [wBombFlash]
+    and 2
+    jr z, .flset
+    ld b, c
+.flset:
+    ld a, b
+    ldh [rBGP], a
+    jr .afterflash
+.noflash:
+    ld a, [wOptBg]
+    or a
+    ld a, %00011011
+    jr z, .restore
+    ld a, %11100100
+.restore:
+    ldh [rBGP], a
+.afterflash:
+    ; Smart bomb: SELECT, or A and B pressed together this frame. Hits every live alien.
     ld a, [wKeysNew]
+    ld b, a
     and PAD_SELECT
-    call nz, UseBomb
+    jr nz, .bombkey
+    ld a, b
+    and PAD_A | PAD_B
+    cp PAD_A | PAD_B                ; A alone or B alone does not trigger it
+    jr nz, .nobomb
+.bombkey:
+    call UseBomb
+.nobomb:
     ld a, [wPX]
     ld hl, wLastPX
     cp [hl]
@@ -579,9 +618,20 @@ UseBomb:
     ld a, [wPAlive]
     or a
     ret z
+    ; no bomb while a tune is still playing (Z from MusicBusy = every channel has finished)
+    ld a, [aPlay]
+    or a
+    jr z, .musicdone
+    call MusicBusy
+    ret nz
+.musicdone:
     ld a, [wBombs]
     dec a
     ld [wBombs], a
+    ld a, SFX_BOMB
+    call Sfx
+    ld a, 12
+    ld [wBombFlash], a             ; screen flash for 12 frames, same length as the life-lost flash
     ld c, 0
 .ub:
     ld h, HIGH(wAliens)

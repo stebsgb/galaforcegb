@@ -102,6 +102,10 @@ def nz(env, nr43, w=0):
 sfx = {}
 sfx["FIRE"] = p1(0x1C, 0x80, 0xF1, 1400, 4)     # short, full-volume click: fast attack, 4-frame wait
 sfx["BOOM"] = nz(0xF3, 0x64) + p1(0x2B, 0x80, 0xF3, 200, 24)
+# smart bomb: longer, deeper boom (low rumbling noise held longer, then a slower low pulse tail)
+# smart bomb: lower-pitched white noise (NR43 0x74 = 15-bit, clock shift 7, divisor 4) layered with a
+# pulse whose frequency drops (NR10 0x3D = sweep down, shift 5, every 3 steps) from 500 Hz
+sfx["BOMB"] = nz(0xF7, 0x74, 12) + p1(0x3D, 0x80, 0xF6, 500, 20)
 sfx["PDEATH"] = nz(0xF7, 0x75) + p1(0x3B, 0x80, 0xF6, 600, 90)
 up = []
 for hz, w in ((523, 5), (659, 5), (784, 5), (1047, 24)):
@@ -118,7 +122,7 @@ for i in range(8):
     sparkle += p2(0x80, 0x82, 1568 if i % 2 == 0 else 1975, 2)
 sfx["SPARKLE"] = sparkle
 
-SFX_ORDER = ["FIRE", "BOOM", "PDEATH", "ONEUP", "HIT", "LAST", "SPARKLE"]    # SFX_* ids in main.asm
+SFX_ORDER = ["FIRE", "BOOM", "PDEATH", "ONEUP", "HIT", "LAST", "SPARKLE", "BOMB"]    # SFX_* ids in main.asm
 out.append("SfxTable:")
 out.append("    dw " + ",".join("Sfx_" + n for n in SFX_ORDER))
 for n in SFX_ORDER:

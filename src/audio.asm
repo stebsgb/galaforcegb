@@ -15,6 +15,7 @@ aSfxCt:   db
 aSfxPtr:  dw
 aPaused:  db
 aSfxLock: db              ; 1 while the last-life sound plays: nothing (bullets, explosions) can cut it
+aSfxId:   db              ; id of the effect now playing (SFX_*), so a BOOM can be held off while the bomb sounds
 
 SECTION "audio", ROM0
 
@@ -298,6 +299,8 @@ Sfx:
     ld a, b                         ; the last-life effect cuts the tune rather than being dropped by it
     cp SFX_LAST
     jr z, .force
+    cp SFX_BOMB                     ; the smart bomb cuts whatever is playing so it is always heard
+    jr z, .force
     ld a, [aPlay]                   ; music overrides every effect while a tune is still playing
     or a
     jr z, .free
@@ -306,9 +309,18 @@ Sfx:
     pop bc
     jr nz, .out
 .free:
-    ld a, b                         ; FIRE (0) and BOOM (1) always start, cutting any effect that is sounding
+    ld a, b
     cp 2
-    jr c, .go
+    jr nc, .notfb
+    ; FIRE (0) and BOOM (1) start at once, but not while the smart bomb is still sounding
+    ld a, [aSfxOn]
+    or a
+    jr z, .go
+    ld a, [aSfxId]
+    cp SFX_BOMB
+    jr z, .out
+    jr .go
+.notfb:
     ld a, [aSfxOn]
     or a
     jr nz, .out
@@ -320,6 +332,7 @@ Sfx:
     ldh [rNR30], a
 .go:
     ld a, b
+    ld [aSfxId], a
     add a
     ld e, a
     ld d, 0

@@ -2,7 +2,7 @@
 
 A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (1986). It keeps the original formations, flight paths and wave data, redraws the sprites for the Game Boy's small 4-shade screen, and recreates the original music and sound effects. Written in SM83 assembly (RGBDS) with Python tooling. Original source: https://github.com/KevEdwards/Galaforce1BBC (cloned to `ref/`). Personal project, not for distribution.
 
-| White background (default) | Dark (black) background |
+| White background | Dark (black) background (default) |
 |---|---|
 | ![Title screen into the demo, white background](docs/screenshots/demo.gif) | ![Title screen into the demo, dark background](docs/screenshots/demo_dark.gif) |
 
@@ -24,7 +24,7 @@ D-pad move, A fire, Start pause, A+B+Select+Start soft reset. Title and options:
 
 ## Features
 - Title styled after the BBC original (SC/HI line, wide logo, small "BBC original 1986 / Kevin Edwards / Superior Software" credit, flags, occasional shine sweep, and the same scrolling starfield as in-game. Idles into a self-playing demo after about 13 s; any Start returns.
-- Options: starting lives 1-5, continues 0-3 (default 1; game over asks CONTINUE? YES/NO and replays the wave with full lives) and a black or white background (white is the default); all saved in battery RAM.
+- Options: starting lives 1-5, continues 0-3 (default 1; game over asks CONTINUE? YES/NO and replays the wave with full lives) and a black or white background (black is the default); all saved in battery RAM.
 - Cheat: on the options screen press Up, Up, Down, Down, Select to unlock a ZONE row (1-16, not saved). Each wave is shown as `ENTERING` / `ZONE nn`.
 - Screen fades, pause dimming, hi-score saved to SRAM.
 
