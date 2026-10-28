@@ -155,7 +155,9 @@ if BOSS_SINGLE_STREAM:
     patts_out[45] = patts_out[45][:17]
     patts_out[45][0] = 2
 for _wi in (3, 7, 11, 15):
-    waves[_wi] = [waves[_wi][0], 45, 255]
+    # keep the original pattern list for this boss wave, so the earlier patterns play first;
+    # the original list already ends with pattern 45 before the 255 terminator
+    assert waves[_wi][-2] == 45 and waves[_wi][-1] == 255, waves[_wi]
 
 L.append("patt_ptrs:\n" + "\n".join("  dw patt%d" % i for i in range(len(patts))))
 for i, p in enumerate(patts_out):
