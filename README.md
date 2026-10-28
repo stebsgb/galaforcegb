@@ -7,6 +7,15 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 | ![Title screen into the demo, white background](docs/screenshots/demo.gif) | ![Title screen into the demo, dark background](docs/screenshots/demo_dark.gif) |
 
 ## Build
+### Setup: reference source (`ref/`)
+`ref/` holds the original BBC source and data (`ref/src/PATT.asm`, `PATDAT.asm`, `WAVE.asm`, `ROUT1.asm`, ...). The build reads it, so it must be present. It is a separate git repo and is not tracked by this one (`.gitignore` lists `ref/`). From the project root:
+
+```
+git clone https://github.com/KevEdwards/Galaforce1BBC ref
+```
+
+If `ref/` is missing, `tools/gen_data.py` and the other generators fail with a file-not-found error.
+
 `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-0.0.11.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
 `make god` builds `galaforce_god.gb` (cannot die; used for soak tests and gameplay screenshots).
 
