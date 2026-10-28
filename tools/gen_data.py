@@ -38,6 +38,7 @@ pdats = [patdat[k] for _, k in idx_key("patdat", patdat)]
 waves = [wave[k] for _, k in idx_key("wave", wave)]
 assert len(patts) == 46 and len(pdats) == 30 and len(waves) == 16, (len(patts), len(pdats), len(waves))
 
+
 # validate patt layout
 for i, p in enumerate(patts):
     n = p[0]
@@ -81,6 +82,17 @@ patts_out[45][18] = BOSS_B
 assert patts_out[45][11] == 4 and patts_out[45][19] == 4
 patts_out[45][11] = patts_out[45][19] = 8
 patts_out[45][12] = patts_out[45][20] = 8
+# Boss screen only: the cyan row directly under the boss uses path 28 (wobble + gentle drift)
+# instead of path 27 to match the observed under-boss movement pattern.
+assert patts_out[45][16] == 27
+patts_out[45][16] = 28
+# CHECKPOINT (boss one-line, pattern 45, path 28): one under-boss stream only, boss waves use pattern 45 only
+assert patts_out[45][0] == 2 or patts_out[45][0] == 3
+patts_out[45] = patts_out[45][:17]
+patts_out[45][0] = 2
+for _wi in (3, 7, 11, 15):
+    waves[_wi] = [waves[_wi][0], 45, 255]
+
 L.append("patt_ptrs:\n" + "\n".join("  dw patt%d" % i for i in range(len(patts))))
 for i, p in enumerate(patts_out):
     L.append("patt%d:  db %s" % (i, ",".join(str(b) for b in p)))
