@@ -23,12 +23,11 @@ slot_sram: dw SRAM_BASE, SRAM_BASE + $20, SRAM_BASE + $30, SRAM_BASE + $40
 
 ; Default hi-score for each continue setting (0..3), used when no valid score is saved.
 ; Digits are 7 bytes, most significant first (index 0 = 10^6, index 2 = 10^4, index 1 = 10^5).
-; 0 continues = 30000, 1 = 60000, 2 = 75000, 3 = 100000.
-default_hi: db 0,0,3,0,0,0,0    ; 30000
+; 0 continues = 15000, 1 = 30000, 2 = 50000, 3 = 60000.
+default_hi: db 0,0,1,5,0,0,0    ; 15000
+            db 0,0,3,0,0,0,0    ; 30000
+            db 0,0,5,0,0,0,0    ; 50000
             db 0,0,6,0,0,0,0    ; 60000
-            db 0,0,7,5,0,0,0    ; 75000
-            db 0,1,0,0,0,0,0    ; 100000
-
 ResetHi:
     ld a, [wOptCont]
     and 3

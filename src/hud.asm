@@ -83,4 +83,29 @@ HudUpdate:
     ld [hli], a
     dec c
     jr nz, .life
+    ; smart bombs (lower status, left of the lives): icon, then "X" and count when there are two
+    ld hl, _SCRN0 + 4
+    ld a, [wBombs]
+    or a
+    jr z, .nobomb
+    ld a, T_BOMB
+    ld [hli], a
+    ld a, [wBombs]
+    cp 2
+    jr nz, .bombone
+    ld a, T_FONT0 + 34              ; 'X' (font order: space=0, '0'=1 ... 'X'=34)
+    ld [hli], a
+    ld a, T_FONT0 + 3               ; digit 2 ('0'=1, so '2'=3)
+    ld [hl], a
+    ret
+.bombone:
+    ld a, T_BLANK
+    ld [hli], a
+    ld [hl], a
+    ret
+.nobomb:
+    ld a, T_BLANK
+    ld [hli], a
+    ld [hli], a
+    ld [hl], a
     ret

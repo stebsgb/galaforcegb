@@ -123,6 +123,49 @@ StateWaveMsg:
 
 StatePlay:
     call PlayerUpdate
+    ; smart-bomb screen flash: alternate the background palette like the life-lost flash
+    ld a, [wBombFlash]
+    or a
+    jr z, .noflash
+    dec a
+    ld [wBombFlash], a
+    ld a, [wOptBg]
+    or a
+    ld b, %00011011                 ; black background, normal
+    ld c, %00011001                 ; black background, flash
+    jr z, .flpal
+    ld b, %11100100                 ; white background, normal
+    ld c, %11100110                 ; white background, flash
+.flpal:
+    ld a, [wBombFlash]
+    and 2
+    jr z, .flset
+    ld b, c
+.flset:
+    ld a, b
+    ldh [rBGP], a
+    jr .afterflash
+.noflash:
+    ld a, [wOptBg]
+    or a
+    ld a, %00011011
+    jr z, .restore
+    ld a, %11100100
+.restore:
+    ldh [rBGP], a
+.afterflash:
+    ; Smart bomb: SELECT, or A and B pressed together this frame. Hits every live alien.
+    ld a, [wKeysNew]
+    ld b, a
+    and PAD_SELECT
+    jr nz, .bombkey
+    ld a, b
+    and PAD_A | PAD_B
+    cp PAD_A | PAD_B                ; A alone or B alone does not trigger it
+    jr nz, .nobomb
+.bombkey:
+    call UseBomb
+.nobomb:
     ld a, [wPX]
     ld hl, wLastPX
     cp [hl]
@@ -324,6 +367,8 @@ StartGame:
     dec a                           ; option = total lives; wLives = spares (the ship in play is extra)
     ld [wLives], a
     xor a
+    ld [wBombs], a                  ; a new game starts with no bombs (PlayerReset gives the first)
+    xor a
     ld [wWave], a
     ld a, [wDemo]
     or a
@@ -389,6 +434,13 @@ ENDC
 PlayerReset:
     xor a
     ld [wStill], a
+    ; each new life starts with one smart bomb; a player already holding two keeps two (max 2)
+    ld a, [wBombs]
+    cp 1
+    jr nc, .bombs_ok
+    ld a, 1
+    ld [wBombs], a
+.bombs_ok:
     ld a, 76
     ld [wPX], a
     ld a, 110
@@ -557,8 +609,65 @@ AlienHit:                       ; c = alien slot
     pop bc
     ret
 
+; UseBomb: SELECT pressed in play. Uses one smart bomb if held and the ship is alive.
+; Every live alien takes two hits; the boss (type 5) takes one. Dying aliens are skipped.
+UseBomb:
+    ld a, [wBombs]
+    or a
+    ret z
+    ld a, [wPAlive]
+    or a
+    ret z
+    ; no bomb while a tune is still playing (Z from MusicBusy = every channel has finished)
+    ld a, [aPlay]
+    or a
+    jr z, .musicdone
+    call MusicBusy
+    ret nz
+.musicdone:
+    ld a, [wBombs]
+    dec a
+    ld [wBombs], a
+    ld a, SFX_BOMB
+    call Sfx
+    ld a, 12
+    ld [wBombFlash], a             ; screen flash for 12 frames, same length as the life-lost flash
+    ld c, 0
+.ub:
+    ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80                          ; live alien only
+    jr nz, .ubn
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5                            ; boss: one hit
+    jr z, .ubboss
+    call AlienHit                   ; first hit for every other alien
+IF BOMB_HITS == 2                   ; original two-hit bomb: switch BOMB_HITS to 2 in main.asm to use it
+    ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80                          ; only if the first hit did not kill it
+    jr nz, .ubn
+    call AlienHit
+ENDC
+    jr .ubn
+.ubboss:
+    call AlienHit
+.ubn:
+    ld a, c
+    add 16
+    ld c, a
+    cp MAXAL * 16
+    jr c, .ub
+    ret
+
 CollideBullets:
     ld b, 0
+
 .bl:
     ld hl, wBul
     ld e, b

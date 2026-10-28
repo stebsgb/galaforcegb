@@ -55,6 +55,8 @@ DEF SFX_1UP     EQU 3
 DEF SFX_HIT     EQU 4
 DEF SFX_LAST    EQU 5
 DEF SFX_SPARKLE EQU 6
+DEF SFX_BOMB    EQU 7
+DEF BOMB_HITS   EQU 1           ; smart bomb hits per alien: 1 (current) or 2 (original; kept in UseBomb)
 
 ; ---- music ids ----
 DEF MUS_START   EQU 0
@@ -110,6 +112,8 @@ wSpawnCD:   db            ; wave 3: frames until the spawner may release another
 wLastPX:    db
 wFireCD:    db
 wLastSfx:   db            ; 1 = last-life sound pending; it plays once the Lost a Life tune has finished
+wBombs:     db            ; smart bombs held: 0, 1 or 2 (SELECT uses one; boss kill adds one, capped at 2)
+wBombFlash: db            ; frames left in the smart-bomb screen flash (set by UseBomb, counts down in StatePlay)
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
@@ -271,7 +275,7 @@ Start:
     ld [wRng], a
     ld a, $AC
     ld [wRng + 1], a
-    ld a, 3
+    ld a, 5
     ld [wOptLives], a
     xor a
     ld [wCheat], a
@@ -281,7 +285,7 @@ Start:
     ld [wOptCont], a            ; default: no continues (so hi-scores are recorded)
     ld a, 1
     ld [wStartLvl], a
-    ld a, 1                     ; white background by default
+    ld a, 0                     ; black background by default (0 = black, 1 = white)
     ld [wOptBg], a
     call InitHiScore
     call LoadOptions

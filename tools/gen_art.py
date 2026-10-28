@@ -120,13 +120,24 @@ for y in range(16):
 sps[7][3] = sps[7][4] = sps[8][3] = sps[8][4] = 3
 syms.append(("SPR_SPARK_S", len(obj) // 16))
 obj.extend(tile8(sps[0:8]) + tile8(sps[8:16]))
-# alien bomb: diamond/drop, 4 wide
+# alien bomb: the previous narrow shape (rounded end, sharp point) flipped vertically, so the point is at
+# the top. Symmetric by construction: the half-width depends only on the row, and pixels are tested by
+# |x - 3.5| (the centre line lies between columns 3 and 4). Rim is dark (3), body mid (2), centre light (1).
 bomb = [[0]*8 for _ in range(16)]
-shape = ["..##..", "..##..", ".####.", ".####.", "######", "######", "######", "######", "######", "######", ".####.", "..##.."]   # fat 6x12 drop, round head at the bottom
-for y, row in enumerate(shape):
-    for x, ch in enumerate(row):
-        if ch == "#": bomb[y + 1][1 + x] = 1
-bomb[8][3] = bomb[8][4] = bomb[9][3] = bomb[9][4] = 3   # darker core so it reads as a glowing orb
+for y in range(16):
+    yy = 15 - y                                            # vertical flip of the previous shape
+    if yy < 2 or yy > 12:
+        continue
+    if yy <= 7.5:
+        hw = 2.0 * (1 - ((yy - 7.5) / 5.5) ** 2) ** 0.5    # rounded end
+    else:
+        hw = 2.0 * (12 - yy) / 4.5                         # sharp point
+    for x in range(8):
+        ax = abs(x - 3.5)
+        if ax <= hw + 0.5:
+            edge = ax > hw - 0.5
+            centre = ax < 0.9 and 5 <= yy <= 9
+            bomb[y][x] = 3 if edge else (1 if centre else 2)
 syms.append(("SPR_BOMB", len(obj) // 16))
 obj.extend(tile8(bomb[0:8]) + tile8(bomb[8:16]))
 # title star: 2x2 dot (8x16 object)
@@ -177,7 +188,9 @@ while len(bg) // 16 < 100 - BG0: bg_add(blank())
 ICON0 = BG0 + len(bg) // 16
 life = ["...##...", "...##...", "..####..", "..####..", ".######.", "########", "##.##.##", "#..##..#"]
 flag = ["#####...", "######..", "#####...", "#.......", "#.......", "#.......", "#.......", "#......."]
-for icon in (life, flag):
+# smart bomb: round body with a fuse (HUD icon, lower status)
+bomb_icon = ["...#....", "..#.....", "..####..", ".######.", ".######.", ".######.", "..####..", "........"]
+for icon in (life, flag, bomb_icon):
     px = [[3 if ch == "#" else 0 for ch in r] for r in icon]
     bg_add(tile8(px))
 # big heart for the secret screen: 32x32 px = 4x4 BG tiles, row-major (secret.asm draws them)
@@ -203,6 +216,29 @@ for r in range(4):
         bg_add(tile8([row[c*8:c*8+8] for row in heart[r*8:r*8+8]]))
 BG_TILES = len(bg) // 16
 assert BG0 + BG_TILES <= 128
+# GB crest for the title, under the GALAFORCE logo on the right: a horizontally wider orb (16x8 px,
+# 2 tiles wide by 1 tile tall) with "GB" in dark letters. Added after the heart, so every existing tile
+# index is unchanged; CREST0 is the first of its two tiles.
+CREST0 = BG0 + len(bg) // 16
+crest = [[0]*16 for _ in range(8)]
+for y in range(8):
+    for x in range(16):
+        dx, dy = (x - 7.5) / 8.0, (y - 3.5) / 4.0
+        d = (dx * dx + dy * dy) ** 0.5
+        if d <= 1.0:
+            crest[y][x] = 3 if d > 0.85 else 2
+G_GB = ["####", "#...", "#.##", "#..#", "####"]
+B_GB = ["###.", "#..#", "###.", "#..#", "###."]
+for ri, row in enumerate(G_GB):
+    for ci, ch in enumerate(row):
+        if ch == "#": crest[ri + 2][4 + ci] = 3
+for ri, row in enumerate(B_GB):
+    for ci, ch in enumerate(row):
+        if ch == "#": crest[ri + 2][9 + ci] = 3
+bg_add(tile8([r[0:8] for r in crest]))
+bg_add(tile8([r[8:16] for r in crest]))
+BG_TILES = len(bg) // 16
+assert BG0 + BG_TILES <= 128
 
 import random
 rng = random.Random(1986)
@@ -226,7 +262,9 @@ L.append("DEF T_FONT0 EQU %d" % FONT0)
 L.append("DEF T_BIG0 EQU %d" % BIG0)
 L.append("DEF T_LIFE EQU %d" % ICON0)
 L.append("DEF T_FLAG EQU %d" % (ICON0 + 1))
+L.append("DEF T_BOMB EQU %d" % (ICON0 + 2))
 L.append("DEF HEART0 EQU %d" % HEART0)
+L.append("DEF CREST0 EQU %d" % CREST0)
 for ch in "0123456789":
     pass
 L.append('; font char order: %r' % CHARS)

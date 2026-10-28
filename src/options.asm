@@ -2,7 +2,7 @@
 ; Layout: $4F $50, lives, bg, continues, checksum (sum + $5A).
 
 DEF OPT_SRAM EQU $A010
-DEF OPT_ROW_LIVES EQU 4
+DEF OPT_ROW_LIVES EQU 4                ; menu rows kept at 4,6,8,10,12 so BACK clears the ship/aliens (screen Y 109 = row 13)
 DEF OPT_ROW_CONT  EQU 6
 DEF OPT_ROW_BG    EQU 8
 DEF OPT_ROW_LEVEL EQU 10
@@ -38,7 +38,7 @@ LoadOptions:
     ld a, b
     or a
     jr z, .off
-    cp 6
+    cp 8
     jr nc, .off
     ld a, c
     cp 2
@@ -83,20 +83,17 @@ ShowOptions:
     di
     call LcdOff
     call ClearMapA
-    ld hl, strOptions
-    ld de, _SCRN0 + 32 * 2 + 6
-    call PutStr
     ld hl, strLives
-    ld de, _SCRN0 + 32 * OPT_ROW_LIVES + 4
+    ld de, _SCRN0 + 32 * OPT_ROW_LIVES + 3
     call PutStr
     ld hl, strBackground
-    ld de, _SCRN0 + 32 * OPT_ROW_BG + 4
+    ld de, _SCRN0 + 32 * OPT_ROW_BG + 3
     call PutStr
     ld hl, strCont
-    ld de, _SCRN0 + 32 * OPT_ROW_CONT + 4
+    ld de, _SCRN0 + 32 * OPT_ROW_CONT + 3
     call PutStr
     ld hl, strBack
-    ld de, _SCRN0 + 32 * OPT_ROW_BACK + 4
+    ld de, _SCRN0 + 32 * OPT_ROW_BACK + 3
     call PutStr
     ld hl, strHint1
     ld de, _SCRN0 + 32 * 16 + 1
@@ -207,7 +204,7 @@ StateOptions:
     ret z
     ld hl, wOptLives
     ld a, [hl]
-    cp 5
+    cp 7
     ret nc
     inc [hl]
     ld a, 1
@@ -346,23 +343,23 @@ MenuDraw:
     ret nz
     ld a, [wMenuSel]
     ld c, a
-    ld hl, _SCRN0 + 32 * OPT_ROW_LIVES + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_LIVES + 1
     ld a, c
     cp 0
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_BG + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_BG + 1
     ld a, c
     cp 2
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_CONT + 1
     ld a, c
     cp 1
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_LEVEL + 1
     ld a, c
     cp 3
     call CursorTile
-    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 2
+    ld hl, _SCRN0 + 32 * OPT_ROW_BACK + 1
     ld a, c
     cp 4
     call CursorTile
@@ -370,10 +367,10 @@ MenuDraw:
     or a
     jr z, .nolv
     ld hl, strLevel
-    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 4
+    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 3
     call PutStr
     ld a, [wStartLvl]
-    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 15
+    ld de, _SCRN0 + 32 * OPT_ROW_LEVEL + 14
     cp 10
     jr nc, .two
     ld c, a
@@ -396,16 +393,16 @@ MenuDraw:
 .nolv:
     ld a, [wOptLives]
     add T_FONT0 + 1
-    ld [_SCRN0 + 32 * OPT_ROW_LIVES + 15], a
+    ld [_SCRN0 + 32 * OPT_ROW_LIVES + 14], a
     ld a, [wOptCont]
     add T_FONT0 + 1
-    ld [_SCRN0 + 32 * OPT_ROW_CONT + 15], a
+    ld [_SCRN0 + 32 * OPT_ROW_CONT + 14], a
     ld hl, strBlack
     ld a, [wOptBg]
     or a
     jr z, .b
     ld hl, strWhite
-.b: ld de, _SCRN0 + 32 * OPT_ROW_BG + 15
+.b: ld de, _SCRN0 + 32 * OPT_ROW_BG + 14
     jp PutStr
 .title:
     ld a, [wMenuSel]
@@ -429,7 +426,8 @@ CursorTile:
 
 ; Sprite preview so the contrast of the chosen background can be judged
 BuildOptionsOAM:
-    ld b, 128
+    call BuildOptionsTitleOAM
+    ld b, 125                       ; ship: moved up 3 px with the alien preview row (was 128)
     ld c, 32
     ld d, SPR_PLAYER
     ld e, 0
@@ -453,7 +451,7 @@ BuildOptionsOAM:
     ld d, a
     ld a, [wTmp + 1]
     ld c, a
-    ld b, 128
+    ld b, 125                       ; alien preview row Y, 3 px higher than before (was 128)
     call Put16
     ld a, [wTmp + 1]
     add 24
@@ -477,3 +475,25 @@ strHint1:      db "LEFT/RIGHT CHANGES", 0
 strHint2:      db "B = BACK", 0
 strStartGame:  db "START GAME", 0
 strOptionsItem: db "OPTIONS", 0
+
+; OPTIONS title drawn as sprites so it uses OBP1 (a different shade from the map text).
+; Letters O P T I O N S: font char indices 25 26 30 19 25 24 29; object tile = T_OFONT0 + 2*index.
+BuildOptionsTitleOAM:
+    ld hl, optTitleChars
+    ld c, 52                        ; X of the first letter: centred (7 letters x 8 px = 56 px on 160)
+.t: ld a, [hli]
+    or a
+    ret z
+    add a                           ; 2 tiles per character in the object font
+    add T_OFONT0
+    ld d, a
+    ld b, 24                        ; Y: one row lower (was 16)
+    ld e, $10                       ; OBP1 (the title's own shade)
+    push hl
+    call PutObj
+    pop hl
+    ld a, c
+    add 8
+    ld c, a
+    jr .t
+optTitleChars: db 25, 26, 30, 19, 25, 24, 29, 0
