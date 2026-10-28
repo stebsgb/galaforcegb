@@ -645,13 +645,15 @@ UseBomb:
     ld a, [hl]
     cp 5                            ; boss: one hit
     jr z, .ubboss
-    call AlienHit                   ; two hits for everything else
+    call AlienHit                   ; first hit for every other alien
+IF BOMB_HITS == 2                   ; original two-hit bomb: switch BOMB_HITS to 2 in main.asm to use it
     ld h, HIGH(wAliens)
     ld l, c
     ld a, [hl]
-    cp $80
+    cp $80                          ; only if the first hit did not kill it
     jr nz, .ubn
     call AlienHit
+ENDC
     jr .ubn
 .ubboss:
     call AlienHit

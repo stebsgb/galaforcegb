@@ -56,6 +56,7 @@ DEF SFX_HIT     EQU 4
 DEF SFX_LAST    EQU 5
 DEF SFX_SPARKLE EQU 6
 DEF SFX_BOMB    EQU 7
+DEF BOMB_HITS   EQU 1           ; smart bomb hits per alien: 1 (current) or 2 (original; kept in UseBomb)
 
 ; ---- music ids ----
 DEF MUS_START   EQU 0
