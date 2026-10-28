@@ -140,8 +140,8 @@ patts_out[45][10] = BOSS_A            # loop row Y
 # Part 3 -- only used when BOSS_SINGLE_STREAM is False.
 patts_out[45][18] = BOSS_B
 assert patts_out[45][11] == 4 and patts_out[45][19] == 4
-patts_out[45][11] = 10                # delay (spacing between aliens)
-patts_out[45][12] = 12                # count (number of aliens)
+patts_out[45][11] = 19              # delay (spacing between aliens)
+patts_out[45][12] = 12               # count (number of aliens)
 patts_out[45][8] = 29                 # path: solo top boss
 patts_out[45][16] = 28                # path: loop row (path 28 -> 27 -> 30 -> 28 loop)
 # -------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ for i, p in enumerate(pdats):
 L.append("wave_ptrs:\n" + "\n".join("  dw wave%d" % i for i in range(len(waves))))
 for i, w in enumerate(waves):
     L.append("wave%d:  db %s" % (i, ",".join(str(b) for b in w)))
-L.append("alien_hits:  db 1,1,1,1,1,10,2,5,5,2,2,2")
+L.append("alien_hits:  db 1,1,1,1,1,20,2,5,5,2,2,2")   # index 5 = solo boss (type 5): 20 hits to kill
 L.append("alien_score: db 2,2,2,2,4,8,4,4,6,8,8,8   ; x10 points")
 os.makedirs(os.path.join(ROOT, "build"), exist_ok=True)
 open(os.path.join(ROOT, "build/data.inc"), "w").write("\n".join(L) + "\n")

@@ -170,6 +170,35 @@ AlienStep:
     add hl, de
     ld a, [hl]
     ld b, a
+    ; boss loop row (types 7 and 8, pattern 45 only): halve the sideways step so it moves slower in X
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 7
+    jr z, .halfx
+    cp 8
+    jr nz, .fullx
+.halfx:
+    sra b
+.fullx:
+    ; solo boss (type 5, pattern 45): double the sideways step (its legs are halved in .store)
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    jr nz, .notsolox
+    ld a, e
+    cp 1
+    jr z, .solox
+    cp 3
+    jr nz, .notsolox
+.solox:
+    sla b
+.notsolox:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_X
@@ -309,6 +338,43 @@ AlienFetch:
     xor 7
     ld e, a
 .store:
+    ; solo boss (type 5, pattern 45): horizontal legs (dir 1 right, 3 left) take half the steps.
+    ; AlienStep doubles their X step, so the sweep is twice as fast over half the distance.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    jr nz, .soloskip
+    ld a, e
+    cp 1
+    jr z, .soloh
+    cp 3
+    jr nz, .soloskip
+.soloh:
+    srl b
+.soloskip:
+    ; boss loop row (types 7 and 8): horizontal legs (dir 9 right, 11 left) take twice the steps.
+    ; AlienStep halves their X step, so this restores the full sideways distance at half speed.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 7
+    jr z, .dbl
+    cp 8
+    jr nz, .nodbl
+.dbl:
+    ld a, e
+    cp 9
+    jr z, .hz
+    cp 11
+    jr nz, .nodbl
+.hz:
+    sla b
+.nodbl:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_STEPS
@@ -732,6 +798,24 @@ SpawnAlien:
     or IN_TYPE
     ld e, a
     ld a, [de]
+    ; boss wave loop row: type 7 or 8 chosen at random per alien (both come only from pattern 45)
+    cp 7
+    jr z, .mix
+    cp 8
+    jr nz, .typeok
+.mix:
+    ld b, a
+    push bc
+    call Rand
+    pop bc
+    and 3                           ; 1 in 4 swaps, so runs of the same type are longer
+    jr nz, .keep
+    ld a, b
+    xor 15                          ; 7 <-> 8 (0111 <-> 1000)
+    jr .typeok
+.keep:
+    ld a, b                         ; keep the original type (7 stays 7)
+.typeok:
     ld [wTmp + 3], a
     inc e
     ld a, [de]
