@@ -83,7 +83,7 @@ patts_out[45][18] = BOSS_B
 # ...and thin each row to 8 aliens at double spacing (<= 5 abreast = 10 objects per line, the hardware limit)
 assert patts_out[45][11] == 4 and patts_out[45][19] == 4
 patts_out[45][11] = 10  # spacing/delay
-patts_out[45][12] = 16 # number of aliens
+patts_out[45][12] = 12 # number of aliens
 patts_out[45][19] = 8
 patts_out[45][20] = 8
 # Boss screen only: keep the top single stream on path 29; only the looping stream uses path 28.
