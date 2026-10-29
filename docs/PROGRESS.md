@@ -64,5 +64,6 @@
 - Alien bomb speeds tuned in `UpdateBombs` (`src/bombs.asm`): slow bombs 1 px per frame, fast bombs 3 or 4 px per frame alternating (3.5 average). Checked by build only; please play-test on ZONE 04 (cheat LEVEL 4).
 
 - Last-life sound: plays once the Lost a Life tune has finished (polled via `MusicBusy`), replacing the fixed 170-frame delay. Recorded in `docs/FIXES.md`. Build checked; not yet play-tested.
+- Dynamic boss hit scaling: first boss (wave 3) takes 20 hits, later bosses (waves 7, 11, 15) take 25 hits. Added `wBossHits` RAM and `SetBossHits` function; `FillAlien` uses it for type‑5 boss aliens. Cosmetic explosions (`BossAuto`) continue during the last 5 hits for both variants.
 - Version 0.0.11 released: see `docs/RELEASE-v0.0.11.md`.
 

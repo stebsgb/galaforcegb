@@ -21,6 +21,7 @@ Wave numbers are 1-based as the player sees them; "wave index" is 0-based as in 
 | Wave 3 easier | Fast streams get 1.5x spacing and 3/4 as many aliens, so there are gaps to shoot through | `StartPattern` |
 | Anti-camping | After 240 still frames (4 s) on a level with bombs, a live alien within 4 px of the ship's x drops a bomb about every 16 frames. The bomb always comes from a real alien | `AimedBomb` in `src/bombs.asm`, `wStill` in `StatePlay` |
 | Boss alone | The boss path has no bomb opcode, so it never fired. When it is the only alien left it now fires with a 1 in 32 chance per frame. With company, its bomb opcode gate is looser | `BossFire` in `src/aliens.asm` |
+| Dynamic boss hits | First boss (wave 3) takes 20 hits, later bosses (waves 7, 11, 15) take 25 hits. Added `wBossHits` RAM and `SetBossHits` function; `FillAlien` uses it for type‑5 boss aliens | `src/game.asm`, `src/aliens.asm`, `src/main.asm` |
 
 ## Boss stage (waves 4, 8, 12, 16; pattern 45)
 
