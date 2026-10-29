@@ -635,7 +635,7 @@ AddScoreHL:
 .place:
     ld a, [wTmp]
     cp 5
-    ret nc
+    jp nc, UpdateHiScore            ; all places added: bring the hi-score up to date
     add a                           ; word table offset
     ld e, a
     ld d, 0
@@ -709,6 +709,29 @@ AddDigitCol:
     ret
 
 decDivs: dw 10000, 1000, 100, 10, 1
+
+; UpdateHiScore: copy wScore to wHi if wScore is higher. Same rule AddScoreInner uses.
+; Ends with ret, so it returns to the caller of AddScoreHL.
+UpdateHiScore:
+    ld hl, wScore
+    ld de, wHi
+    ld b, 7
+.cmp:
+    ld a, [de]
+    ld c, a
+    ld a, [hli]
+    cp c
+    ret c                           ; score is lower at this digit: no change
+    jr nz, .copy                    ; score is higher at this digit: copy
+    inc de
+    dec b
+    jr nz, .cmp
+    ret                             ; equal: nothing to do
+.copy:
+    ld hl, wScore
+    ld de, wHi
+    ld bc, 7
+    jp MemCopy
 ; ---------------------------------------------------------------- wave flow
 ; ---------------------------------------------------------------- wave flow
 ; Z set when no alien slot is in use
