@@ -463,7 +463,6 @@ BuildOptionsOAM:
     jr c, .l
     ret
 
-strOptions:    db "OPTIONS", 0
 strLives:      db "LIVES", 0
 strLevel:      db "ZONE ", 0
 strCont:       db "CONTINUES", 0

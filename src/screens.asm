@@ -149,8 +149,6 @@ ShowTitle:
 strSC:      db "SC", 0
 strDemo:    db "DEMO", 0
 strHI:      db "HI", 0
-strPress:   db "PRESS  START", 0
-strHiTitle: db "HI-SCORE", 0
 strCred1:   db "BBC ORIGINAL 1986", 0
 strCred2:   db "KEVIN EDWARDS", 0
 strCred3:   db "SUPERIOR SOFTWARE", 0
