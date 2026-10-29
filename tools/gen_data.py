@@ -169,7 +169,7 @@ L.append("wave_ptrs:\n" + "\n".join("  dw wave%d" % i for i in range(len(waves))
 for i, w in enumerate(waves):
     L.append("wave%d:  db %s" % (i, ",".join(str(b) for b in w)))
 L.append("alien_hits:  db 1,1,1,1,1,25,2,5,5,2,2,2")   # index 5 = solo boss (type 5): default 25 hits; first boss (wave 3) uses 20 hits
-L.append("alien_score: db 2,2,2,2,4,8,4,4,6,8,8,8   ; x10 points")
+L.append("alien_score: db 1,1,1,1,4,8,4,4,6,8,8,8   ; x10 points (standard kills 10 pts)")
 os.makedirs(os.path.join(ROOT, "build"), exist_ok=True)
 open(os.path.join(ROOT, "build/data.inc"), "w").write("\n".join(L) + "\n")
 json.dump({"patts": patts, "patdats": pdats, "waves": waves, "dx": dx, "dy": dy},

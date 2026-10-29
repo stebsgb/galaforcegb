@@ -396,6 +396,9 @@ ENDC
     ld a, [wStartLvl]
     dec a
     ld [wWave], a
+    xor a
+    ld [wMultFlash], a
+    call ResetWaveStats
 .w0:
     xor a
     ld [wExtra], a
@@ -513,6 +516,206 @@ SetBossHits:
 .store:
     ld [wBossHits], a
     ret
+ResetWaveStats:
+    xor a
+    ld [wWaveKills], a
+    ld [wWaveKills+1], a
+    ld [wWaveTotalAliens], a
+    ld [wWaveTotalAliens+1], a
+    ld [wWavePoints], a
+    ld [wWavePoints+1], a
+    ; NOTE: wDebugMultiplier NOT cleared here so we can see it after wave end
+    ; ld [wDebugMultiplier], a
+    ; boss pattern flag: set by FillAlien when a boss (type 5) is created in this pattern
+    xor a
+    ld [wIsBossWave], a
+    ret
+
+ApplyWaveBonus:
+    push bc
+    push de
+    push hl
+    ; boss pattern (wIsBossWave, set by FillAlien): no wave multiplier; its 2000 bonus is paid on the kill
+    ld a, [wIsBossWave]
+    or a
+    jr nz, .done
+    ; load kills and total
+    ld hl, wWaveKills
+    ld a, [hli]
+    ld e, a
+    ld d, [hl] ; DE = kills
+    ld hl, wWaveTotalAliens
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a ; HL = total aliens
+    ; check total != 0
+    ld a, h
+    or l
+    jr z, .done
+    ; compare kills == total
+    ld a, e
+    sub l
+    ld a, d
+    sbc h
+    jr nz, .not100
+    ; 100% kills
+    ld a, 5
+    jr .apply
+.not100:
+    ; compute kills * 5 and total * 4
+    ; kills * 5 = kills * 4 + kills
+    push hl ; save total
+    push de ; save kills
+    ; DE * 4
+    sla e
+    rl d
+    sla e
+    rl d ; DE = kills * 4
+    ; add original kills (still on stack)
+    pop bc ; BC = original kills
+    ld h, d
+    ld l, e
+    add hl, bc ; HL = kills * 5
+    ; compute total * 4
+    pop bc ; BC = total aliens
+    sla c
+    rl b
+    sla c
+    rl b ; BC = total * 4
+    ; compare HL > BC (kills * 5 > total * 4)
+    ld a, l
+    sub c
+    ld l, a
+    ld a, h
+    sbc b
+    ld h, a   ; HL = HL - BC
+    jr c, .done ; HL < BC (less than 80%)
+    ; HL >= 0
+    ld a, h
+    or l
+    jr z, .done ; HL == 0 (exactly 80%, no bonus)
+    ; HL > 0 (over 80%)
+    ; >80%
+    ld a, 2
+.apply:
+    ; a = multiplier (2 or 5)
+    ld [wDebugMultiplier], a
+    ld [wMultKind], a
+    ld a, 120                       ; flash on the HUD for 120 frames
+    ld [wMultFlash], a
+    ; extra points = wWavePoints * (multiplier-1): x2 adds 1x, x5 adds 4x
+    ld a, [wMultKind]
+    cp 2
+    jr z, .mult1
+    ; multiplier 5: extra = wavePoints * 4
+    ld hl, wWavePoints
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a ; HL = wavePoints
+    add hl, hl ; *2
+    add hl, hl ; *4
+    jr .addExtra
+.mult1:
+    ld hl, wWavePoints
+    ld a, [hli]
+    ld h, [hl]
+    ld l, a ; HL = wavePoints
+.addExtra:
+    ; HL = extraPoints (value x10)
+    call AddScoreHL
+.done:
+    pop hl
+    pop de
+    pop bc
+    ret
+
+AddScoreHL:
+    ; HL = value in score units (x10 points), may be > 9. Split it into decimal digits and add
+    ; each digit at its own score column, so the score always stays valid BCD.
+    ld a, h
+    ld [wMultRem], a
+    ld a, l
+    ld [wMultRem + 1], a
+    xor a
+    ld [wTmp], a                    ; place index 0..4 (10000, 1000, 100, 10, 1)
+.place:
+    ld a, [wTmp]
+    cp 5
+    ret nc
+    add a                           ; word table offset
+    ld e, a
+    ld d, 0
+    ld hl, decDivs
+    add hl, de
+    ld a, [hli]
+    ld e, a
+    ld d, [hl]                      ; DE = divisor
+    ld a, [wMultRem]
+    ld h, a
+    ld a, [wMultRem + 1]
+    ld l, a                         ; HL = remainder
+    ld b, 0                         ; b = digit
+.sub:
+    ld a, l
+    sub e
+    ld c, a
+    ld a, h
+    sbc d
+    jr c, .subdone                  ; remainder < divisor
+    ld h, a
+    ld l, c
+    inc b
+    jr .sub
+.subdone:
+    ld a, h
+    ld [wMultRem], a
+    ld a, l
+    ld [wMultRem + 1], a
+    ld a, b
+    or a
+    jr z, .next
+    ld c, a                         ; c = digit 1..9
+    ld a, [wTmp]
+    inc a                           ; score column: place 0 (10000 units) -> wScore+1 ... place 4 -> wScore+5
+    ld b, a
+    ld a, c
+    call AddDigitCol
+.next:
+    ld a, [wTmp]
+    inc a
+    ld [wTmp], a
+    jr .place
+
+; AddDigitCol: a = digit 0-9, b = score byte index (0-6, wScore+b), BCD add with carry
+AddDigitCol:
+    push bc
+    push de
+    push hl
+    ld c, a
+    ld hl, wScore
+    ld d, 0
+    ld e, b
+    add hl, de
+    ld a, [hl]
+    add c
+.c:
+    cp 10
+    jr c, .store
+    sub 10
+    ld [hl], a
+    dec hl
+    ld a, [hl]
+    inc a
+    jr .c
+.store:
+    ld [hl], a
+    pop hl
+    pop de
+    pop bc
+    ret
+
+decDivs: dw 10000, 1000, 100, 10, 1
+; ---------------------------------------------------------------- wave flow
 ; ---------------------------------------------------------------- wave flow
 ; Z set when no alien slot is in use
 AliensClear:
@@ -562,12 +765,20 @@ WaveControl:
     ld a, [hl]
     cp $FF
     jr z, .end
+    ; pattern finished, more patterns follow in this zone: pay this pattern's bonus, then start a fresh count.
+    ; The next pattern id is in A and must survive the calls (StartPattern reads A).
+    push af
+    call ApplyWaveBonus
+    call ResetWaveStats
+    pop af
     ld hl, wWaveOff
     inc [hl]
     jp StartPattern
 .end:
+    call ApplyWaveBonus
     ld hl, wWave
     inc [hl]
+    call ResetWaveStats
     ld a, [wWave]               ; best wave reached since power-on (for the title flags)
     ld hl, wBest
     cp [hl]
@@ -611,10 +822,7 @@ AlienHit:                       ; c = alien slot
     ld a, [hl]
     ld e, a
     ld d, 0
-    ld hl, alien_score
-    add hl, de
-    ld a, [hl]
-    call AddScore
+    call AddKillScore
     ld h, HIGH(wAliens)
     ld l, c
     ld a, $81
@@ -982,6 +1190,40 @@ PlayerDie:
 AddScore:
     push bc
     call AddScoreInner
+    pop bc
+    ret
+AddKillScore: ; e = alien type
+    push bc
+    push hl
+    push de
+    ; load base score
+    ld hl, alien_score
+    ld d, 0
+    add hl, de
+    ld a, [hl]
+    ; add base score to wave points (16-bit)
+    ld c, a
+    ld b, 0
+    ld hl, wWavePoints
+    ld a, [hl]
+    add c
+    ld [hli], a
+    ld a, [hl]
+    adc b
+    ld [hl], a
+    ; add base score to total score
+    ld a, c
+    call AddScore
+
+    ; increment wave kills
+    ld hl, wWaveKills
+    inc [hl]
+    jr nz, .nocarry
+    inc hl
+    inc [hl]
+.nocarry:
+    pop de
+    pop hl
     pop bc
     ret
 

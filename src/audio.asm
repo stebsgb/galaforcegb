@@ -293,6 +293,9 @@ Sfx:
     ld a, [wDemo]                   ; no sound effects during the attract demo
     or a
     jr nz, .out
+    ld a, b                         ; forced effects (boss/cheat sparkle, last life) are checked before the lock
+    cp SFX_SPARKLE
+    jr z, .force
     ld a, [aSfxLock]                ; the last-life sound blocks every other effect until it ends
     or a
     jr nz, .out
@@ -300,6 +303,8 @@ Sfx:
     cp SFX_LAST
     jr z, .force
     cp SFX_BOMB                     ; the smart bomb cuts whatever is playing so it is always heard
+    jr z, .force
+    cp SFX_SPARKLE                  ; boss-kill and cheat-menu sound: cuts the tune and any effect
     jr z, .force
     ld a, [aPlay]                   ; music overrides every effect while a tune is still playing
     or a

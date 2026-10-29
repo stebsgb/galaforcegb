@@ -93,7 +93,13 @@ UpdateAliens:
     xor a
     ld [hl], a
     jr .next
-.bossfree:                      ; boss death finished: grant one smart bomb (max 2), then free the slot
+.bossfree:                      ; boss death finished: 2000-point bonus + heart sound, one smart bomb (max 2), free the slot
+    push bc
+    ld hl, 200                      ; 2000 points bonus (x10 units)
+    call AddScoreHL
+    ld a, SFX_SPARKLE               ; heart sound
+    call Sfx
+    pop bc
     ld a, [wBombs]
     cp 2
     jr nc, .bombcap
@@ -627,6 +633,24 @@ FillAlien:
     ld [hli], a                 ; reflect
     xor a
     ld [hl], a                  ; timer
+    ; a boss in this pattern marks the pattern as a boss pattern (no wave multiplier on it)
+    ld a, [wTmp + 3]
+    cp 5
+    jr nz, .notboss
+    ld a, 1
+    ld [wIsBossWave], a
+.notboss:
+    ; every alien created (spawned or split child) counts toward the wave total
+    push hl
+    push de
+    ld hl, wWaveTotalAliens
+    inc [hl]
+    jr nz, .incdone
+    inc hl
+    inc [hl]
+.incdone:
+    pop de
+    pop hl
     ret
 
 ; FindFreeAlien: returns e = offset, carry set if none
@@ -841,7 +865,7 @@ SpawnAlien:
     ld [wTmp + 2], a
     ld a, b
     and $7F
-    call FillAlien
+    call FillAlien                  ; counts toward wWaveTotalAliens itself
 
     ; advance the spawn record
     ld d, HIGH(wInits)

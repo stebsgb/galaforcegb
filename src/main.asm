@@ -146,6 +146,14 @@ wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
 wBossHits:  db
+wWaveKills: dw
+wWaveTotalAliens: dw
+wWavePoints: dw
+wIsBossWave: db
+wDebugMultiplier: db
+wMultKind:  db              ; 2 or 5: multiplier shown on the HUD
+wMultFlash: db              ; frames left for the HUD X2/X5 flash (0 = off)
+wMultRem:   dw              ; remaining x10 points to add for a wave multiplier
 
 SECTION "hram", HRAM
 hDma:       ds 10

@@ -38,6 +38,7 @@ HudUpdate:
     ld de, wHi
     ld hl, _SCRN0 + 32 + 13
     call HudNum
+    call HudMult
     ; wave number (bottom strip, window row 0)
     ld a, [wWave]
     inc a
@@ -109,3 +110,33 @@ HudUpdate:
     ld [hli], a
     ld [hl], a
     ret
+
+; HudMult: blinking "X2" / "X5" just right of the score (HUD row 1, columns 9-10) for the
+; frames left in wMultFlash, set by ApplyWaveBonus when a wave multiplier is paid out.
+HudMult:
+    ld hl, wMultFlash
+    ld a, [hl]
+    or a
+    jr z, .off
+    dec [hl]
+    bit 3, [hl]                     ; blink: on/off every 8 frames
+    jr z, .off
+    ld a, [wMultKind]
+    cp 5
+    ld a, T_FONT0 + 3               ; '2' (digit d = T_FONT0 + 1 + d)
+    jr nz, .dig
+    ld a, T_FONT0 + 6               ; '5'
+.dig:
+    ld b, a
+    ld hl, _SCRN0 + 32 + 9          ; HUD row 1, cols 9-10: alongside the score
+    ld a, T_FONT0 + 34              ; 'X'
+    ld [hli], a
+    ld [hl], b
+    ret
+.off:
+    ld hl, _SCRN0 + 32 + 9
+    ld a, T_BLANK
+    ld [hli], a
+    ld [hl], a
+    ret
+

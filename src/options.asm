@@ -293,7 +293,7 @@ CheatCheck:
     ld a, 1
     ld [wCheat], a
     ld [wDirty], a
-    ld a, SFX_1UP
+    ld a, SFX_SPARKLE               ; cheat unlock: forced like the boss sound (cuts music)
     jp Sfx
 .miss:
     xor a
