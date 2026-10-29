@@ -112,6 +112,26 @@ BuildOAM:
     ld [wTmp + 6], a
     jr nz, .ml
 
+    ; --- boss hit explosion (cosmetic): frame = wHfxT / 4 (0..5), hidden when wHfxT == wHfxN
+    ld a, [wHfxT]
+    ld b, a
+    ld a, [wHfxN]
+    cp b
+    jr z, .nohfx
+    ld a, b
+    and $FC                         ; 4 tiles per frame, as the dying aliens
+    add SPR_EXPL0
+    ld d, a
+    ld a, [wHfxY]                   ; same screen origin as the bullets (y+24, x+8)
+    add 24
+    ld b, a
+    ld a, [wHfxX]
+    add 8
+    ld c, a
+    ld e, 0
+    call Put16
+.nohfx:
+
     ; --- aliens
     ld a, [wRot]
     add ROTSTEP * 16
@@ -315,8 +335,8 @@ txtYes:      db " YES", 0
 txtNoSel:    db ">NO", 0
 txtNo:       db " NO", 0
 
-; BossBoom: grand death of the boss. b = Y, c = X, hl = its AL_FRAME (0..23). A cluster of explosions
-; with staggered phases bursts over and around it, then one big final blast.
+; BossBoom: grand death of the boss. b = Y, c = X, hl = its AL_FRAME (0..35). A cluster of explosions
+; with staggered phases bursts over and around it for 30 steps, then one big final blast (last 6 steps).
 BossBoom:
     ld a, [hl]
     ld [wTmp + 4], a
@@ -325,9 +345,9 @@ BossBoom:
     ld a, c
     ld [wTmp + 6], a
     ld a, [wTmp + 4]
-    cp 18
+    cp 30
     jr c, .cluster
-    sub 18                      ; final blast: one explosion over the boss position
+    sub 30                      ; final blast: one explosion over the boss position
     add a
     add a
     add SPR_EXPL0

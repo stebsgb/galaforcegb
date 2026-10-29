@@ -114,6 +114,10 @@ wFireCD:    db
 wLastSfx:   db            ; 1 = last-life sound pending; it plays once the Lost a Life tune has finished
 wBombs:     db            ; smart bombs held: 0, 1 or 2 (SELECT uses one; boss kill adds one, capped at 2)
 wBombFlash: db            ; frames left in the smart-bomb screen flash (set by UseBomb, counts down in StatePlay)
+wHfxT:      db            ; boss hit explosion: ticks so far (counts up to wHfxN)
+wHfxN:      db            ; its length: 12 (short) or 24 (standard kill animation, last 5 boss hits); equal = none
+wHfxX:      db            ; its top-left x
+wHfxY:      db            ; its top-left y (field coordinates, as the bullet)
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
