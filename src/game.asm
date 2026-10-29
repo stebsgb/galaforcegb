@@ -535,7 +535,7 @@ ApplyWaveBonus:
     push bc
     push de
     push hl
-    ; boss pattern (wIsBossWave, set by FillAlien): no wave multiplier; its 2000 bonus is paid on the kill
+    ; boss pattern (wIsBossWave, set by FillAlien): no wave multiplier
     ld a, [wIsBossWave]
     or a
     jr nz, .done

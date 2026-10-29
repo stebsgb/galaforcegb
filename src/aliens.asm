@@ -93,13 +93,7 @@ UpdateAliens:
     xor a
     ld [hl], a
     jr .next
-.bossfree:                      ; boss death finished: 2000-point bonus + heart sound, one smart bomb (max 2), free the slot
-    push bc
-    ld hl, 200                      ; 2000 points bonus (x10 units)
-    call AddScoreHL
-    ld a, SFX_SPARKLE               ; heart sound
-    call Sfx
-    pop bc
+.bossfree:                      ; boss death finished: grant one smart bomb (max 2), then free the slot
     ld a, [wBombs]
     cp 2
     jr nc, .bombcap
