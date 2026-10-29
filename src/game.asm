@@ -526,19 +526,13 @@ ResetWaveStats:
     ld [wWavePoints+1], a
     ; NOTE: wDebugMultiplier NOT cleared here so we can see it after wave end
     ; ld [wDebugMultiplier], a
-    ; boss pattern flag: set by FillAlien when a boss (type 5) is created in this pattern
-    xor a
-    ld [wIsBossWave], a
     ret
 
 ApplyWaveBonus:
     push bc
     push de
     push hl
-    ; boss pattern (wIsBossWave, set by FillAlien): no wave multiplier
-    ld a, [wIsBossWave]
-    or a
-    jr nz, .done
+    ; every pattern, including the boss pattern, is paid the standard wave multiplier
     ; load kills and total
     ld hl, wWaveKills
     ld a, [hli]

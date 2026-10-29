@@ -629,11 +629,6 @@ FillAlien:
     ld [hl], a                  ; timer
     ; a boss in this pattern marks the pattern as a boss pattern (no wave multiplier on it)
     ld a, [wTmp + 3]
-    cp 5
-    jr nz, .notboss
-    ld a, 1
-    ld [wIsBossWave], a
-.notboss:
     ; every alien created (spawned or split child) counts toward the wave total
     push hl
     push de
