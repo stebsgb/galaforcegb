@@ -168,7 +168,7 @@ for i, p in enumerate(pdats):
 L.append("wave_ptrs:\n" + "\n".join("  dw wave%d" % i for i in range(len(waves))))
 for i, w in enumerate(waves):
     L.append("wave%d:  db %s" % (i, ",".join(str(b) for b in w)))
-L.append("alien_hits:  db 1,1,1,1,1,20,2,5,5,2,2,2")   # index 5 = solo boss (type 5): 20 hits to kill
+L.append("alien_hits:  db 1,1,1,1,1,30,2,5,5,2,2,2")   # index 5 = solo boss (type 5): 30 hits to kill
 L.append("alien_score: db 2,2,2,2,4,8,4,4,6,8,8,8   ; x10 points")
 os.makedirs(os.path.join(ROOT, "build"), exist_ok=True)
 open(os.path.join(ROOT, "build/data.inc"), "w").write("\n".join(L) + "\n")

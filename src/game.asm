@@ -180,6 +180,16 @@ StatePlay:
     jr z, .idled                ; saturate at 255 frames
     ld [hl], a
 .idled:
+    ld a, [wHfxT]                   ; boss hit explosion: count up to its length
+    ld b, a
+    ld a, [wHfxN]
+    cp b
+    jr z, .nohfx
+    inc b
+    ld a, b
+    ld [wHfxT], a
+.nohfx:
+    call BossAuto
     call UpdateBullets
     call UpdateAliens
     call UpdateInits
@@ -313,6 +323,12 @@ StateGameOver:
     ld [wAsk], a
     ld hl, wWaveOff
     dec [hl]
+    ld a, [wBombs]                  ; a continue starts with one smart bomb if none are held
+    or a
+    jr nz, .hasbomb
+    inc a
+    ld [wBombs], a
+.hasbomb:
     call PlayerReset
     ld a, ST_WAVEMSG
     ld [wState], a
@@ -366,8 +382,8 @@ StartGame:
     ld a, [wOptLives]
     dec a                           ; option = total lives; wLives = spares (the ship in play is extra)
     ld [wLives], a
-    xor a
-    ld [wBombs], a                  ; a new game starts with no bombs (PlayerReset gives the first)
+    ld a, 1
+    ld [wBombs], a                  ; a new game starts with one smart bomb (more come only from killing the boss)
     xor a
     ld [wWave], a
     ld a, [wDemo]
@@ -434,13 +450,9 @@ ENDC
 PlayerReset:
     xor a
     ld [wStill], a
-    ; each new life starts with one smart bomb; a player already holding two keeps two (max 2)
-    ld a, [wBombs]
-    cp 1
-    jr nc, .bombs_ok
-    ld a, 1
-    ld [wBombs], a
-.bombs_ok:
+    ld [wHfxT], a                   ; no boss hit explosion at the start of a life
+    ld [wHfxN], a
+    ; smart bombs are kept across lost lives: only a boss kill adds one (max 2)
     ld a, 76
     ld [wPX], a
     ld a, 110
@@ -709,6 +721,15 @@ CollideBullets:
     add 5
     cp 19
     jr nc, .an
+    ld h, HIGH(wAliens)             ; boss hit: cosmetic explosion near the bullet (the 20-hit count is unchanged)
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    call z, BossHitFx
+    ld h, HIGH(wAliens)
+    ld l, c
     call AlienHit
     ld hl, wBul
     ld e, b
@@ -729,6 +750,95 @@ CollideBullets:
     ld b, a
     cp 12
     jr c, .bl
+    ret
+
+; BossHitFx: called on a bullet hit on the boss. c = boss slot, wTmp = bullet x, wTmp+1 = bullet y.
+; Plays the kill explosion sound and starts an explosion at a random offset of -4..+3 px from the hit.
+; Every boss hit uses the standard kill animation (24 ticks, 6 frames). Preserves bc.
+BossHitFx:
+    push bc
+    ld a, SFX_BOOM
+    call Sfx
+    ld a, 24
+    ld [wHfxN], a
+    xor a
+    ld [wHfxT], a
+    call Rand
+    and 7
+    add 252                         ; -4
+    ld hl, wTmp
+    add [hl]
+    ld [wHfxX], a
+    call Rand
+    and 7
+    add 252
+    ld hl, wTmp + 1
+    add [hl]
+    ld [wHfxY], a
+    pop bc
+    ret
+
+; BossAuto: while the boss has 5 or fewer hits left, keep one cosmetic explosion going on it.
+; When the current one has finished, the next starts at a random spot over the boss (one at a time).
+BossAuto:
+    ld c, 0
+.l: ld h, HIGH(wAliens)
+    ld l, c
+    ld a, [hl]
+    cp $80
+    jr nz, .n
+    ld a, c
+    or AL_TYPE
+    ld l, a
+    ld a, [hl]
+    cp 5
+    jr z, .found
+.n: ld a, c
+    add 16
+    ld c, a
+    cp MAXAL * 16
+    jr c, .l
+    ret
+.found:
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_HITS
+    ld l, a
+    ld a, [hl]                      ; hits left
+    cp 6
+    ret nc                          ; more than 5 left: only the hit explosions
+    ld a, [wHfxT]
+    ld b, a
+    ld a, [wHfxN]
+    cp b
+    ret nz                          ; the current explosion is still playing
+    call Rand
+    and 15
+    add 252                         ; -4..+11 px
+    ld d, a
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_X
+    ld l, a
+    ld a, [hl]
+    add d
+    ld [wHfxX], a
+    call Rand
+    and 15
+    add 252
+    ld d, a
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_Y
+    ld l, a
+    ld a, [hl]
+    call FieldY
+    add d
+    ld [wHfxY], a
+    xor a
+    ld [wHfxT], a
+    ld a, 24
+    ld [wHfxN], a
     ret
 
 CollidePlayer:
@@ -806,6 +916,8 @@ PlayerDie:
     ld [wPExp], a
     ld [wPExpT], a
     ld [wTimer], a
+    ld [wHfxT], a                   ; no boss hit explosion survives a death
+    ld [wHfxN], a
     ld a, ST_PDEAD
     ld [wState], a
     ld c, 0

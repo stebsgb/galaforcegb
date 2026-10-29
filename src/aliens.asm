@@ -104,8 +104,8 @@ UpdateAliens:
     xor a
     ld [hl], a
     jr .next
-.bossdie:                       ; boss: 24 frame steps (~1.6 s) of chained explosions, a boom every 4th step
-    cp 24
+.bossdie:                       ; boss: 36 frame steps (~2.4 s) of chained explosions, a boom every 4th step
+    cp 36
     jr nc, .bossfree
     and 3
     jr nz, .next
