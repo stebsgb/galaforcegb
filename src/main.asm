@@ -149,7 +149,6 @@ wBossHits:  db
 wWaveKills: dw
 wWaveTotalAliens: dw
 wWavePoints: dw
-wIsBossWave: db
 wDebugMultiplier: db
 wMultKind:  db              ; 2 or 5: multiplier shown on the HUD
 wMultFlash: db              ; frames left for the HUD X2/X5 flash (0 = off)

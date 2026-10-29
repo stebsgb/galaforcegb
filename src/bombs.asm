@@ -62,9 +62,9 @@ UpdateBombs:
     jr z, .n
     cp 2
     jr nz, .slow
-    ld a, [wFrame]              ; fast bomb: 3 or 4 px per frame, alternating (3.5 average)
+    ld a, [wFrame]              ; fast bomb: 2 or 3 px per frame, alternating (2.5 average; slow bomb is 1)
     and 1
-    add 3
+    add 2
     ld d, a
     jr .go
 .slow:
