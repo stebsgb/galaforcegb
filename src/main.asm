@@ -145,6 +145,7 @@ wHiOK:      db            ; 1 = this game may record a hi-score (0 once a contin
 wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
+wBossHits:  db
 
 SECTION "hram", HRAM
 hDma:       ds 10

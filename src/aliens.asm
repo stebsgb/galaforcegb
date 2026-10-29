@@ -576,11 +576,17 @@ AlienFetch:
 FillAlien:
     ld [wTmp + 6], a
     ld a, [wTmp + 3]
+    cp 5
+    jr nz, .notBoss
+    ld a, [wBossHits]
+    jr .storeHits
+.notBoss:
     ld e, a
     ld d, 0
     ld hl, alien_hits
     add hl, de
     ld a, [hl]
+.storeHits:
     ld [wTmp + 4], a
     ld a, [wTmp + 6]
     add a

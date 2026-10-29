@@ -498,8 +498,21 @@ LoadWavePtr:
     ld [wWavePtr], a
     ld a, [hl]
     ld [wWavePtr + 1], a
+    call SetBossHits
     ret
 
+SetBossHits:
+    ld a, [wWave]
+    and 15
+    cp 3
+    jr z, .firstBoss
+    ld a, 25
+    jr .store
+.firstBoss:
+    ld a, 20
+.store:
+    ld [wBossHits], a
+    ret
 ; ---------------------------------------------------------------- wave flow
 ; Z set when no alien slot is in use
 AliensClear:
@@ -778,8 +791,9 @@ BossHitFx:
     pop bc
     ret
 
-; BossAuto: while the boss has 5 or fewer hits left, keep one cosmetic explosion going on it.
+; BossAuto: while the boss has 5 or fewer hits left (absolute count, not percentage), keep one cosmetic explosion going on it.
 ; When the current one has finished, the next starts at a random spot over the boss (one at a time).
+; Works for both 20-hit first boss and 25-hit later bosses.
 BossAuto:
     ld c, 0
 .l: ld h, HIGH(wAliens)
