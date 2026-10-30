@@ -21,7 +21,7 @@ Build: `galaforce-0.0.16.gb` (MBC1 + RAM + battery, 32 KB ROM).
 - `make boss` builds `galaforce_boss.gb`, which starts on ZONE 04 (the first boss wave) for testing.
 
 ## Build
-- `make` builds `galaforce-0.0.16-SNAPSHOT.gb` from `VERSION` in the Makefile.
+- `make` builds `galaforce-0.0.16.gb` from `VERSION` in the Makefile.
 - `make god` builds `galaforce_god.gb`, which cannot die (used for headless checks).
 
 ## Known issues

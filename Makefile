@@ -8,7 +8,7 @@ VOUT = galaforce-$(VERSION).gb
 SRCS = $(wildcard src/*.asm)
 GEN = build/data.inc build/gfx.inc build/music.inc
 
-all: snapshot
+all: $(OUT) $(VOUT)
 
 $(VOUT): $(OUT)
 	cp $(OUT) $(VOUT)
@@ -35,13 +35,13 @@ god: $(SRCS) $(GEN) | build
 	$(RGBLINK) -p 0xFF -n galaforce_god.sym -o galaforce_god.gb build/god.o
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_god.gb
 
-SNAP = galaforce-$(VERSION)-SNAPSHOT.gb
+# SNAPSHOT REMOVED: The default build now produces a non-snapshot version
+# Development snapshot build is still available via 'make snapshot-build' if needed.
 
-# Development build from the current source. Does not touch galaforce.gb or the versioned release copy.
-snapshot: $(SRCS) $(GEN) | build
+snapshot-build: $(SRCS) $(GEN) | build
 	$(RGBASM) -I src/ -I build/ -o build/snapshot.o src/main.asm
-	$(RGBLINK) -p 0xFF -n galaforce_snapshot.sym -o $(SNAP) build/snapshot.o
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 $(SNAP)
+	$(RGBLINK) -p 0xFF -n galaforce_snapshot.sym -o galaforce-$(VERSION)-SNAPSHOT.gb build/snapshot.o
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce-$(VERSION)-SNAPSHOT.gb
 
 clean:
 	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym galaforce_snapshot.sym
@@ -51,4 +51,4 @@ boss: $(SRCS) $(GEN) | build
 	$(RGBLINK) -p 0xFF -n galaforce_boss.sym -o galaforce_boss.gb build/boss.o
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
 
-.PHONY: all clean god boss snapshot
+.PHONY: all clean god boss snapshot-build

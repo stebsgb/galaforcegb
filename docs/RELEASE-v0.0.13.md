@@ -24,7 +24,7 @@ Build: `galaforce-0.0.13.gb` (MBC1 + RAM + battery, 32 KB ROM).
 
 ## Build
 - `make` builds `galaforce-0.0.13.gb` (release copy of `galaforce.gb`).
-- `make snapshot` builds the current development build from source.
+- `make snapshot-build` builds the current development build from source.
 
 ## Known issues
 - Boss wave flicker and overlap (ZONE 04, 08, 12, 16): carried over from v0.0.10 to v0.0.12, not fixed. The aliens still overlap and flicker on the boss wave.
