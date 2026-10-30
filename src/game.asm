@@ -154,15 +154,20 @@ StatePlay:
 .restore:
     ldh [rBGP], a
 .afterflash:
-    ; Smart bomb: SELECT, or A and B pressed together this frame. Hits every live alien.
+    ; Smart bomb: SELECT, or A and B both held, with at least one of them pressed this frame.
+    ; Holding both is checked against wKeys so the A+B press does not need to land on the same frame.
+    ; Requiring a fresh press (wKeysNew) stops the bomb from re-firing while A and B stay held.
     ld a, [wKeysNew]
     ld b, a
     and PAD_SELECT
     jr nz, .bombkey
-    ld a, b
+    ld a, [wKeys]
     and PAD_A | PAD_B
     cp PAD_A | PAD_B                ; A alone or B alone does not trigger it
     jr nz, .nobomb
+    ld a, b
+    and PAD_A | PAD_B
+    jr z, .nobomb                   ; both held but neither newly pressed: no repeat
 .bombkey:
     call UseBomb
 .nobomb:
