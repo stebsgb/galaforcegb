@@ -20,7 +20,7 @@ Build: `galaforce-0.0.14.gb` (MBC1 + RAM + battery, 32 KB ROM).
 - `make boss` builds `galaforce_boss.gb`, which starts on ZONE 04 (the first boss wave) for testing.
 
 ## Build
-- `make` builds `galaforce-0.0.14-SNAPSHOT.gb` from `VERSION` in the Makefile.
+- `make` builds `galaforce-0.0.14.gb` from `VERSION` in the Makefile.
 - `make god` builds `galaforce_god.gb`, which cannot die (used for headless checks).
 - The reference source is in `ref/`, a separate git repo that this repo does not track. `archive/ref-source.zip` is a snapshot of it, with a SHA-256 in `archive/ref-source.zip.sha256`.
 
