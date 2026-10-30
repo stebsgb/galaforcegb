@@ -2,25 +2,7 @@
 
 A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (1986). It keeps the original formations, flight paths and wave data, redraws the sprites for the Game Boy's small 4-shade screen, and recreates the original music and sound effects. Original source: https://github.com/KevEdwards/Galaforce1BBC. Personal project, not for distribution.
 
-Colour recordings of the title screen and the attract-mode demo, 10 seconds each.
-
-| | Dark background (default) | White background |
-|---|---|---|
-| Title screen (intro) | ![Title screen, dark background](docs/screenshots/colour/intro_dark.gif) | ![Title screen, white background](docs/screenshots/colour/intro_white.gif) |
-| Attract-mode demo | ![Attract-mode demo, dark background](docs/screenshots/colour/demo_dark.gif) | ![Attract-mode demo, white background](docs/screenshots/colour/demo_white.gif) |
-
-The original 4-shade greyscale recordings, as the hardware shows them, are `docs/screenshots/demo.gif` (white) and `docs/screenshots/demo_dark.gif` (dark).
-
-## Build
-### Setup: reference source (`ref/`)
-`ref/` holds the original BBC source and data (`ref/src/PATT.asm`, `PATDAT.asm`, `WAVE.asm`, `ROUT1.asm`, ...). The build reads it, so it must be present. It is a separate git repo and is not tracked by this one (`.gitignore` lists `ref/`). From the project root:
-
-```
-git clone https://github.com/KevEdwards/Galaforce1BBC ref
-```
-
-`make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-1.0.0.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
-`make god` builds `galaforce_god.gb` (cannot die; used for soak tests and gameplay screenshots).
+![Title screen with the black background](docs/screenshots/colour/intro_dark.gif)
 
 ## Controls
 - In play: D-pad move, A fire.
@@ -50,3 +32,14 @@ git clone https://github.com/KevEdwards/Galaforce1BBC ref
 - **Options.** Lives (1 to 7), continues (0 to 3), and a black or white background (black is the default). The options are saved in battery RAM with a checksum.
 - **Cheat: level select.** On the options screen, press Up, Up, Down, Down, Select to reveal a `ZONE` row (1 to 16). It is not saved, and a game started this way does not record a hi-score. The demo ignores it.
 - **Secret screen.** On the options screen, press Down, Down, Up, Up, Select to see a flashing screen, a growing heart and the words `FOR MAYA`. A, B, Start or Select returns to the options.
+
+## Build
+### Setup: reference source (`ref/`)
+`ref/` holds the original BBC source and data (`ref/src/PATT.asm`, `PATDAT.asm`, `WAVE.asm`, `ROUT1.asm`, ...). The build reads it, so it must be present. It is a separate git repo and is not tracked by this one (`.gitignore` lists `ref/`). From the project root:
+
+```
+git clone https://github.com/KevEdwards/Galaforce1BBC ref
+```
+
+- `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-1.0.0.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
+- `make god` builds `galaforce_god.gb` (cannot die; used for soak tests and gameplay screenshots).
