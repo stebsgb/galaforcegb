@@ -199,6 +199,7 @@ VBlankISR:
     ldh [rLCDC], a
     ld a, 8
     ldh [rSCY], a
+    ld a, 7                     ; top split fires on LY 7; StatISR waits for HBlank so the switch lands on line 8
     ldh [rLYC], a
     pop af
     reti
@@ -218,17 +219,27 @@ StatISR:
     or a
     jp nz, TitleStat
     ldh a, [rLYC]
-    cp 8
+    cp 7
     jr nz, .bottom
+    ; top split (fires on LY 7): wait for HBlank so the new SCY/LCDC apply from line 8 on
+.hb1:
+    ldh a, [rSTAT]
+    and 3
+    jr nz, .hb1
     ldh a, [hStarY]
     ldh [rSCY], a
     ld a, LCDC_STAR
     ldh [rLCDC], a
-    ld a, BOT_LINE
+    ld a, BOT_LINE - 1
     ldh [rLYC], a
     pop af
     reti
 .bottom:
+    ; bottom split (fires on LY BOT_LINE-1): wait for HBlank so the switch lands on line BOT_LINE
+.hb2:
+    ldh a, [rSTAT]
+    and 3
+    jr nz, .hb2
     ld a, LCDC_BOT
     ldh [rLCDC], a
     pop af
