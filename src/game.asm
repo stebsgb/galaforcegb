@@ -843,6 +843,7 @@ AlienHit:                       ; c = alien slot
     ld e, a
     ld d, 0
     call AddKillScore
+    call KillCap                ; cap live player-kill explosions (src/edgefx.asm); preserves c
     ld h, HIGH(wAliens)
     ld l, c
     ld a, $81

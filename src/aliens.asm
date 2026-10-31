@@ -469,9 +469,7 @@ AlienFetch:
     inc a
     ret
 .vis:
-    ld l, c
-    ld a, $81
-    ld [hl], a
+    call EdgeExplode            ; edge explosion in ROM bank 1 (src/edgefx.asm); c preserved
     ld a, c
     or AL_FRAME
     ld l, a

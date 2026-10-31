@@ -118,6 +118,7 @@ wHfxT:      db            ; boss hit explosion: ticks so far (counts up to wHfxN
 wHfxN:      db            ; its length: 12 (short) or 24 (standard kill animation, last 5 boss hits); equal = none
 wHfxX:      db            ; its top-left x
 wHfxY:      db            ; its top-left y (field coordinates, as the bullet)
+wEdgeSlot:  db            ; alien slot offset of the current edge (path-end) explosion, state $83
 wBul:       ds 12          ; 3 x (active, x, y, -)
 wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
@@ -477,4 +478,5 @@ INCLUDE "save.asm"
 INCLUDE "fx.asm"
 INCLUDE "options.asm"
 INCLUDE "secret.asm"
+INCLUDE "edgefx.asm"
 INCLUDE "data.inc"
