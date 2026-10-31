@@ -317,8 +317,6 @@ StateGameOver:
     ld a, [wContSel]
     or a
     jr nz, .no
-    xor a
-    ld [wHiOK], a               ; a continue was used: this game cannot record a hi-score
     ld hl, wConts               ; yes: refill the lives and replay this wave
     dec [hl]
     ld a, [wOptLives]           ; the option is total lives; wLives counts spares (the ship in play is extra)

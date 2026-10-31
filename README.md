@@ -22,7 +22,7 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 - **Enemy fire.** Aliens drop bombs at random. If you stay still for about 4 seconds, a live alien in line with your ship drops an aimed bomb.
 - **Lives and extra life.** You start with the number of lives set in the options (default 5, range 1 to 7). You get one extra life (1UP) per game when your score reaches 20,000.
 - **Continues.** The options allow 0 to 3 continues (default 0). At game over with a continue left, the screen asks `CONTINUE? YES / NO`. YES refills your lives, keeps your score and replays the wave. NO ends the game.
-- **Hi-score.** The hi-score is saved to battery RAM. Each continue setting keeps its own hi-score. Until a real score is saved, the defaults are 25,000, 50,000, 75,000 and 100,000 for 0 to 3 continues. A hi-score is not recorded after a continue is used, or after a cheat start.
+- **Hi-score.** The hi-score is saved to battery RAM. Each continue setting keeps its own hi-score. Until a real score is saved, the defaults are 25,000, 50,000, 75,000 and 100,000 for 0 to 3 continues. A hi-score is saved as normal after a continue is used. It is not recorded after a cheat start.
 - **Music and sound.** The original BBC tunes and sound effects are recreated. There are tunes for the title and attract demo, game start, between waves, zone entry, lost life and game over, plus sound effects for shots, explosions, bombs and the 1UP.
 - **Visual effects.** Palette fades between screens, a screen flash when a bomb is used or a life is lost, and a death flash.
 
@@ -41,5 +41,5 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 git clone https://github.com/KevEdwards/Galaforce1BBC ref
 ```
 
-- `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-1.0.0.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
+- `make` (needs RGBDS and a Python venv in `.venv` with pillow, numpy, pyboy) -> `galaforce.gb` plus a versioned copy `galaforce-1.0.1.gb` (set `VERSION` in the Makefile; MBC1+RAM+battery, 32 KB ROM).
 - `make god` builds `galaforce_god.gb` (cannot die; used for soak tests and gameplay screenshots).
