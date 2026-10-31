@@ -134,6 +134,9 @@ patts_out[0][3] = 7
 # Pattern 1 (mirrored path 0, waves 0 and 8): same spacing change, delay from 5 to 7 spawn ticks.
 assert patts_out[1] == [1, 73, 50, 5, 20, 0, 5, 12, 128], patts_out[1]
 patts_out[1][3] = 7
+# Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
+assert patts_out[2] == [1, 12, 24, 4, 30, 0, 0, 18, 1], patts_out[2]
+patts_out[2][4] = 28
 # Pattern layout (read by StartPattern in src/aliens.asm):
 #   byte 0 = number of parts. Each part is 8 bytes:
 #   [x, y, delay, count, relx, rely, gra, path]
