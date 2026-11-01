@@ -688,6 +688,7 @@ SpawnChild:
 
 ; StartPattern: a = pattern id -> creates spawn records
 StartPattern:
+    call BossCheck              ; pattern 45 (boss): title tune on pulse 1 only; preserves a
     add a
     ld e, a
     ld d, 0

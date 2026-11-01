@@ -1,5 +1,51 @@
 SECTION "edgefx", ROMX, BANK[1]
 
+; Boss stage music. Called from StartPattern (src/aliens.asm) when pattern 45 starts.
+; The title tune (MUS_DEMO) plays on the wave channel only and repeats. Pulse 1 and pulse 2 are
+; left to the explosions and player bullets (src/audio.asm: aMute, aLoop). Lives in bank 1 to save space in bank 0.
+BossCheck:                      ; a = pattern id, preserved
+    cp 45
+    ret nz
+    push af
+    call BossMusic
+    pop af
+    ret
+
+BossMusic:
+    ld a, [wDemo]               ; the attract demo has no music
+    or a
+    ret nz
+    ld a, MUS_DEMO
+    call MusicPlay
+    ld a, 1
+    ld [aMute], a
+    ld [aLoop], a
+    ret
+
+; RestartTune: reload all three stream pointers of the current tune and start again.
+; Called from MusicTick (src/audio.asm) when the wave channel reaches the end of a looping tune.
+RestartTune:
+    push bc
+    ld a, [aTune]
+    swap a
+    ld e, a
+    ld d, 0
+    ld hl, TuneTable
+    add hl, de
+    ld de, aPtr
+    ld b, 6
+.c: ld a, [hli]
+    ld [de], a
+    inc de
+    dec b
+    jr nz, .c
+    ld a, 1
+    ld [aCnt], a
+    ld [aCnt + 1], a
+    ld [aCnt + 2], a
+    pop bc
+    ret
+
 ; Edge (path-end) explosions. This code lives in ROM bank 1 to free space in bank 0.
 ; Bank 1 is selected at boot and the game never writes the MBC1 bank register ($2000-$3FFF),
 ; so a plain call from bank 0 reaches this code. Add bank switching only with a matching change here.

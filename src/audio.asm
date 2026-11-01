@@ -16,6 +16,9 @@ aSfxPtr:  dw
 aPaused:  db
 aSfxLock: db              ; 1 while the last-life sound plays: nothing (bullets, explosions) can cut it
 aSfxId:   db              ; id of the effect now playing (SFX_*), so a BOOM can be held off while the bomb sounds
+aMute:    db              ; 1 = wave channel only (boss stage): PlayNote skips pulse 1 and pulse 2
+aTune:    db              ; id of the tune now playing (MUS_*), used to restart it
+aLoop:    db              ; 1 = the tune repeats (boss stage): the wave channel restarts when its stream ends
 
 SECTION "audio", ROM0
 
@@ -66,6 +69,7 @@ MusicPlay:
     ret
 .play:
     pop af
+    ld [aTune], a
     swap a
     ld e, a
     ld d, 0
@@ -91,12 +95,21 @@ MusicPlay:
     xor a
     ld [aSfxOn], a                  ; the tune takes the pulse channels back, cutting any effect (e.g. the death explosion)
     ld [aSfxLock], a                ; a tune also releases the last-life lock
+    ld [aMute], a                   ; a new tune starts with every channel sounding
+    ld [aLoop], a                   ; and does not repeat unless it is the boss tune
     ldh [rNR12], a
     ldh [rNR22], a
     ret
 
 ; Z set when every channel has reached the end of its stream
+; The looping boss tune never ends, so it does not count as busy (bombs and effects stay available).
 MusicBusy:
+    ld a, [aLoop]
+    or a
+    jr z, .real
+    xor a
+    ret
+.real:
     ld hl, aPtr
     ld b, 3
     xor a
@@ -178,6 +191,13 @@ MusicTick:
     ld a, [de]
     or a
     jr nz, .note
+    ld a, c                     ; boss tune: the wave channel (channel 2) repeats from the start when it ends
+    cp 2
+    jr nz, .idle
+    ld a, [aLoop]
+    or a
+    call nz, RestartTune
+.idle:
     ld e, c                     ; channel finished: idle until restarted
     ld d, 0
     ld hl, aCnt
@@ -221,6 +241,13 @@ MusicTick:
 PlayNote:
     ld e, a
     ld d, 0
+    ld a, [aMute]                   ; boss stage: only the wave channel (channel 2) sounds
+    or a
+    jr z, .live
+    ld a, c
+    cp 2
+    ret nz
+.live:
     ld a, c
     cp 2
     jr z, .wave
@@ -331,6 +358,9 @@ Sfx:
     jr nz, .out
     jr .go
 .force:                             ; stop the tune's channels, then play the effect
+    ld a, [aLoop]                   ; boss tune is on the wave channel only: the effect plays over it
+    or a
+    jr nz, .go
     xor a
     ld [aPlay], a
     ld [aGateCt], a

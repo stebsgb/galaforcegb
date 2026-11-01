@@ -1,4 +1,4 @@
-SECTION "hud", ROM0
+SECTION "hud", ROMX, BANK[1]        ; bank 1 (like src/edgefx.asm): bank 0 is full; called as a normal subroutine
 
 ; HudNum: de = 7 digit buffer, hl = VRAM destination (leading zeros suppressed)
 HudNum:
