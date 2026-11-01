@@ -20,7 +20,7 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 - **Wave multipliers.** When a pattern ends, the points you scored for it are multiplied. Killing more than 80% of the aliens gives x2. Killing every alien gives x5. The boss pattern counts too, and an `X2` / `X5` flash shows beside the score when a multiplier is paid. Aliens spawned by splitting count toward the total.
 - **Smart bombs.** A smart bomb hits every alien on screen once, and the boss once. Aliens that take two hits survive with one hit left. You start each game with one bomb and can hold up to two. Bombs are kept when you lose a life. A boss kill adds one.
 - **Enemy fire.** Aliens drop bombs at random. If you stay still for about 4 seconds, a live alien in line with your ship drops an aimed bomb.
-- **Lives and extra life.** You start with the number of lives set in the options (default 5, range 1 to 7). You get one extra life (1UP) per game when your score reaches 20,000.
+- **Lives and extra life.** You start with the number of lives set in the options (default 5, range 1 to 6). You get one extra life (1UP) per game when your score reaches 20,000.
 - **Continues.** The options allow 0 to 3 continues (default 0). At game over with a continue left, the screen asks `CONTINUE? YES / NO`. YES refills your lives, keeps your score and replays the wave. NO ends the game.
 - **Hi-score.** The hi-score is saved to battery RAM. Each continue setting keeps its own hi-score. Until a real score is saved, the defaults are 25,000, 50,000, 75,000 and 100,000 for 0 to 3 continues. A hi-score is saved as normal after a continue is used. It is not recorded after a cheat start.
 - **Music and sound.** The original BBC tunes and sound effects are recreated. There are tunes for the title and attract demo, game start, between waves, zone entry, lost life and game over, plus sound effects for shots, explosions, bombs and the 1UP.
@@ -29,7 +29,7 @@ A Game Boy (DMG) remake of Kevin Edwards' BBC Micro shoot-'em-up *Galaforce* (19
 ### Title, options and attract mode
 - **Title screen.** Styled after the BBC original: the SC and HI line, the wide logo, the credit line for the 1986 original (Kevin Edwards, Superior Software), the flags, an occasional shine sweep, and the same scrolling starfield as in-game.
 - **Attract-mode demo.** The title screen idles into a self-playing demo after about 13 seconds. The demo ship is invulnerable and runs for about 30 seconds. Any Start press returns to the title, and the hi-score is not changed by the demo.
-- **Options.** Lives (1 to 7), continues (0 to 3), and a black or white background (black is the default). The options are saved in battery RAM with a checksum.
+- **Options.** Lives (1 to 6), continues (0 to 3), and a black or white background (black is the default). The options are saved in battery RAM with a checksum.
 - **Cheat: level select.** On the options screen, press Up, Up, Down, Down, Select to reveal a `ZONE` row (1 to 16). It is not saved, and a game started this way does not record a hi-score. The demo ignores it.
 - **Secret screen.** On the options screen, press Down, Down, Up, Up, Select to see a flashing screen, a growing heart and the words `FOR MAYA`. A, B, Start or Select returns to the options.
 

@@ -140,7 +140,7 @@ wDemo:      db            ; 1 while the attract-mode demo runs
 wIdle:      dw            ; title idle frames
 wDemoT:     dw            ; demo frames
 wHiBak:     ds 7          ; hi-score saved while the demo runs
-wOptLives:  db            ; options: starting spare lives 1..5
+wOptLives:  db            ; options: starting spare lives 1..6
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
 wTwk:       dw            ; title logo shine cycle counter
