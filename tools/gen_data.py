@@ -131,13 +131,13 @@ assert patts_out[0] == [1, 0, 50, 5, 20, 0, 5, 12, 0], patts_out[0]
 patts_out[0][4] = 20
 # Pattern 0: increase the spacing between aliens (part byte 3, delay) from 5 to 7 spawn ticks.
 patts_out[0][3] = 7
-# Pattern 0: increase the vertical spacing between aliens (part byte rely, index 6) from 5 to 10 Y units.
+# Pattern 0: increase the vertical spacing between aliens (part byte rely, index 6) from 5 to 7 Y units.
 assert patts_out[0][6] == 5, patts_out[0]
 patts_out[0][6] = 7
 # Pattern 1 (mirrored path 0, waves 0 and 8): same spacing change, delay from 5 to 7 spawn ticks.
 assert patts_out[1] == [1, 73, 50, 5, 20, 0, 5, 12, 128], patts_out[1]
 patts_out[1][3] = 7
-# Pattern 1: increase the vertical spacing between aliens (part byte rely, index 6) from 5 to 10 Y units.
+# Pattern 1: increase the vertical spacing between aliens (part byte rely, index 6) from 5 to 8 Y units.
 assert patts_out[1][6] == 5, patts_out[1]
 patts_out[1][6] = 8
 # Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
