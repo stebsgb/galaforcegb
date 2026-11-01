@@ -38,6 +38,7 @@ DEF IN_RELX  EQU 6
 DEF IN_RELY  EQU 7
 DEF IN_TYPE  EQU 8
 DEF IN_PNUM  EQU 9         ; path id | $80 = mirrored
+DEF IN_NOBOMB EQU 10       ; 1 = aliens from this record fire no bombs (patterns 8 and 9)
 
 ; ---- game states ----
 DEF ST_TITLE    EQU 0
@@ -66,6 +67,7 @@ DEF MUS_LOST    EQU 2
 DEF MUS_OVER    EQU 3
 DEF MUS_ZONE    EQU 4
 DEF MUS_DEMO    EQU 5
+DEF MUS_BOSS    EQU 6           ; boss stage: title tune's wave stream, one octave lower, pulse wave
 
 DEF PX_MAX EQU 144
 DEF PY_MIN EQU 82
@@ -88,6 +90,9 @@ wAliens: ds 16 * MAXAL
 
 SECTION "initsram", WRAM0, ALIGN[8]
 wInits: ds 16 * MAXINIT
+
+SECTION "nobombram", WRAM0, ALIGN[8]
+wNoBomb: ds 16 * MAXAL      ; per alien slot (same offsets as wAliens): 1 = this alien fires no bombs
 
 SECTION "vars", WRAM0
 wKeys:      db
@@ -126,6 +131,7 @@ wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
 wWaveOff:   db
 wTmp:       ds 8
+wSpawnNoBomb: db           ; flag for the alien being created: 1 = fires no bombs
 wRot:       db
 wPause:     db
 wMusic:     ds 16
@@ -149,6 +155,7 @@ wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
 wBossHits:  db
+wBossWait:  db              ; 1 = boss stage: boss tune armed, waiting for the boss to be the last big threat (src/edgefx.asm)
 wWaveKills: dw
 wWaveTotalAliens: dw
 wWavePoints: dw
@@ -164,6 +171,7 @@ hSplit:     db
 hStarY:     db
 hTitle:     db            ; 1 while the title screen (split star background) is shown
 hSeg:       db            ; title split segment index
+hCgb:       db            ; 1 on a Game Boy Color (A = $11 at power-on), 0 on DMG; set once by Boot, kept by soft reset
 
 ; ===================================================== vectors
 SECTION "vec_vbl", ROM0[$40]
@@ -173,7 +181,7 @@ SECTION "vec_stat", ROM0[$48]
 
 SECTION "entry", ROM0[$100]
     nop
-    jp Start
+    jp Boot
     ds $150 - @, 0
 
 SECTION "main", ROM0
@@ -258,6 +266,15 @@ DmaRoutine:
 DmaRoutineEnd:
 
 ; ===================================================== boot
+; Power-on entry from $100: A is $11 on a Game Boy Color and $01 on DMG. Saved once in hCgb;
+; soft reset jumps to Start directly, so the saved value is kept.
+Boot:
+    cp $11
+    ld a, 0                         ; ld does not change the flags
+    jr nz, .dmg
+    inc a
+.dmg:
+    ldh [hCgb], a
 Start:
     di
     ld sp, $FFFE
@@ -290,7 +307,9 @@ Start:
     ld de, _SCRN1 + 512
     ld bc, 512
     call MemCopy
+    call CgbInit                    ; GBC only: clear the BG attribute map in VRAM bank 1
     call ApplyPalettes
+    call CgbFlush
     ld a, BOT_LINE
     ldh [rWY], a
     ld a, 7
@@ -334,6 +353,7 @@ MainLoop:
     xor a
     ldh [hVBlank], a
     call hDma
+    call CgbFlush
     call HudUpdate
     call MenuRefresh
     call TitleShine
@@ -453,7 +473,11 @@ PutObj:
     ld a, d
     ld [hli], a
     ld a, e
-    ld [hli], a
+    and $F0                     ; keep the DMG bits (flip, priority, OBP1); clear the CGB palette and bank bits
+    bit 4, a
+    jr z, .p
+    or 1                        ; GBC: object palette 1 (DMG ignores this bit)
+.p: ld [hli], a
     ld a, l
     ld [wOamLo], a
     ret
@@ -481,4 +505,5 @@ INCLUDE "fx.asm"
 INCLUDE "options.asm"
 INCLUDE "secret.asm"
 INCLUDE "edgefx.asm"
+INCLUDE "cgb.asm"
 INCLUDE "data.inc"

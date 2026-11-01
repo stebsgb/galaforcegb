@@ -110,6 +110,7 @@ UpdateAliens:
     and 3
     jr nz, .next
     push bc
+    call BossStop               ; the boss tune stops for the death explosions (src/edgefx.asm)
     ld a, SFX_BOOM
     call Sfx
     pop bc
@@ -119,7 +120,7 @@ UpdateAliens:
     ld c, a
     cp MAXAL * 16
     jr c, .loop
-    ret
+    jp BossWaitTick             ; boss tune: starts once the boss is alive with at most 2 standard aliens (src/edgefx.asm)
 
 ; BossFire: c = slot. A boss (type 5) with no other live alien drops a bomb about every 32 frames;
 ; the boss path has no bomb opcodes, so this is its only fire.
@@ -598,6 +599,9 @@ FillAlien:
     ld [wTmp + 6], a
     ld a, [wTmp + 7]
     ld l, a
+    ld h, HIGH(wNoBomb)         ; l = slot offset
+    ld a, [wSpawnNoBomb]
+    ld [hl], a
     ld h, HIGH(wAliens)
     ld a, $80
     ld [hli], a
@@ -683,11 +687,36 @@ SpawnChild:
     and 2
     srl a
     ld [wTmp + 3], a
+    ld h, HIGH(wNoBomb)
+    ld a, c
+    ld l, a
+    ld a, [hl]
+    ld [wSpawnNoBomb], a        ; children inherit the parent's no-bomb flag
     ld a, b
     jp FillAlien
 
+; NoBombPattern: a = pattern id -> wSpawnNoBomb = 1 for patterns 31 and 32 (their aliens fire no bombs), else 0. Preserves a.
+NoBombPattern:
+    push af
+    xor a
+    ld [wSpawnNoBomb], a
+    pop af
+    push af
+    cp 31
+    jr z, .on
+    cp 32
+    jr nz, .done
+.on:
+    ld a, 1
+    ld [wSpawnNoBomb], a
+.done:
+    pop af
+    ret
+
 ; StartPattern: a = pattern id -> creates spawn records
 StartPattern:
+    call BossCheck              ; pattern 45 (boss): title tune on pulse 1 only; preserves a
+    call NoBombPattern          ; patterns 31 and 32: their aliens fire no bombs; preserves a
     add a
     ld e, a
     ld d, 0
@@ -768,6 +797,9 @@ StartPattern:
     inc e
     ld a, [hli]                 ; path id | mirror
     ld [de], a
+    inc e
+    ld a, [wSpawnNoBomb]
+    ld [de], a                  ; IN_NOBOMB: 1 for patterns 8 and 9
     ld a, e
     and $F0
     add 16
@@ -850,6 +882,12 @@ SpawnAlien:
     rlca
     and 1
     ld [wTmp + 2], a
+    ld d, HIGH(wInits)
+    ld a, c
+    or IN_NOBOMB
+    ld e, a
+    ld a, [de]
+    ld [wSpawnNoBomb], a        ; this record's flag, read by FillAlien
     ld a, b
     and $7F
     call FillAlien                  ; counts toward wWaveTotalAliens itself

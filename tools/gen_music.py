@@ -38,11 +38,26 @@ for lab in order:
 
 SPT, ENVTAB, DURATAB = streams["SPT"], streams["ENVTAB"], streams["DURATAB"]
 
+# boss tune: the title tune's wave stream in its original order, one octave lower (pitches only; durations unchanged)
+dem3 = streams["DEMa3"]
+assert dem3[-1] == 0 and 0 not in dem3[:-1]
+pitch = [b & 63 for b in dem3[:-1]]
+dur = [b & 192 for b in dem3[:-1]]
+BOSS_SEMITONES = -12                  # the boss tune plays one octave lower (note = semitone)
+pitch = [p if p == 63 else p + BOSS_SEMITONES for p in pitch]   # rests (63) stay rests
+assert all(p == 63 or 1 <= p <= 62 for p in pitch)
+boss = [p | d for p, d in zip(pitch, dur)] + [0]
+assert 0 not in boss[:-1]
+addr["BossWave"] = len(blob)
+blob += bytes(boss)
+
 # tune lookup table (.LT in MUSIC3.asm): addr1, label2, label3, speed idx, env idx, dur idx
 text = open(os.path.join(REF, "src", "MUSIC3.asm"), encoding="latin-1").read()
 rows = re.findall(r"EQUW (\w+):EQUB (\w+)-\w+:EQUB (\w+)-\w+:EQUB (\d+):EQUB (\d+):EQUB (\d+)", text)
 LT = {"START": rows[0], "BETW": rows[1], "OVER": rows[2], "DEMO": rows[3], "LOST": rows[4], "ZONE": rows[5]}
-MY_ORDER = ["START", "BETW", "LOST", "OVER", "ZONE", "DEMO"]   # MUS_* ids in main.asm
+LT["BOSS"] = (*LT["DEMO"][:2], "BossWave", *LT["DEMO"][3:])   # boss: DEMO row, wave stream one octave lower
+MY_ORDER = ["START", "BETW", "LOST", "OVER", "ZONE", "DEMO", "BOSS"]   # MUS_* ids in main.asm
+SPEED_SCALE = {"BOSS": 0.5}          # boss tune plays twice as fast (note lengths halved); other tunes unchanged
 
 # BBC ENVELOPE number -> (GB start volume, decay pace)
 # music sits below the effects so that the SFX punch through
@@ -70,6 +85,7 @@ for name in MY_ORDER:
     a1, l2, l3, spt, env, dur = LT[name]
     spt, env, dur = int(spt), int(env), int(dur)
     spd = [SPT[spt - (3 - y)] for y in range(4)]
+    spd = [max(1, round(s * SPEED_SCALE.get(name, 1))) for s in spd]   # per-tune tempo (1 = original)
     e = [ENVTAB[env - (2 - c)] for c in range(3)]
     d = [DURATAB[dur - (2 - c)] for c in range(3)]
     gate = max(1, min(255, d[2] * 3))
@@ -82,9 +98,15 @@ out.append("    dw " + ",".join(str(pulse_x(freq(n))) for n in range(64)))
 out.append("WaveFreq:")
 out.append("    dw " + ",".join(str(wave_x(freq(n))) for n in range(64)))
 
+
 samples = [round(7.5 + 7.5 * (2 / math.pi) * math.asin(math.sin(2 * math.pi * (i + 0.5) / 32))) for i in range(32)]
 out.append("WaveTable:")
 out.append("    db " + ",".join(str((samples[2 * i] << 4) | samples[2 * i + 1]) for i in range(16)))
+# boss waveform: a 25% duty pulse (high for 8 of 32 samples, then low) instead of the triangle; only the boss tune uses it.
+# A thinner pulse than 50% gives the buzzy, reedy sound of the Game Boy pulse channels.
+pulse = [15 if i < 8 else 0 for i in range(32)]
+out.append("WaveTableBoss:")
+out.append("    db " + ",".join(str((pulse[2 * i] << 4) | pulse[2 * i + 1]) for i in range(16)))
 
 # ---------------------------------------------------------------- SFX
 # event: type (0 pulse1 NR10-14 | 1 pulse2 NR21-24 | 2 noise NR41-44), regs..., wait frames; 255 ends

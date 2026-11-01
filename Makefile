@@ -3,7 +3,7 @@ RGBLINK ?= rgblink
 RGBFIX ?= rgbfix
 PY ?= .venv/bin/python
 OUT = galaforce.gb
-VERSION = 1.0.3-SNAPSHOT
+VERSION = 1.0.4-SNAPSHOT
 VOUT = galaforce-$(VERSION).gb
 SRCS = $(wildcard src/*.asm)
 GEN = build/data.inc build/gfx.inc build/music.inc
@@ -28,12 +28,12 @@ build/main.o: $(SRCS) $(GEN) | build
 
 $(OUT): build/main.o
 	$(RGBLINK) -p 0xFF -m build/galaforce.map -n galaforce.sym -o $@ $<
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 $@
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -c -l 0x00 -m 0x03 -r 2 $@
 
 god: $(SRCS) $(GEN) | build
 	$(RGBASM) -DGOD -I src/ -I build/ -o build/god.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_god.sym -o galaforce_god.gb build/god.o
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_god.gb
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -c -l 0x00 -m 0x03 -r 2 galaforce_god.gb
 
 # SNAPSHOT REMOVED: The default build now produces a non-snapshot version
 # Development snapshot build is still available via 'make snapshot-build' if needed.
@@ -41,7 +41,7 @@ god: $(SRCS) $(GEN) | build
 snapshot-build: $(SRCS) $(GEN) | build
 	$(RGBASM) -I src/ -I build/ -o build/snapshot.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_snapshot.sym -o galaforce-$(VERSION)-SNAPSHOT.gb build/snapshot.o
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce-$(VERSION)-SNAPSHOT.gb
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -c -l 0x00 -m 0x03 -r 2 galaforce-$(VERSION)-SNAPSHOT.gb
 
 clean:
 	rm -rf build galaforce.gb galaforce-*.gb galaforce.sym galaforce_snapshot.sym
@@ -49,6 +49,10 @@ clean:
 boss: $(SRCS) $(GEN) | build
 	$(RGBASM) -DBOSSTEST -I src/ -I build/ -o build/boss.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_boss.sym -o galaforce_boss.gb build/boss.o
-	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -c -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
+alientest: $(SRCS) $(GEN) | build
+	$(RGBASM) -I src/ -I build/ -o build/alientest.o src/main.asm
+	$(RGBLINK) -p 0xFF -n alientest.sym -o alientest.gb build/alientest.o
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -c -l 0x00 -m 0x03 -r 2 alientest.gb
 
-.PHONY: all clean god boss snapshot-build
+.PHONY: all clean god boss alientest snapshot-build

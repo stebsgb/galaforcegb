@@ -1,7 +1,12 @@
-SECTION "bombs", ROM0
+SECTION "bombs", ROMX, BANK[1]      ; bank 1 (like src/edgefx.asm): bank 0 is full; called as a normal subroutine
 
 ; InitBomb: c = alien slot offset. Preserves c.
 InitBomb:
+    ld h, HIGH(wNoBomb)         ; no bombs from this alien (patterns 8 and 9): random, aimed and path-drop bombs all stop here
+    ld l, c
+    ld a, [hl]
+    or a
+    ret nz
     ld hl, wBomb
     ld b, 6
 .f: ld a, [hl]
@@ -135,6 +140,11 @@ AimedBomb:
     ld a, [hl]
     cp $80
     jr nz, .n
+    ld h, HIGH(wNoBomb)         ; skip aliens from patterns 8 and 9 (no targeting bombs): look for a normal alien above the ship
+    ld a, [hl]
+    or a
+    jr nz, .n
+    ld h, HIGH(wAliens)
     inc l
     ld a, [hl]
     sub d

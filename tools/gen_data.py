@@ -143,6 +143,42 @@ patts_out[1][6] = 7
 # Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
 assert patts_out[2] == [1, 12, 24, 4, 30, 0, 0, 18, 1], patts_out[2]
 patts_out[2][4] = 28
+# Pattern 29 (part: [x, y, delay, count, relx, rely, gra, path]): reduce the alien count (part byte 4, num) from 21 to 12.
+# Pattern 29 is the first pattern of wave 12 (ZONE 13) and also the last pattern of wave 10 (ZONE 11), so both zones get the change.
+assert patts_out[29] == [1, 0, 32, 2, 21, 3, 0, 20, 18], patts_out[29]
+patts_out[29][4] = 12
+# Pattern 30 (part: [x, y, delay, count, relx, rely, gra, path]): reduce the alien count (part byte 4, num) from 21 to 12.
+# Pattern 30 is the second pattern of wave 12 (ZONE 13) only.
+assert patts_out[30] == [1, 74, 32, 2, 21, 253, 0, 20, 146], patts_out[30]
+patts_out[30][4] = 12
+# Patterns 8 and 9 keep their original spawn height (part byte y, index 2 = 32). No override.
+# Pattern 8 is the third pattern of wave 12 (ZONE 13) and is also used by waves 1, 2, 3, 6, 7, 9, 10, 12, 13, 14 and 15.
+# Pattern 9 is the fourth pattern of wave 12 (ZONE 13) and is also used by waves 2 and 9 (ZONES 3 and 10).
+# No bomb rule on these two (patterns 8 and 9 fire normally).
+assert patts_out[8] == [1, 36, 32, 6, 15, 0, 0, 20, 6], patts_out[8]
+assert patts_out[9] == [1, 38, 32, 6, 15, 0, 0, 20, 134], patts_out[9]
+# Patterns 29 and 30 (ZONE 13, first and second patterns): spawn delay (part byte index 3) from 2 to 3 ticks, so the gaps between aliens are slightly wider.
+# Pattern 29 is also ZONE 11's last pattern, so ZONE 11 gets the wider gap too.
+assert patts_out[29] == [1, 0, 32, 2, 12, 3, 0, 20, 18], patts_out[29]
+patts_out[29][3] = 3
+assert patts_out[30] == [1, 74, 32, 2, 12, 253, 0, 20, 146], patts_out[30]
+patts_out[30][3] = 3
+# Patterns 31 and 32 (ZONE 13 only, the last two patterns of wave 12): 8 aliens each (part byte 4, num) from 12,
+# and spawn row (part byte y, index 2) lowered from 32 to 36 (higher Y is lower on screen). Both are no-bomb patterns.
+assert patts_out[31] == [1, 73, 32, 4, 12, 0, 0, 32, 19], patts_out[31]
+patts_out[31][2] = 36
+patts_out[31][4] = 8
+assert patts_out[32] == [1, 1, 32, 4, 12, 0, 0, 32, 147], patts_out[32]
+patts_out[32][2] = 36
+patts_out[32][4] = 8
+# Pattern 23 (part: [x, y, delay, count, relx, rely, gra, path]): spawn delay (index 3) from 3 to 4 ticks,
+# doubling the gap between aliens in the stream. Pattern 23 is used by waves 3, 7 and 14 (original lists).
+assert patts_out[23] == [1, 2, 255, 3, 20, 0, 0, 20, 15], patts_out[23]
+patts_out[23][3] = 4
+# Pattern 24 (part: [x, y, delay, count, relx, rely, gra, path]): spawn delay (index 3) from 3 to 4 ticks,
+# same change as pattern 23. Pattern 24 is in wave 3's original list.
+assert patts_out[24] == [1, 72, 255, 3, 20, 0, 0, 20, 143], patts_out[24]
+patts_out[24][3] = 4
 # Pattern layout (read by StartPattern in src/aliens.asm):
 #   byte 0 = number of parts. Each part is 8 bytes:
 #   [x, y, delay, count, relx, rely, gra, path]

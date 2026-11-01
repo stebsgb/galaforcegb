@@ -16,6 +16,10 @@ aSfxPtr:  dw
 aPaused:  db
 aSfxLock: db              ; 1 while the last-life sound plays: nothing (bullets, explosions) can cut it
 aSfxId:   db              ; id of the effect now playing (SFX_*), so a BOOM can be held off while the bomb sounds
+aMute:    db              ; 1 = wave channel only (boss stage): PlayNote skips pulse 1 and pulse 2
+aTune:    db              ; id of the tune now playing (MUS_*), used to restart it
+aLoop:    db              ; 1 = the tune repeats (boss stage): the wave channel restarts when its stream ends
+aRate:    db              ; accumulator step per frame (50 = normal tempo, 100 = 2x); the boss tune raises it each loop
 
 SECTION "audio", ROM0
 
@@ -32,6 +36,20 @@ AudioInit:
     ldh [rNR22], a
     ldh [rNR42], a
     ld hl, WaveTable
+    call LoadWave
+    xor a
+    ld [aPlay], a
+    ld [aAcc], a
+    ld [aGateCt], a
+    ld [aSfxOn], a
+    ld [aSfxLock], a
+    ld [aPaused], a
+    ld a, 50
+    ld [aRate], a
+    ret
+
+; hl = 16 bytes of waveform to copy into wave RAM ($FF30). Channel 3 must be off (MusicPlay turns it off first).
+LoadWave:
     ld de, $FF30
     ld b, 16
 .wave:
@@ -40,13 +58,6 @@ AudioInit:
     inc de
     dec b
     jr nz, .wave
-    xor a
-    ld [aPlay], a
-    ld [aAcc], a
-    ld [aGateCt], a
-    ld [aSfxOn], a
-    ld [aSfxLock], a
-    ld [aPaused], a
     ret
 
 ; a = tune id. During the attract demo there is no music: any tune request silences the channels.
@@ -66,6 +77,7 @@ MusicPlay:
     ret
 .play:
     pop af
+    ld [aTune], a
     swap a
     ld e, a
     ld d, 0
@@ -88,15 +100,28 @@ MusicPlay:
     ld [aAcc], a
     ld [aGateCt], a
     ldh [rNR30], a
+    ld hl, WaveTable                    ; every tune starts on the default waveform (the boss tune loads its own after this)
+    call LoadWave
     xor a
     ld [aSfxOn], a                  ; the tune takes the pulse channels back, cutting any effect (e.g. the death explosion)
     ld [aSfxLock], a                ; a tune also releases the last-life lock
+    ld [aMute], a                   ; a new tune starts with every channel sounding
+    ld [aLoop], a                   ; and does not repeat unless it is the boss tune
     ldh [rNR12], a
     ldh [rNR22], a
+    ld a, 50                            ; every tune starts at normal tempo (only the boss tune speeds up, in RestartTune)
+    ld [aRate], a
     ret
 
 ; Z set when every channel has reached the end of its stream
+; The looping boss tune never ends, so it does not count as busy (bombs and effects stay available).
 MusicBusy:
+    ld a, [aLoop]
+    or a
+    jr z, .real
+    xor a
+    ret
+.real:
     ld hl, aPtr
     ld b, 3
     xor a
@@ -147,12 +172,16 @@ AudioUpdate:
     or a
     ret z
     ld a, [aAcc]
-    add 50
-    cp 60
+    ld hl, aRate
+    add [hl]                        ; + aRate: 50 normally; the boss tune raises it on each loop
+.tick:
+    cp 60                           ; every 60 accumulated units is one driver tick
     jr c, .store
     sub 60
-    ld [aAcc], a
-    jr MusicTick
+    push af
+    call MusicTick
+    pop af
+    jr .tick                        ; rate above 60 gives more than one tick in a frame
 .store:
     ld [aAcc], a
     ret
@@ -178,6 +207,13 @@ MusicTick:
     ld a, [de]
     or a
     jr nz, .note
+    ld a, c                     ; boss tune: the wave channel (channel 2) repeats from the start when it ends
+    cp 2
+    jr nz, .idle
+    ld a, [aLoop]
+    or a
+    call nz, RestartTune
+.idle:
     ld e, c                     ; channel finished: idle until restarted
     ld d, 0
     ld hl, aCnt
@@ -221,6 +257,13 @@ MusicTick:
 PlayNote:
     ld e, a
     ld d, 0
+    ld a, [aMute]                   ; boss stage: only the wave channel (channel 2) sounds
+    or a
+    jr z, .live
+    ld a, c
+    cp 2
+    ret nz
+.live:
     ld a, c
     cp 2
     jr z, .wave
@@ -331,6 +374,9 @@ Sfx:
     jr nz, .out
     jr .go
 .force:                             ; stop the tune's channels, then play the effect
+    ld a, [aLoop]                   ; boss tune is on the wave channel only: the effect plays over it
+    or a
+    jr nz, .go
     xor a
     ld [aPlay], a
     ld [aGateCt], a
