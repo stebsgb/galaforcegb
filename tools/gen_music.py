@@ -102,8 +102,9 @@ out.append("    dw " + ",".join(str(wave_x(freq(n))) for n in range(64)))
 samples = [round(7.5 + 7.5 * (2 / math.pi) * math.asin(math.sin(2 * math.pi * (i + 0.5) / 32))) for i in range(32)]
 out.append("WaveTable:")
 out.append("    db " + ",".join(str((samples[2 * i] << 4) | samples[2 * i + 1]) for i in range(16)))
-# boss waveform: a 50% duty pulse (high for 16 of 32 samples, then low) instead of the triangle; only the boss tune uses it
-pulse = [15 if i < 16 else 0 for i in range(32)]
+# boss waveform: a 25% duty pulse (high for 8 of 32 samples, then low) instead of the triangle; only the boss tune uses it.
+# A thinner pulse than 50% gives the buzzy, reedy sound of the Game Boy pulse channels.
+pulse = [15 if i < 8 else 0 for i in range(32)]
 out.append("WaveTableBoss:")
 out.append("    db " + ",".join(str((pulse[2 * i] << 4) | pulse[2 * i + 1]) for i in range(16)))
 
