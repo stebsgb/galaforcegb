@@ -25,8 +25,9 @@ EdgeExplode:
     ret
 
 ; KillCap: called from AlienHit just before slot c becomes a player-kill explosion ($81).
-; At most KILL_CAP non-boss kill explosions are live. If the cap is already reached, the oldest
-; one (largest AL_TMR, its age in frames) is removed now. The boss (type 5) is never capped or removed.
+; At most KILL_CAP player-kill explosions are live. If the cap is already reached, the oldest
+; one (largest AL_TMR, its age in frames) is removed now. The boss (type 5) is never capped or removed,
+; and smart bomb kills (AL_BOMB set from wBombKill) are neither counted nor removed.
 ; Preserves c.
 DEF KILL_CAP EQU 3
 
@@ -40,11 +41,39 @@ KillCap:                        ; wrapper: keeps bc, de and hl for the caller
     pop bc
     ret
 
+; BombHit: c = alien slot. UseBomb calls this in place of AlienHit, so a kill made by the smart bomb is
+; tagged as a bomb kill (wBombKill = 1) and is not counted or capped. Preserves bc (AlienHit does).
+BombHit:
+    ld a, 1
+    ld [wBombKill], a
+    call AlienHit
+    xor a
+    ld [wBombKill], a
+    ret
+
+; BombTagClear: c = slot of a player-death explosion ($81 set in PlayerDie). Tags it exempt (AL_BOMB = 1)
+; so the death animation is not counted or capped, as before. Preserves c.
+BombTagClear:
+    ld a, c
+    or AL_BOMB
+    ld l, a
+    ld h, HIGH(wAliens)
+    ld a, 1
+    ld [hl], a
+    ret
+
 KillCapBody:
+    ld a, c
+    or AL_BOMB
+    ld l, a
+    ld h, HIGH(wAliens)
+    ld a, [wBombKill]
+    ld [hl], a                  ; tag this kill: 1 = smart bomb kill (set by UseBomb), 0 = player kill
+    or a
+    ret nz                      ; smart bomb kill: not capped and not counted
     ld a, c
     or AL_TYPE
     ld l, a
-    ld h, HIGH(wAliens)
     ld a, [hl]
     cp 5
     ret z                       ; the boss is not capped
@@ -63,6 +92,12 @@ KillCapBody:
     ld a, [hl]
     cp 5
     jr z, .c1n
+    ld a, e
+    or AL_BOMB
+    ld l, a
+    ld a, [hl]
+    or a
+    jr nz, .c1n                 ; smart bomb kill: not counted
     inc b
     ld a, e
     or AL_TMR
@@ -93,6 +128,12 @@ KillCapBody:
     ld a, [hl]
     cp 5
     jr z, .c2n
+    ld a, e
+    or AL_BOMB
+    ld l, a
+    ld a, [hl]
+    or a
+    jr nz, .c2n                 ; smart bomb kill: never removed by the cap
     ld a, e
     or AL_TMR
     ld l, a

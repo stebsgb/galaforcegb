@@ -139,7 +139,7 @@ assert patts_out[1] == [1, 73, 50, 5, 20, 0, 5, 12, 128], patts_out[1]
 patts_out[1][3] = 7
 # Pattern 1: increase the vertical spacing between aliens (part byte rely, index 6) from 5 to 8 Y units.
 assert patts_out[1][6] == 5, patts_out[1]
-patts_out[1][6] = 8
+patts_out[1][6] = 7
 # Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
 assert patts_out[2] == [1, 12, 24, 4, 30, 0, 0, 18, 1], patts_out[2]
 patts_out[2][4] = 28

@@ -25,6 +25,7 @@ DEF AL_LCNT  EQU 11
 DEF AL_LSTART EQU 12
 DEF AL_REFL  EQU 13
 DEF AL_TMR   EQU 14
+DEF AL_BOMB  EQU 15        ; 1 = killed by a smart bomb: not counted or removed by KillCap (src/edgefx.asm)
 
 ; ---- field offsets of a spawn record (16 bytes) ----
 DEF IN_ACT   EQU 0
@@ -114,6 +115,7 @@ wFireCD:    db
 wLastSfx:   db            ; 1 = last-life sound pending; it plays once the Lost a Life tune has finished
 wBombs:     db            ; smart bombs held: 0, 1 or 2 (SELECT uses one; boss kill adds one, capped at 2)
 wBombFlash: db            ; frames left in the smart-bomb screen flash (set by UseBomb, counts down in StatePlay)
+wBombKill:  db            ; 1 while UseBomb is hitting aliens: kills made then are smart bomb kills (not capped)
 wHfxT:      db            ; boss hit explosion: ticks so far (counts up to wHfxN)
 wHfxN:      db            ; its length: 12 (short) or 24 (standard kill animation, last 5 boss hits); equal = none
 wHfxX:      db            ; its top-left x

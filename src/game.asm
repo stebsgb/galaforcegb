@@ -843,7 +843,7 @@ AlienHit:                       ; c = alien slot
     ld e, a
     ld d, 0
     call AddKillScore
-    call KillCap                ; cap live player-kill explosions (src/edgefx.asm); preserves c
+    call KillCap                ; tags the kill (AL_BOMB) and caps player kills (src/edgefx.asm); preserves c
     ld h, HIGH(wAliens)
     ld l, c
     ld a, $81
@@ -899,18 +899,18 @@ UseBomb:
     ld a, [hl]
     cp 5                            ; boss: one hit
     jr z, .ubboss
-    call AlienHit                   ; first hit for every other alien
+    call BombHit                    ; first hit for every other alien (src/edgefx.asm: tags the kill as a bomb kill)
 IF BOMB_HITS == 2                   ; original two-hit bomb: switch BOMB_HITS to 2 in main.asm to use it
     ld h, HIGH(wAliens)
     ld l, c
     ld a, [hl]
     cp $80                          ; only if the first hit did not kill it
     jr nz, .ubn
-    call AlienHit
+    call BombHit
 ENDC
     jr .ubn
 .ubboss:
-    call AlienHit
+    call BombHit
 .ubn:
     ld a, c
     add 16
@@ -1171,6 +1171,7 @@ PlayerDie:
     jr nz, .n
     ld a, $81
     ld [hl], a
+    call BombTagClear           ; death explosion: not a smart bomb kill (src/edgefx.asm); preserves c
     ld a, c
     or AL_FRAME
     ld l, a
