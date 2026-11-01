@@ -120,7 +120,7 @@ UpdateAliens:
     ld c, a
     cp MAXAL * 16
     jr c, .loop
-    ret
+    jp BossWaitTick             ; boss tune: starts once the boss is alive with at most 2 standard aliens (src/edgefx.asm)
 
 ; BossFire: c = slot. A boss (type 5) with no other live alien drops a bomb about every 32 frames;
 ; the boss path has no bomb opcodes, so this is its only fire.

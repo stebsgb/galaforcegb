@@ -66,6 +66,7 @@ DEF MUS_LOST    EQU 2
 DEF MUS_OVER    EQU 3
 DEF MUS_ZONE    EQU 4
 DEF MUS_DEMO    EQU 5
+DEF MUS_BOSS    EQU 6           ; boss stage: title tune's wave stream, one octave lower, pulse wave
 
 DEF PX_MAX EQU 144
 DEF PY_MIN EQU 82
@@ -149,6 +150,7 @@ wContSel:   db            ; 0 = yes, 1 = no
 wDirty:     db            ; menu needs its dynamic tiles redrawn in VBlank
 wSecPos:    db            ; secret sequence progress (DOWN DOWN UP UP SELECT)
 wBossHits:  db
+wBossWait:  db              ; 1 = boss stage: boss tune armed, waiting for the boss to be the last big threat (src/edgefx.asm)
 wWaveKills: dw
 wWaveTotalAliens: dw
 wWavePoints: dw

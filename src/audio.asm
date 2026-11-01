@@ -35,6 +35,18 @@ AudioInit:
     ldh [rNR22], a
     ldh [rNR42], a
     ld hl, WaveTable
+    call LoadWave
+    xor a
+    ld [aPlay], a
+    ld [aAcc], a
+    ld [aGateCt], a
+    ld [aSfxOn], a
+    ld [aSfxLock], a
+    ld [aPaused], a
+    ret
+
+; hl = 16 bytes of waveform to copy into wave RAM ($FF30). Channel 3 must be off (MusicPlay turns it off first).
+LoadWave:
     ld de, $FF30
     ld b, 16
 .wave:
@@ -43,13 +55,6 @@ AudioInit:
     inc de
     dec b
     jr nz, .wave
-    xor a
-    ld [aPlay], a
-    ld [aAcc], a
-    ld [aGateCt], a
-    ld [aSfxOn], a
-    ld [aSfxLock], a
-    ld [aPaused], a
     ret
 
 ; a = tune id. During the attract demo there is no music: any tune request silences the channels.
@@ -92,6 +97,8 @@ MusicPlay:
     ld [aAcc], a
     ld [aGateCt], a
     ldh [rNR30], a
+    ld hl, WaveTable                    ; every tune starts on the default waveform (the boss tune loads its own after this)
+    call LoadWave
     xor a
     ld [aSfxOn], a                  ; the tune takes the pulse channels back, cutting any effect (e.g. the death explosion)
     ld [aSfxLock], a                ; a tune also releases the last-life lock

@@ -50,5 +50,9 @@ boss: $(SRCS) $(GEN) | build
 	$(RGBASM) -DBOSSTEST -I src/ -I build/ -o build/boss.o src/main.asm
 	$(RGBLINK) -p 0xFF -n galaforce_boss.sym -o galaforce_boss.gb build/boss.o
 	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 galaforce_boss.gb
+alientest: $(SRCS) $(GEN) | build
+	$(RGBASM) -I src/ -I build/ -o build/alientest.o src/main.asm
+	$(RGBLINK) -p 0xFF -n alientest.sym -o alientest.gb build/alientest.o
+	$(RGBFIX) -v -p 0xFF -t "GALAFORCE" -l 0x00 -m 0x03 -r 2 alientest.gb
 
-.PHONY: all clean god boss snapshot-build
+.PHONY: all clean god boss alientest snapshot-build
