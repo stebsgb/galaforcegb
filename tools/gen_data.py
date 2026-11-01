@@ -143,6 +143,14 @@ patts_out[1][6] = 8
 # Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
 assert patts_out[2] == [1, 12, 24, 4, 30, 0, 0, 18, 1], patts_out[2]
 patts_out[2][4] = 28
+# Pattern 23 (part: [x, y, delay, count, relx, rely, gra, path]): spawn delay (index 3) from 3 to 4 ticks,
+# doubling the gap between aliens in the stream. Pattern 23 is used by waves 3, 7 and 14 (original lists).
+assert patts_out[23] == [1, 2, 255, 3, 20, 0, 0, 20, 15], patts_out[23]
+patts_out[23][3] = 4
+# Pattern 24 (part: [x, y, delay, count, relx, rely, gra, path]): spawn delay (index 3) from 3 to 4 ticks,
+# same change as pattern 23. Pattern 24 is in wave 3's original list.
+assert patts_out[24] == [1, 72, 255, 3, 20, 0, 0, 20, 143], patts_out[24]
+patts_out[24][3] = 4
 # Pattern layout (read by StartPattern in src/aliens.asm):
 #   byte 0 = number of parts. Each part is 8 bytes:
 #   [x, y, delay, count, relx, rely, gra, path]
