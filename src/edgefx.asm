@@ -121,11 +121,11 @@ RestartTune:
     ld [aCnt], a
     ld [aCnt + 1], a
     ld [aCnt + 2], a
-    ld a, [aRate]                   ; boss tune: each loop speeds up (+10 per loop, 50 -> 60 -> 70 -> 80 -> 90 -> 100)
+    ld a, [aRate]                   ; boss tune: each loop speeds up (+10 per loop, 50 -> 60 -> 70 -> 80, then held)
     add 10
-    cp 101
+    cp 81
     jr c, .rate
-    ld a, 100                       ; cap: 2x the starting tempo (rate 50 = 1x)
+    ld a, 80                        ; cap: loops hold at 148 frames (rate 80); rate 50 = 1x
 .rate:
     ld [aRate], a
     pop bc
