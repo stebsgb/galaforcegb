@@ -11,6 +11,7 @@ FadeWait:
     xor a
     ldh [hVBlank], a
     call hDma
+    call CgbFlush
     push bc
     call AudioUpdate
     pop bc
