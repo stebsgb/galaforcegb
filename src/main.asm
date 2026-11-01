@@ -38,6 +38,7 @@ DEF IN_RELX  EQU 6
 DEF IN_RELY  EQU 7
 DEF IN_TYPE  EQU 8
 DEF IN_PNUM  EQU 9         ; path id | $80 = mirrored
+DEF IN_NOBOMB EQU 10       ; 1 = aliens from this record fire no bombs (patterns 8 and 9)
 
 ; ---- game states ----
 DEF ST_TITLE    EQU 0
@@ -90,6 +91,9 @@ wAliens: ds 16 * MAXAL
 SECTION "initsram", WRAM0, ALIGN[8]
 wInits: ds 16 * MAXINIT
 
+SECTION "nobombram", WRAM0, ALIGN[8]
+wNoBomb: ds 16 * MAXAL      ; per alien slot (same offsets as wAliens): 1 = this alien fires no bombs
+
 SECTION "vars", WRAM0
 wKeys:      db
 wKeysNew:   db
@@ -127,6 +131,7 @@ wBomb:      ds 24          ; 6 x (kind 0/1 slow/2 fast, x, y, -)
 wWavePtr:   dw
 wWaveOff:   db
 wTmp:       ds 8
+wSpawnNoBomb: db           ; flag for the alien being created: 1 = fires no bombs
 wRot:       db
 wPause:     db
 wMusic:     ds 16
