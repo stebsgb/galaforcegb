@@ -19,6 +19,7 @@ aSfxId:   db              ; id of the effect now playing (SFX_*), so a BOOM can 
 aMute:    db              ; 1 = wave channel only (boss stage): PlayNote skips pulse 1 and pulse 2
 aTune:    db              ; id of the tune now playing (MUS_*), used to restart it
 aLoop:    db              ; 1 = the tune repeats (boss stage): the wave channel restarts when its stream ends
+aRate:    db              ; accumulator step per frame (50 = normal tempo, 100 = 2x); the boss tune raises it each loop
 
 SECTION "audio", ROM0
 
@@ -43,6 +44,8 @@ AudioInit:
     ld [aSfxOn], a
     ld [aSfxLock], a
     ld [aPaused], a
+    ld a, 50
+    ld [aRate], a
     ret
 
 ; hl = 16 bytes of waveform to copy into wave RAM ($FF30). Channel 3 must be off (MusicPlay turns it off first).
@@ -106,6 +109,8 @@ MusicPlay:
     ld [aLoop], a                   ; and does not repeat unless it is the boss tune
     ldh [rNR12], a
     ldh [rNR22], a
+    ld a, 50                            ; every tune starts at normal tempo (only the boss tune speeds up, in RestartTune)
+    ld [aRate], a
     ret
 
 ; Z set when every channel has reached the end of its stream
@@ -167,12 +172,16 @@ AudioUpdate:
     or a
     ret z
     ld a, [aAcc]
-    add 50
-    cp 60
+    ld hl, aRate
+    add [hl]                        ; + aRate: 50 normally; the boss tune raises it on each loop
+.tick:
+    cp 60                           ; every 60 accumulated units is one driver tick
     jr c, .store
     sub 60
-    ld [aAcc], a
-    jr MusicTick
+    push af
+    call MusicTick
+    pop af
+    jr .tick                        ; rate above 60 gives more than one tick in a frame
 .store:
     ld [aAcc], a
     ret

@@ -121,6 +121,13 @@ RestartTune:
     ld [aCnt], a
     ld [aCnt + 1], a
     ld [aCnt + 2], a
+    ld a, [aRate]                   ; boss tune: each loop speeds up (+10 per loop, 50 -> 60 -> 70 -> 80 -> 90 -> 100)
+    add 10
+    cp 101
+    jr c, .rate
+    ld a, 100                       ; cap: 2x the starting tempo (rate 50 = 1x)
+.rate:
+    ld [aRate], a
     pop bc
     ret
 
