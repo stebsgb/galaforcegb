@@ -110,6 +110,7 @@ UpdateAliens:
     and 3
     jr nz, .next
     push bc
+    call BossStop               ; the boss tune stops for the death explosions (src/edgefx.asm)
     ld a, SFX_BOOM
     call Sfx
     pop bc

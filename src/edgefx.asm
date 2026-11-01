@@ -22,6 +22,17 @@ BossMusic:
     ld [aLoop], a
     ret
 
+; BossStop: the boss dies. Stop the boss tune and silence the wave channel. Called from the boss death
+; explosion (src/aliens.asm .bossdie). Clears every tune flag so the next wave's tune starts normally.
+BossStop:
+    xor a
+    ld [aPlay], a
+    ld [aMute], a
+    ld [aLoop], a
+    ld [aGateCt], a
+    ldh [rNR30], a
+    ret
+
 ; RestartTune: reload all three stream pointers of the current tune and start again.
 ; Called from MusicTick (src/audio.asm) when the wave channel reaches the end of a looping tune.
 RestartTune:
