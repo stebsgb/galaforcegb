@@ -254,9 +254,28 @@ AlienStep:
     add b
     ld [hl], a
 .dec:
+    ; Patterns 23/24 use patdat15; 5/8-frame steps pair with their 4-tick spawn delay.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_PATH
+    ld l, a
+    ld a, [hl-]
+    cp HIGH(patdat15)
+    jr nz, .normalstep
+    ld a, [hl]
+    cp LOW(patdat15)
+    jr nz, .normalstep
+    ld a, [wFrame]
+    and 7
+    jr z, .step
+    and 1
+    ret z
+    jr .step
+.normalstep:
     ld a, [wFrame]
     and 1
     ret z
+.step:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_STEPS
