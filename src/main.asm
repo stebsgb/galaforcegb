@@ -171,6 +171,7 @@ hSplit:     db
 hStarY:     db
 hTitle:     db            ; 1 while the title screen (split star background) is shown
 hSeg:       db            ; title split segment index
+hTitleDelay: db            ; title input lockout; left intact by the soft-reset HRAM clear
 
 ; ===================================================== vectors
 SECTION "vec_vbl", ROM0[$40]
@@ -266,6 +267,13 @@ DmaRoutineEnd:
 
 ; ===================================================== boot
 Start:
+    xor a
+    ldh [hTitleDelay], a
+    jr StartCore
+SoftReset:
+    ld a, 20
+    ldh [hTitleDelay], a
+StartCore:
     di
     ld sp, $FFFE
     call LcdOff
@@ -347,10 +355,14 @@ MainLoop:
     ld hl, wFrame
     inc [hl]
     call ReadKeys
+    ldh a, [hTitleDelay]
+    or a
+    jr nz, .noreset
     ld a, [wKeys]
     and $0F
     cp $0F
-    jp z, Start                 ; A+B+Select+Start soft reset
+    jp z, SoftReset             ; A+B+Select+Start soft reset
+.noreset:
     call DemoInput
     call AudioUpdate
     call GameUpdate

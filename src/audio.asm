@@ -16,6 +16,7 @@ aSfxPtr:  dw
 aPaused:  db
 aSfxLock: db              ; 1 while the last-life sound plays: nothing (bullets, explosions) can cut it
 aSfxId:   db              ; id of the effect now playing (SFX_*), so a BOOM can be held off while the bomb sounds
+aSfxNoise: db             ; NR43 override for the alien-hit BOOM variant; zero uses the SFX data
 aMute:    db              ; 1 = wave channel only (boss stage): PlayNote skips pulse 1 and pulse 2
 aTune:    db              ; id of the tune now playing (MUS_*), used to restart it
 aLoop:    db              ; 1 = the tune repeats (boss stage): the wave channel restarts when its stream ends
@@ -43,6 +44,7 @@ AudioInit:
     ld [aGateCt], a
     ld [aSfxOn], a
     ld [aSfxLock], a
+    ld [aSfxNoise], a
     ld [aPaused], a
     ld a, 50
     ld [aRate], a
@@ -327,8 +329,8 @@ PlayNote:
     ld [aGateCt], a
     ret
 
-; a = sfx id. RandomStartSfx adds a 0-3 frame lead-in before the first event.
-RandomStartSfx:
+; a = sfx id. RandomNoiseSfx slightly lowers the BOOM's noise pitch at random.
+RandomNoiseSfx:
     push bc
     push de
     push hl
@@ -349,7 +351,7 @@ SfxCore:
     jr z, .force
     ld a, [aSfxLock]                ; the last-life sound blocks every other effect until it ends
     or a
-    jr nz, .out
+    jp nz, .out
     ld a, b                         ; the last-life effect cuts the tune rather than being dropped by it
     cp SFX_LAST
     jr z, .force
@@ -411,13 +413,19 @@ SfxCore:
 .nolock:
     ld a, c
     or a
-    jr z, .immediate
+    jr z, .flatnoise
+    ld a, b
+    cp SFX_BOOM
+    jr nz, .flatnoise
     call Rand
-    and 3
-    jr z, .immediate
-    ld [aSfxCt], a
-    jr .out
-.immediate:
+    and 7
+    jr nz, .flatnoise
+    ld a, $65
+    jr .setnoise
+.flatnoise:
+    xor a
+.setnoise:
+    ld [aSfxNoise], a
     xor a
     ld [aSfxCt], a
     call SfxStep
@@ -459,6 +467,19 @@ SfxStep:
     ld b, 4
 .cp:
     ld a, [hli]
+    push af
+    ld a, e
+    cp LOW(rNR43)
+    jr nz, .raw
+    ld a, [aSfxNoise]
+    or a
+    jr z, .raw
+    pop af
+    ld a, [aSfxNoise]
+    jr .write
+.raw:
+    pop af
+.write:
     ld [de], a
     inc de
     dec b

@@ -35,7 +35,7 @@ print("BGP", hex(m[0xFF47]))
 for _ in range(10): pb.tick(1, False)
 shot(pb, "opt_screen_white.png")
 tap(pb, "b", 100)
-assert m[S["wState"]] == 0 and m[S["wMenuSel"]] == 1
+assert m[S["wState"]] == 0 and m[S["wMenuSel"]] == 0
 tap(pb, "up"); shot(pb, "opt_title_white.png")
 tap(pb, "start", 5)
 for _ in range(200): pb.tick(1, False)

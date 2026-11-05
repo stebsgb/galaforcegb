@@ -121,12 +121,12 @@ ShowOptions:
     ei
     jp FadeIn
 
-; Leaves the options screen: saves, fades, back to the title with OPTIONS selected
+; Leaves the options screen: saves, fades, back to the title with START selected
 LeaveOptions:
     call SaveOptions
     call LoadHi                 ; show the hi-score for the chosen continue setting
     call FadeOut
-    ld a, 1
+    xor a
     ld [wMenuSel], a
     jp ShowTitle
 
