@@ -282,6 +282,11 @@ StartCore:
     ld bc, $2000
     xor a
     call MemFill
+    ; HRAM variables start at 0 (hVBlank..hSeg are read before any game writes them, e.g. hStarY in TitleStat)
+    ld hl, hDma
+    ld bc, hSeg + 1 - hDma
+    xor a
+    call MemFill
     ; HRAM routine
     ld hl, DmaRoutine
     ld de, hDma
