@@ -327,15 +327,23 @@ PlayNote:
     ld [aGateCt], a
     ret
 
-; a = sfx id. FIRE never interrupts another effect.
+; a = sfx id. RandomStartSfx adds a 0-3 frame lead-in before the first event.
+RandomStartSfx:
+    push bc
+    push de
+    push hl
+    ld c, 1
+    jr SfxCore
 Sfx:
     push bc
     push de
     push hl
+    ld c, 0
+SfxCore:
     ld b, a
     ld a, [wDemo]                   ; no sound effects during the attract demo
     or a
-    jr nz, .out
+    jp nz, .out
     ld a, b                         ; forced effects (boss/cheat sparkle, last life) are checked before the lock
     cp SFX_SPARKLE
     jr z, .force
@@ -360,7 +368,7 @@ Sfx:
     ld a, b
     cp 2
     jr nc, .notfb
-    ; FIRE (0) and BOOM (1) start at once, but not while the smart bomb is still sounding
+    ; FIRE (0) and BOOM (1) may cut effects, but not while the smart bomb is still sounding
     ld a, [aSfxOn]
     or a
     jr z, .go
@@ -401,6 +409,15 @@ Sfx:
     ld a, 1
     ld [aSfxLock], a
 .nolock:
+    ld a, c
+    or a
+    jr z, .immediate
+    call Rand
+    and 3
+    jr z, .immediate
+    ld [aSfxCt], a
+    jr .out
+.immediate:
     xor a
     ld [aSfxCt], a
     call SfxStep

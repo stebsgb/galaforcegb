@@ -859,7 +859,7 @@ AlienHit:                       ; c = alien slot
     xor a
     ld [hl], a
     ld a, SFX_BOOM
-    call Sfx
+    call RandomStartSfx
     pop bc
     ret
 
