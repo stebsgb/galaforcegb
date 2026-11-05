@@ -779,7 +779,6 @@ NoBombPattern:
 StartPattern:
     call BossCheck              ; pattern 45 (boss): title tune on pulse 1 only; preserves a
     call NoBombPattern          ; patterns 31 and 32: their aliens fire no bombs; preserves a
-    ld [wTmp + 5], a            ; keep the pattern id for the WAVE04 spacing adjustment
     add a
     ld e, a
     ld d, 0
@@ -823,20 +822,6 @@ StartPattern:
     inc a
 .d0:
     ld c, a
-    ld a, [wWave]
-    and 15
-    cp 4
-    jr nz, .delayok
-    ld a, [wTmp + 5]
-    cp 15
-    jr z, .widegap
-    cp 16
-    jr nz, .delayok
-.widegap:
-    ld a, c
-    add 3                       ; WAVE04 patterns 15/16: 5 -> 8 ticks for visible spacing
-    ld c, a
-.delayok:
     ld a, [wTmp + 6]
     or a
     ld a, c
@@ -882,7 +867,7 @@ StartPattern:
     add 16
     ld e, a
     dec b
-    jr nz, .part
+    jp nz, .part
     ret
 
 ; Spawn records tick once per original "sweep" (every 2nd frame)
