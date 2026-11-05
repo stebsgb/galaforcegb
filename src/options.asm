@@ -1,4 +1,4 @@
-; Options: starting lives (1..5) and black/white background, stored in SRAM at $A010.
+; Options: starting lives (1..6) and black/white background, stored in SRAM at $A010.
 ; Layout: $4F $50, lives, bg, continues, checksum (sum + $5A).
 
 DEF OPT_SRAM EQU $A010
@@ -38,7 +38,7 @@ LoadOptions:
     ld a, b
     or a
     jr z, .off
-    cp 8
+    cp 7
     jr nc, .off
     ld a, c
     cp 2
@@ -121,12 +121,12 @@ ShowOptions:
     ei
     jp FadeIn
 
-; Leaves the options screen: saves, fades, back to the title with OPTIONS selected
+; Leaves the options screen: saves, fades, back to the title with START selected
 LeaveOptions:
     call SaveOptions
     call LoadHi                 ; show the hi-score for the chosen continue setting
     call FadeOut
-    ld a, 1
+    xor a
     ld [wMenuSel], a
     jp ShowTitle
 
@@ -204,7 +204,7 @@ StateOptions:
     ret z
     ld hl, wOptLives
     ld a, [hl]
-    cp 7
+    cp 6
     ret nc
     inc [hl]
     ld a, 1

@@ -143,6 +143,11 @@ patts_out[1][6] = 7
 # Pattern 2 (waves 0, 3, 6, 9): reduce the alien count (part byte 4, num) by 2, from 30 to 28.
 assert patts_out[2] == [1, 12, 24, 4, 30, 0, 0, 18, 1], patts_out[2]
 patts_out[2][4] = 28
+# Patterns 15 and 16 (waves 4, 10 and 13): use the wider 8-tick spawn delay in every wave.
+assert patts_out[15] == [1, 0, 210, 5, 12, 0, 0, 18, 10], patts_out[15]
+assert patts_out[16] == [1, 74, 210, 5, 12, 0, 0, 18, 138], patts_out[16]
+patts_out[15][3] = 8
+patts_out[16][3] = 8
 # Pattern 29 (part: [x, y, delay, count, relx, rely, gra, path]): reduce the alien count (part byte 4, num) from 21 to 12.
 # Pattern 29 is the first pattern of wave 12 (ZONE 13) and also the last pattern of wave 10 (ZONE 11), so both zones get the change.
 assert patts_out[29] == [1, 0, 32, 2, 21, 3, 0, 20, 18], patts_out[29]

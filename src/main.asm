@@ -140,7 +140,7 @@ wDemo:      db            ; 1 while the attract-mode demo runs
 wIdle:      dw            ; title idle frames
 wDemoT:     dw            ; demo frames
 wHiBak:     ds 7          ; hi-score saved while the demo runs
-wOptLives:  db            ; options: starting spare lives 1..5
+wOptLives:  db            ; options: starting spare lives 1..6
 wOptBg:     db            ; options: 0 black background, 1 white
 wMenuSel:   db
 wTwk:       dw            ; title logo shine cycle counter
@@ -171,7 +171,7 @@ hSplit:     db
 hStarY:     db
 hTitle:     db            ; 1 while the title screen (split star background) is shown
 hSeg:       db            ; title split segment index
-hCgb:       db            ; 1 on a Game Boy Color (A = $11 at power-on), 0 on DMG; set once by Boot, kept by soft reset
+hTitleDelay: db            ; title input lockout; left intact by the soft-reset HRAM clear
 
 ; ===================================================== vectors
 SECTION "vec_vbl", ROM0[$40]
@@ -181,7 +181,7 @@ SECTION "vec_stat", ROM0[$48]
 
 SECTION "entry", ROM0[$100]
     nop
-    jp Boot
+    jp Start
     ds $150 - @, 0
 
 SECTION "main", ROM0
@@ -266,22 +266,25 @@ DmaRoutine:
 DmaRoutineEnd:
 
 ; ===================================================== boot
-; Power-on entry from $100: A is $11 on a Game Boy Color and $01 on DMG. Saved once in hCgb;
-; soft reset jumps to Start directly, so the saved value is kept.
-Boot:
-    cp $11
-    ld a, 0                         ; ld does not change the flags
-    jr nz, .dmg
-    inc a
-.dmg:
-    ldh [hCgb], a
 Start:
+    xor a
+    ldh [hTitleDelay], a
+    jr StartCore
+SoftReset:
+    ld a, 20
+    ldh [hTitleDelay], a
+StartCore:
     di
     ld sp, $FFFE
     call LcdOff
     ; clear WRAM
     ld hl, $C000
     ld bc, $2000
+    xor a
+    call MemFill
+    ; HRAM variables start at 0 (hVBlank..hSeg are read before any game writes them, e.g. hStarY in TitleStat)
+    ld hl, hDma
+    ld bc, hSeg + 1 - hDma
     xor a
     call MemFill
     ; HRAM routine
@@ -307,9 +310,7 @@ Start:
     ld de, _SCRN1 + 512
     ld bc, 512
     call MemCopy
-    call CgbInit                    ; GBC only: clear the BG attribute map in VRAM bank 1
     call ApplyPalettes
-    call CgbFlush
     ld a, BOT_LINE
     ldh [rWY], a
     ld a, 7
@@ -353,17 +354,20 @@ MainLoop:
     xor a
     ldh [hVBlank], a
     call hDma
-    call CgbFlush
     call HudUpdate
     call MenuRefresh
     call TitleShine
     ld hl, wFrame
     inc [hl]
     call ReadKeys
+    ldh a, [hTitleDelay]
+    or a
+    jr nz, .noreset
     ld a, [wKeys]
     and $0F
     cp $0F
-    jp z, Start                 ; A+B+Select+Start soft reset
+    jp z, SoftReset             ; A+B+Select+Start soft reset
+.noreset:
     call DemoInput
     call AudioUpdate
     call GameUpdate
@@ -473,11 +477,7 @@ PutObj:
     ld a, d
     ld [hli], a
     ld a, e
-    and $F0                     ; keep the DMG bits (flip, priority, OBP1); clear the CGB palette and bank bits
-    bit 4, a
-    jr z, .p
-    or 1                        ; GBC: object palette 1 (DMG ignores this bit)
-.p: ld [hli], a
+    ld [hli], a
     ld a, l
     ld [wOamLo], a
     ret
@@ -505,5 +505,4 @@ INCLUDE "fx.asm"
 INCLUDE "options.asm"
 INCLUDE "secret.asm"
 INCLUDE "edgefx.asm"
-INCLUDE "cgb.asm"
 INCLUDE "data.inc"

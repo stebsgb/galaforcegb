@@ -38,11 +38,6 @@ DEF rOBP0  EQU $FF48
 DEF rOBP1  EQU $FF49
 DEF rWY    EQU $FF4A
 DEF rWX    EQU $FF4B
-DEF rVBK   EQU $FF4F           ; CGB: VRAM bank select
-DEF rBCPS  EQU $FF68           ; CGB: background palette index (bit 7 = auto-increment)
-DEF rBCPD  EQU $FF69           ; CGB: background palette data
-DEF rOCPS  EQU $FF6A           ; CGB: object palette index
-DEF rOCPD  EQU $FF6B           ; CGB: object palette data
 DEF rIE    EQU $FFFF
 
 DEF _VRAM   EQU $8000

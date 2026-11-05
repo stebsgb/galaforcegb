@@ -48,6 +48,13 @@ StateTitle:
     dec a
     ldh [hStarY], a
 .nos:
+    ldh a, [hTitleDelay]
+    or a
+    jr z, .input
+    dec a
+    ldh [hTitleDelay], a
+    ret
+.input:
     call TitleMenuKeys
     ld a, [wKeysNew]
     or a
@@ -859,7 +866,7 @@ AlienHit:                       ; c = alien slot
     xor a
     ld [hl], a
     ld a, SFX_BOOM
-    call Sfx
+    call RandomNoiseSfx
     pop bc
     ret
 

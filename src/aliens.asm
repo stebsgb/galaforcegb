@@ -175,7 +175,7 @@ AlienStep:
     ld l, a
     ld a, [hl]
     cp $40
-    jr nc, .dec                 ; pause
+    jp nc, .dec                 ; pause
     ld e, a
     ld d, 0
     ld hl, dir_dx
@@ -202,7 +202,7 @@ AlienStep:
     ld l, a
     ld a, [hl]
     cp 5
-    jr nz, .notsolox
+    jp nz, .notsolox
     ld a, e
     cp 1
     jr z, .solox
@@ -211,6 +211,49 @@ AlienStep:
 .solox:
     sla b
 .notsolox:
+    ; Restore patdat15's horizontal range after its faster step cadence; the path has no loop count.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_PATH
+    ld l, a
+    ld a, [hl-]
+    cp HIGH(patdat15)
+    jr nz, .narrowx
+    ld a, [hl]
+    cp LOW(patdat15)
+    jr nz, .narrowx
+    ld a, b
+    or a
+    jr z, .narrowx
+    bit 7, a
+    jr z, .xabs
+    cpl
+    inc a
+.xabs:
+    ld d, a
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_LCNT
+    ld l, a
+    ld a, [hl]
+    add d
+    cp 4
+    jr c, .xphase
+    sub 4
+    ld [hl], a
+    ld a, b
+    bit 7, a
+    jr nz, .xscale_neg
+    inc b
+    jr .xscaled
+.xscale_neg:
+    dec b
+    jr .xscaled
+.xphase:
+    ld [hl], a
+.xscaled:
+    ld d, 0
+.narrowx:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_X
@@ -254,9 +297,28 @@ AlienStep:
     add b
     ld [hl], a
 .dec:
+    ; Patterns 23/24 use patdat15; 5/8-frame steps pair with their 4-tick spawn delay.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_PATH
+    ld l, a
+    ld a, [hl-]
+    cp HIGH(patdat15)
+    jr nz, .normalstep
+    ld a, [hl]
+    cp LOW(patdat15)
+    jr nz, .normalstep
+    ld a, [wFrame]
+    and 7
+    jr z, .step
+    and 1
+    ret z
+    jr .step
+.normalstep:
     ld a, [wFrame]
     and 1
     ret z
+.step:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_STEPS
@@ -805,7 +867,7 @@ StartPattern:
     add 16
     ld e, a
     dec b
-    jr nz, .part
+    jp nz, .part
     ret
 
 ; Spawn records tick once per original "sweep" (every 2nd frame)
@@ -911,6 +973,22 @@ SpawnAlien:
     ld e, a
     ld a, [de]
     ld b, a
+    ; Path 15 streams get one 5-tick gap per four releases for a slight spacing increase.
+    ld a, c
+    or IN_PNUM
+    ld e, a
+    ld a, [de]
+    and $7F
+    cp 15
+    jr nz, .delayok
+    ld a, c
+    or IN_NUM
+    ld e, a
+    ld a, [de]
+    and 3
+    jr nz, .delayok
+    inc b
+.delayok:
     ld a, c
     or IN_CNT
     ld e, a
