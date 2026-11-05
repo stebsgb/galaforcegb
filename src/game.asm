@@ -1037,9 +1037,9 @@ BossAuto:
     ld a, [hl]
     cp $80
     jr nz, .n
-    ld a, c
-    or AL_TYPE
-    ld l, a
+    inc l
+    inc l
+    inc l
     ld a, [hl]
     cp 5
     jr z, .found
@@ -1050,13 +1050,23 @@ BossAuto:
     jr c, .l
     ret
 .found:
-    ld h, HIGH(wAliens)
-    ld a, c
-    or AL_HITS
-    ld l, a
+    inc l
+    inc l
     ld a, [hl]                      ; hits left
     cp 6
     ret nc                          ; more than 5 left: only the hit explosions
+    cp 4
+    jr nc, .fx
+    ld a, [wFrame]
+    and 7
+    jr nz, .fx
+    ld a, c
+    or AL_Y
+    ld l, a
+    ld a, [hl]
+    add 4
+    ld [hl], a
+.fx:
     ld a, [wHfxT]
     ld b, a
     ld a, [wHfxN]
@@ -1066,10 +1076,8 @@ BossAuto:
     and 15
     add 252                         ; -4..+11 px
     ld d, a
-    ld h, HIGH(wAliens)
-    ld a, c
-    or AL_X
-    ld l, a
+    ld l, c
+    inc l
     ld a, [hl]
     add d
     ld [wHfxX], a
@@ -1077,10 +1085,7 @@ BossAuto:
     and 15
     add 252
     ld d, a
-    ld h, HIGH(wAliens)
-    ld a, c
-    or AL_Y
-    ld l, a
+    inc l
     ld a, [hl]
     call FieldY
     add d
