@@ -175,7 +175,7 @@ AlienStep:
     ld l, a
     ld a, [hl]
     cp $40
-    jr nc, .dec                 ; pause
+    jp nc, .dec                 ; pause
     ld e, a
     ld d, 0
     ld hl, dir_dx
@@ -202,7 +202,7 @@ AlienStep:
     ld l, a
     ld a, [hl]
     cp 5
-    jr nz, .notsolox
+    jp nz, .notsolox
     ld a, e
     cp 1
     jr z, .solox
@@ -211,6 +211,49 @@ AlienStep:
 .solox:
     sla b
 .notsolox:
+    ; Restore patdat15's horizontal range after its faster step cadence; the path has no loop count.
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_PATH
+    ld l, a
+    ld a, [hl-]
+    cp HIGH(patdat15)
+    jr nz, .narrowx
+    ld a, [hl]
+    cp LOW(patdat15)
+    jr nz, .narrowx
+    ld a, b
+    or a
+    jr z, .narrowx
+    bit 7, a
+    jr z, .xabs
+    cpl
+    inc a
+.xabs:
+    ld d, a
+    ld h, HIGH(wAliens)
+    ld a, c
+    or AL_LCNT
+    ld l, a
+    ld a, [hl]
+    add d
+    cp 4
+    jr c, .xphase
+    sub 4
+    ld [hl], a
+    ld a, b
+    bit 7, a
+    jr nz, .xscale_neg
+    inc b
+    jr .xscaled
+.xscale_neg:
+    dec b
+    jr .xscaled
+.xphase:
+    ld [hl], a
+.xscaled:
+    ld d, 0
+.narrowx:
     ld h, HIGH(wAliens)
     ld a, c
     or AL_X
@@ -736,6 +779,7 @@ NoBombPattern:
 StartPattern:
     call BossCheck              ; pattern 45 (boss): title tune on pulse 1 only; preserves a
     call NoBombPattern          ; patterns 31 and 32: their aliens fire no bombs; preserves a
+    ld [wTmp + 5], a            ; keep the pattern id for the WAVE04 spacing adjustment
     add a
     ld e, a
     ld d, 0
@@ -779,6 +823,20 @@ StartPattern:
     inc a
 .d0:
     ld c, a
+    ld a, [wWave]
+    and 15
+    cp 4
+    jr nz, .delayok
+    ld a, [wTmp + 5]
+    cp 15
+    jr z, .widegap
+    cp 16
+    jr nz, .delayok
+.widegap:
+    ld a, c
+    add 3                       ; WAVE04 patterns 15/16: 5 -> 8 ticks for visible spacing
+    ld c, a
+.delayok:
     ld a, [wTmp + 6]
     or a
     ld a, c
@@ -930,6 +988,22 @@ SpawnAlien:
     ld e, a
     ld a, [de]
     ld b, a
+    ; Path 15 streams get one 5-tick gap per four releases for a slight spacing increase.
+    ld a, c
+    or IN_PNUM
+    ld e, a
+    ld a, [de]
+    and $7F
+    cp 15
+    jr nz, .delayok
+    ld a, c
+    or IN_NUM
+    ld e, a
+    ld a, [de]
+    and 3
+    jr nz, .delayok
+    inc b
+.delayok:
     ld a, c
     or IN_CNT
     ld e, a
