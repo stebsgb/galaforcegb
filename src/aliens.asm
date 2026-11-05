@@ -100,9 +100,9 @@ UpdateAliens:
     inc a
     ld [wBombs], a
 .bombcap:
-    ld l, c
-    xor a
-    ld [hl], a
+    push bc
+    call ClearField
+    pop bc
     jr .next
 .bossdie:                       ; boss: 36 frame steps (~2.4 s) of chained explosions, a boom every 4th step
     cp 36
